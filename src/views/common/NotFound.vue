@@ -1,11 +1,10 @@
 <template>
-    <router-view name="header"></router-view>
-    <router-view></router-view>
+    <div>404 Not Found</div>
 </template>
 
 <script>
 export default {
-    name: 'App',
+    name: 'NotFound',
     components: {},
 };
 </script>

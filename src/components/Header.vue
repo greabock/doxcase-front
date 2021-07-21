@@ -1,11 +1,10 @@
 <template>
-    <router-view name="header"></router-view>
-    <router-view></router-view>
+    <div>Header</div>
 </template>
 
 <script>
 export default {
-    name: 'App',
+    name: 'Header',
     components: {},
 };
 </script>
