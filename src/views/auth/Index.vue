@@ -77,6 +77,7 @@ export default {
                 const userInfo = await AuthService.getUserInfo();
                 console.log(userInfo);
                 this.$store.dispatch('auth/setUserData', userInfo.data.data);
+                this.$router.push('/profile');
             } catch (error) {
                 this.loading = false;
                 this.message =
