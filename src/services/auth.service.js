@@ -1,25 +1,24 @@
-import axios from 'axios';
-import {API_URL} from '../../globals';
+import {axiosInstance} from '../utils/API';
 
 class AuthService {
-    async login({login, password}) {
+    getToken = async ({login, password}) => {
         try {
-            const resp = await axios.post(API_URL + '/auth/login', {
+            const resp = await axiosInstance.post('/auth/login', {
                 login,
                 password,
             });
-            if (resp.data?.token) {
-                localStorage.setItem('token', JSON.stringify(resp.data.token));
-            }
-            return await axios.get(API_URL + '/auth/login');
+            return resp.data.data?.token;
         } catch (e) {
-            console.log(e);
+            console.log('Error fetching token');
         }
-    }
-
-    logout() {
-        localStorage.removeItem('token');
-    }
+    };
+    getUserInfo = async () => {
+        try {
+            return await axiosInstance.get('/auth/me');
+        } catch (e) {
+            console.log('Error fetching UserData');
+        }
+    };
 }
 
 export default new AuthService();

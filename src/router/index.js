@@ -5,6 +5,7 @@ import NotFound from '@/views/common/NotFound.vue';
 import Home from '@/views/home/Index.vue';
 import Login from '@/views/auth/Index.vue';
 import Profile from '@/views/profile/Index.vue';
+import Cookies from 'js-cookie';
 
 const routes = [
     {path: '/:pathMatch(.*)*', components: {default: NotFound}},
@@ -16,4 +17,14 @@ const routes = [
 export const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+router.beforeEach((to, from, next) => {
+    const token = Cookies.get('token');
+    console.log(token);
+    if (to.path !== '/login' && !token) {
+        next('/login');
+    } else {
+        next();
+    }
 });

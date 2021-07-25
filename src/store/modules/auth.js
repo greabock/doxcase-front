@@ -1,5 +1,3 @@
-import AuthService from '../../services/auth.service';
-
 const initialState = {
     role: null,
     userInfo: {
@@ -16,12 +14,10 @@ export const auth = {
     namespaced: true,
     state: initialState,
     actions: {
-        async login({commit}, token) {
-            const userInfo = await AuthService.login(token);
+        setUserData({commit}, userInfo) {
             commit('loginSuccess', userInfo);
         },
         logout({commit}) {
-            AuthService.logout();
             commit('logout');
         },
     },

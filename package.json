@@ -10,9 +10,11 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "vee-validate": "^3.4.11",
+    "js-cookie": "^2.2.1",
+    "vee-validate": "^4.4.7",
     "vue": "^3.0.0",
     "vue-router": "4",
+    "vue3-cookies": "^1.0.1",
     "vuex": "^4.0.2",
     "yup": "^0.32.9"
   },
