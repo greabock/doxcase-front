@@ -58,16 +58,16 @@ export default {
             schema,
         };
     },
-    computed: {
-        userRole() {
-            return this.$store.state.auth.role;
-        },
-    },
-    created() {
-        if (this.userRole) {
-            this.$router.push('/profile');
-        }
-    },
+    // computed: {
+    //     userRole() {
+    //         return this.$store.state.auth.role;
+    //     },
+    // },
+    // created() {
+    //     if (this.userRole) {
+    //         this.$router.push('/profile');
+    //     }
+    // },
     methods: {
         async handleLogin({login, password}) {
             this.loading = true;
