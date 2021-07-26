@@ -1,18 +1,9 @@
-const initialState = {
-    role: null,
-    userInfo: {
-        id: undefined,
-        name: undefined,
-        avatar: null,
-        role: null,
-        login: null,
-        email: null,
-    },
-};
-
 export const auth = {
     namespaced: true,
-    state: initialState,
+    state: () => ({
+        role: null,
+        userInfo: null,
+    }),
     actions: {
         setUserData({commit}, userInfo) {
             commit('loginSuccess', userInfo);

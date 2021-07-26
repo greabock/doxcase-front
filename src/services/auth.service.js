@@ -9,7 +9,7 @@ class AuthService {
             });
             return resp.data.data?.token;
         } catch (e) {
-            console.log('Error fetching token');
+            throw new Error('Ошибка авторизации');
         }
     };
     getUserInfo = async () => {

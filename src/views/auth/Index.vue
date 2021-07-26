@@ -75,7 +75,6 @@ export default {
                 const token = await AuthService.getToken({login, password});
                 Cookies.set('token', token);
                 const userInfo = await AuthService.getUserInfo();
-                console.log(userInfo);
                 this.$store.dispatch('auth/setUserData', userInfo.data.data);
                 this.$router.push('/profile');
             } catch (error) {
