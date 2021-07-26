@@ -19,8 +19,8 @@
                 </button>
             </div>
             <div class="form-group">
-                <div v-if="message" class="alert alert-danger" role="alert">
-                    {{ message }}
+                <div v-if="error" class="alert alert-danger" role="alert">
+                    {{ error }}
                 </div>
             </div>
         </Form>
@@ -35,7 +35,6 @@
 </template>
 <script>
 import {Form, Field, ErrorMessage} from 'vee-validate';
-import AuthService from '../../services/auth.service.js';
 import Cookies from 'js-cookie';
 import * as yup from 'yup';
 
@@ -51,43 +50,31 @@ export default {
             login: yup.string().required('Введите логин'),
             password: yup.string().required('Введите пароль'),
         });
-
         return {
-            loading: false,
-            message: '',
             schema,
         };
     },
-    // computed: {
-    //     userRole() {
-    //         return this.$store.state.auth.role;
-    //     },
-    // },
-    // created() {
-    //     if (this.userRole) {
-    //         this.$router.push('/profile');
-    //     }
-    // },
+    computed: {
+        loading() {
+            return this.$store.state.auth.loading;
+        },
+        error() {
+            return this.$store.state.auth.error;
+        },
+    },
+    created() {
+        const role = Cookies.get('role');
+        const token = Cookies.get('token');
+        if (role && token) {
+            this.$router.push('/profile');
+        }
+    },
     methods: {
-        async handleLogin({login, password}) {
-            this.loading = true;
-            try {
-                const token = await AuthService.getToken({login, password});
-                Cookies.set('token', token);
-                const userInfo = await AuthService.getUserInfo();
-                this.$store.dispatch('auth/setUserData', userInfo.data.data);
-                this.$router.push('/profile');
-            } catch (error) {
-                this.loading = false;
-                this.message =
-                    (error.response && error.response.data && error.response.data.message) ||
-                    error.message ||
-                    error.toString();
-            }
+        handleLogin({login, password}) {
+            this.$store.dispatch('auth/login', {login, password});
         },
         logout() {
             this.$store.dispatch('auth/logout');
-            Cookies.remove('token');
         },
     },
 };
