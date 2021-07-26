@@ -9,7 +9,6 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use((request) => {
     const token = Cookies.get('token');
-    console.log(token);
     if (token) {
         request.headers['Authorization'] = 'Bearer ' + token;
     }

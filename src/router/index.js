@@ -21,7 +21,6 @@ export const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const token = Cookies.get('token');
-    console.log(token);
     if (to.path !== '/login' && !token) {
         next('/login');
     } else {
