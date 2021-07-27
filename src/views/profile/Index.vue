@@ -16,6 +16,7 @@ import Cookies from 'js-cookie';
 export default {
     name: 'Profile',
     components: {},
+    setup() {},
     methods: {
         logout() {
             Cookies.remove('role');

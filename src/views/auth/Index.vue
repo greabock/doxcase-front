@@ -35,11 +35,11 @@
 </template>
 <script>
 import {Form, Field, ErrorMessage} from 'vee-validate';
-import Cookies from 'js-cookie';
 import * as yup from 'yup';
-import {useStore} from 'vuex';
-import {computed, watch, onBeforeMount} from 'vue';
+import {onBeforeMount, watch} from 'vue';
 import {useRouter} from 'vue-router';
+import {useAuth} from '@/hooks/useAuth';
+import Cookies from 'js-cookie';
 
 export default {
     name: 'Login',
@@ -57,20 +57,10 @@ export default {
             schema,
         };
     },
-
     setup() {
-        const store = useStore();
         const router = useRouter();
-        const role = computed(() => store.state.auth.role);
+        const {role, handleLogin, logout, loading, error} = useAuth();
 
-        const handleLogin = ({login, password}) => {
-            store.dispatch('auth/login', {login, password});
-        };
-        const loading = computed(() => store.state.auth.loading);
-        const error = computed(() => store.state.auth.error);
-        const logout = () => {
-            store.dispatch('auth/logout');
-        };
         onBeforeMount(() => {
             const role = Cookies.get('role');
             const token = Cookies.get('token');
@@ -78,13 +68,14 @@ export default {
                 router.push('/profile');
             }
         });
+
         watch(role, () => {
             if (role.value) {
                 router.push('/profile');
             }
         });
+
         return {
-            role,
             handleLogin,
             logout,
             loading,
