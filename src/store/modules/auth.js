@@ -7,7 +7,6 @@ export const auth = {
         loading: false,
         error: null,
         role: null,
-        userInfo: null,
     }),
     actions: {
         async login({commit}, {login, password}) {
@@ -18,6 +17,7 @@ export const auth = {
                 Cookies.set('token', token);
                 const userInfo = await AuthService.getUserInfo();
                 Cookies.set('role', userInfo.data.data.role);
+                commit('setRole', userInfo.data.data.role);
                 commit('setLoading', false);
             } catch (error) {
                 commit('setLoading', false);
@@ -37,17 +37,14 @@ export const auth = {
         setError(state, error) {
             state.error = error;
         },
-        loginSuccess(state, user) {
-            state.role = user.role;
-            state.userInfo = user;
+        setRole(state, role) {
+            state.role = role;
         },
         loginFailure(state) {
             state.role = null;
-            state.user = null;
         },
         logout(state) {
             state.role = null;
-            state.user = null;
         },
     },
 };

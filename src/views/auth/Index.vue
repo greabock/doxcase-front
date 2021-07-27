@@ -37,6 +37,9 @@
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import Cookies from 'js-cookie';
 import * as yup from 'yup';
+import {useStore} from 'vuex';
+import {computed, watch, onBeforeMount} from 'vue';
+import {useRouter} from 'vue-router';
 
 export default {
     name: 'Login',
@@ -54,28 +57,39 @@ export default {
             schema,
         };
     },
-    computed: {
-        loading() {
-            return this.$store.state.auth.loading;
-        },
-        error() {
-            return this.$store.state.auth.error;
-        },
-    },
-    created() {
-        const role = Cookies.get('role');
-        const token = Cookies.get('token');
-        if (role && token) {
-            this.$router.push('/profile');
-        }
-    },
-    methods: {
-        handleLogin({login, password}) {
-            this.$store.dispatch('auth/login', {login, password});
-        },
-        logout() {
-            this.$store.dispatch('auth/logout');
-        },
+
+    setup() {
+        const store = useStore();
+        const router = useRouter();
+        const role = computed(() => store.state.auth.role);
+
+        const handleLogin = ({login, password}) => {
+            store.dispatch('auth/login', {login, password});
+        };
+        const loading = computed(() => store.state.auth.loading);
+        const error = computed(() => store.state.auth.error);
+        const logout = () => {
+            store.dispatch('auth/logout');
+        };
+        onBeforeMount(() => {
+            const role = Cookies.get('role');
+            const token = Cookies.get('token');
+            if (role && token) {
+                router.push('/profile');
+            }
+        });
+        watch(role, () => {
+            if (role.value) {
+                router.push('/profile');
+            }
+        });
+        return {
+            role,
+            handleLogin,
+            logout,
+            loading,
+            error,
+        };
     },
 };
 </script>
