@@ -26,7 +26,7 @@
         </Form>
 
         <div class="form-group">
-            <button @click="logout" class="btn btn-danger btn-block" :disabled="loading">
+            <button @click="handleLogout" class="btn btn-danger btn-block" :disabled="loading">
                 <span v-show="loading" class="spinner-border spinner-border-sm"></span>
                 <span>Logout</span>
             </button>
@@ -37,7 +37,6 @@
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
-import {watch} from 'vue';
 
 export default {
     name: 'Login',
@@ -46,31 +45,20 @@ export default {
         Field,
         ErrorMessage,
     },
-    data() {
+    setup() {
         const schema = yup.object().shape({
             login: yup.string().required('Введите логин'),
             password: yup.string().required('Введите пароль'),
         });
+        const {handleLogin, handleLogout, loading, error, authCheck} = useAuth();
+
         return {
             schema,
-        };
-    },
-    setup() {
-        const {handleLogin, logout, loading, error, role, isAuth, router} = useAuth();
-
-        watch(isAuth, (newVal) => {
-            if (newVal === true) {
-                router.push('/profile');
-            }
-        });
-
-        return {
             handleLogin,
-            logout,
+            handleLogout,
+            authCheck,
             loading,
             error,
-            role,
-            isAuth,
         };
     },
 };

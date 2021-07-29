@@ -1,11 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router';
 
 import Header from '@/components/Header.vue';
-import NotFound from '@/views/common/NotFound.vue';
-import Home from '@/views/home/Index.vue';
-import Login from '@/views/auth/Index.vue';
-import Profile from '@/views/profile/Index.vue';
-import Cookies from 'js-cookie';
+import NotFound from '@/pages/common/NotFound.vue';
+import Home from '@/pages/home/Index.vue';
+import Login from '@/pages/auth/Index.vue';
+import Profile from '@/pages/profile/Index.vue';
 
 const routes = [
     {path: '/:pathMatch(.*)*', components: {default: NotFound}},
@@ -20,7 +19,7 @@ export const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const token = Cookies.get('token');
+    const token = localStorage.getItem('token');
     if (to.path !== '/login' && !token) {
         next('/login');
     } else {
