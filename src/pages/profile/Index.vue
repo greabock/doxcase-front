@@ -8,7 +8,7 @@
             <router-link :to="{name: 'login'}">Login</router-link>
         </li>
     </ul>
-    <button @click="logout">Logout</button>
+    <button @click="handleLogout">Logout</button>
 </template>
 
 <script>
@@ -18,9 +18,9 @@ export default {
     name: 'Profile',
     components: {},
     setup() {
-        const {logout} = useAuth();
+        const {handleLogout} = useAuth();
         return {
-            logout,
+            handleLogout,
         };
     },
 };

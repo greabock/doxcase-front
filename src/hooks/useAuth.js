@@ -1,41 +1,46 @@
-import {useStore} from 'vuex';
-import {computed, onBeforeMount} from 'vue';
 import {useRouter} from 'vue-router';
-import Cookies from 'js-cookie';
+import AuthService from '../services/auth.service';
+import {ref} from 'vue';
 
 export function useAuth() {
-    const store = useStore();
     const router = useRouter();
-    const loading = computed(() => store.state.auth.loading);
-    const error = computed(() => store.state.auth.error);
-    const isAuth = computed(() => store.state.auth.isAuth);
-
-    const handleLogin = ({login, password}) => {
-        store.dispatch('auth/login', {login, password});
+    const error = ref(null);
+    const loading = ref(false);
+    const handleLogin = async ({login, password}) => {
+        try {
+            loading.value = true;
+            const token = await AuthService.getToken({login, password});
+            localStorage.setItem('token', token);
+            const userReq = await AuthService.getUserInfo();
+            localStorage.setItem('role', userReq.data.data.role);
+            loading.value = false;
+            router.push('/profile');
+        } catch (e) {
+            loading.value = false;
+            error.value = e.response?.data?.message || e.message || e.toString();
+        }
     };
 
-    const logout = () => {
-        store.dispatch('auth/logout');
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
         router.push('/login');
     };
 
-    const role = Cookies.get('role');
-    const token = Cookies.get('token');
-
-    onBeforeMount(() => {
+    const authCheck = () => {
+        const role = localStorage.getItem('role');
+        const token = localStorage.getItem('token');
         if (!role || !token) {
             router.push('/login');
         }
-    });
+    };
 
     return {
         handleLogin,
-        logout,
+        handleLogout,
+        authCheck,
         loading,
         error,
-        role,
-        store,
-        isAuth,
         router,
     };
 }

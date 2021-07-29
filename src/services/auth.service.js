@@ -7,6 +7,7 @@ class AuthService {
                 login,
                 password,
             });
+            console.log('Hi');
             return resp.data.data?.token;
         } catch (e) {
             throw new Error('Ошибка авторизации');
