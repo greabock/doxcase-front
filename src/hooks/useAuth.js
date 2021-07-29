@@ -24,14 +24,14 @@ export function useAuth() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
-        router.push('/login');
+        router.push('/auth');
     };
 
     const authCheck = () => {
         const role = localStorage.getItem('role');
         const token = localStorage.getItem('token');
         if (!role || !token) {
-            router.push('/login');
+            router.push('/auth');
         }
     };
 

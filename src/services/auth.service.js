@@ -3,7 +3,7 @@ import {axiosInstance} from '@/utils/API';
 class AuthService {
     getToken = async ({login, password}) => {
         try {
-            const resp = await axiosInstance.post('/auth/login', {
+            const resp = await axiosInstance.post('/auth/auth', {
                 login,
                 password,
             });

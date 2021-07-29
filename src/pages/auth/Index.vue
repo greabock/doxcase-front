@@ -23,14 +23,11 @@
                     {{ error }}
                 </div>
             </div>
-        </Form>
-
-        <div class="form-group">
             <button @click="handleLogout" class="btn btn-danger btn-block" :disabled="loading">
                 <span v-show="loading" class="spinner-border spinner-border-sm"></span>
                 <span>Logout</span>
             </button>
-        </div>
+        </Form>
     </div>
 </template>
 <script>
