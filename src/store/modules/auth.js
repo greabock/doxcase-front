@@ -3,29 +3,26 @@ import Cookies from 'js-cookie';
 
 export const auth = {
     namespaced: true,
-    state: () => ({
+    state: {
         loading: false,
         error: null,
-        role: null,
-    }),
+        isAuth: false,
+    },
     actions: {
         async login({commit}, {login, password}) {
             try {
-                commit('setError', null);
                 commit('setLoading', true);
                 const token = await AuthService.getToken({login, password});
                 Cookies.set('token', token);
                 const userInfo = await AuthService.getUserInfo();
                 Cookies.set('role', userInfo.data.data.role);
-                commit('setRole', userInfo.data.data.role);
-                commit('setLoading', false);
+                commit('loginSuccess');
             } catch (error) {
-                commit('setLoading', false);
                 commit('setError', error.response?.data?.message || error.message || error.toString());
             }
         },
         logout({commit}) {
-            commit('loginFailure');
+            commit('logoutMut');
             Cookies.remove('token');
             Cookies.remove('role');
         },
@@ -33,18 +30,22 @@ export const auth = {
     mutations: {
         setLoading(state, bool) {
             state.loading = bool;
+            state.error = null;
+        },
+        loginSuccess(state) {
+            state.isAuth = true;
+            state.loading = false;
+            state.error = null;
         },
         setError(state, error) {
+            state.loading = false;
+            state.isAuth = false;
             state.error = error;
         },
-        setRole(state, role) {
-            state.role = role;
-        },
-        loginFailure(state) {
-            state.role = null;
-        },
-        logout(state) {
-            state.role = null;
+        logoutMut(state) {
+            state.isAuth = false;
+            state.loading = false;
+            state.error = null;
         },
     },
 };

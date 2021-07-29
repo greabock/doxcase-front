@@ -12,17 +12,16 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie';
+import {useAuth} from '@/hooks/useAuth';
+
 export default {
     name: 'Profile',
     components: {},
-    setup() {},
-    methods: {
-        logout() {
-            Cookies.remove('role');
-            Cookies.remove('token');
-            this.$router.push('/login');
-        },
+    setup() {
+        const {logout} = useAuth();
+        return {
+            logout,
+        };
     },
 };
 </script>
