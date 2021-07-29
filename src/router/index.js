@@ -1,10 +1,9 @@
 import {createRouter, createWebHistory} from 'vue-router';
-
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer';
 import NotFound from '@/pages/common/NotFound.vue';
 import Home from '@/pages/home/Index.vue';
-import Auth from '@/pages/auth/Index.vue';
+import Login from '@/pages/auth/Index.vue';
 import Profile from '@/pages/profile/Index.vue';
 import Search from '@/pages/search';
 import UserInfo from '@/pages/edit/userInfo';
@@ -17,8 +16,8 @@ import Material from '@/pages/material';
 const routes = [
     {path: '/:pathMatch(.*)*', components: {default: NotFound}},
     {path: '/', name: 'home', components: {default: Home, header: Header}},
-    {path: '/auth', name: 'auth', components: {default: Auth}},
-    {path: '/profile', name: 'profile', components: {default: Profile, header: Header}},
+    {path: '/login', name: 'login', components: {default: Login}},
+    {path: '/profile', name: 'profile', components: {default: Profile, header: Header, footer: Footer}},
     {path: '/search', name: 'search', components: {default: Search, header: Header, footer: Footer}},
     {
         path: '/edit',

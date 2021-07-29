@@ -1,7 +1,7 @@
 <template>
     <div class="menu-assistant">
         <router-link to="/">Index</router-link>
-        <router-link to="/login">Login</router-link>
+        <router-link to="/auth">Login</router-link>
         <router-link to="/profile">Profile</router-link>
         <router-link to="/search">Search</router-link>
         <router-link to="/edit">Edit (admin)</router-link>
