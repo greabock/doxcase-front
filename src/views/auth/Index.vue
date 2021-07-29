@@ -36,10 +36,8 @@
 <script>
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
-import {onBeforeMount, watch} from 'vue';
-import {useRouter} from 'vue-router';
 import {useAuth} from '@/hooks/useAuth';
-import Cookies from 'js-cookie';
+import {watch} from 'vue';
 
 export default {
     name: 'Login',
@@ -58,19 +56,10 @@ export default {
         };
     },
     setup() {
-        const router = useRouter();
-        const {role, handleLogin, logout, loading, error} = useAuth();
+        const {handleLogin, logout, loading, error, role, isAuth, router} = useAuth();
 
-        onBeforeMount(() => {
-            const role = Cookies.get('role');
-            const token = Cookies.get('token');
-            if (role && token) {
-                router.push('/profile');
-            }
-        });
-
-        watch(role, () => {
-            if (role.value) {
+        watch(isAuth, (newVal) => {
+            if (newVal === true) {
                 router.push('/profile');
             }
         });
@@ -80,6 +69,8 @@ export default {
             logout,
             loading,
             error,
+            role,
+            isAuth,
         };
     },
 };
