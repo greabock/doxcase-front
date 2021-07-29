@@ -1,4 +1,4 @@
-import {axiosInstance} from '../utils/API';
+import {axiosInstance} from '@/utils/API';
 
 class AuthService {
     getToken = async ({login, password}) => {
