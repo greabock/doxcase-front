@@ -3,7 +3,9 @@
 </template>
 
 <script>
-export default {};
+export default {
+    name: 'ChapterCreationPage',
+};
 </script>
 
 <style scoped></style>

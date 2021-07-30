@@ -36,7 +36,7 @@ import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
 
 export default {
-    name: 'Login',
+    name: 'AuthPage',
     components: {
         Form,
         Field,

@@ -1,48 +1,66 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import Header from '@/components/Header.vue';
-import Footer from '@/components/Footer';
-import NotFound from '@/pages/common/NotFound.vue';
-import Home from '@/pages/home/Index.vue';
-import Login from '@/pages/auth/Index.vue';
-import Profile from '@/pages/profile/Index.vue';
-import Search from '@/pages/search';
-import UserInfo from '@/pages/edit/userInfo';
-import Edit from '@/pages/edit/edit';
-import MaterialCreation from '@/pages/materialCreation';
-import ChapterList from '@/pages/chapterList';
-import ChapterCreation from '@/pages/chapterCreation';
-import Material from '@/pages/material';
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import FooterComponent from '@/components/FooterComponent.vue';
+import NotFoundPage from '@/pages/NotFoundPage';
+import HomePage from '@/pages/HomePage';
+import AuthPage from '@/pages/AuthPage';
+import ProfilePage from '@/pages/ProfilePage';
+import SearchPage from '@/pages/SearchPage';
+import EditPage from '@/pages/EditPage';
+import MaterialCreationPage from '@/pages/MaterialCreationPage';
+import ChapterListPage from '@/pages/ChapterListPage';
+import ChapterCreationPage from '@/pages/ChapterCreationPage';
+import MaterialPage from '@/pages/MaterialPage';
 
 const routes = [
-    {path: '/:pathMatch(.*)*', components: {default: NotFound}},
-    {path: '/', name: 'home', components: {default: Home, header: Header}},
-    {path: '/login', name: 'login', components: {default: Login}},
-    {path: '/profile', name: 'profile', components: {default: Profile, header: Header, footer: Footer}},
-    {path: '/search', name: 'search', components: {default: Search, header: Header, footer: Footer}},
+    {
+        path: '/:pathMatch(.*)*',
+        components: {default: NotFoundPage},
+    },
+    {
+        path: '/',
+        name: 'HomePageRoute',
+        components: {default: HomePage, header: HeaderComponent, footer: FooterComponent},
+    },
+    {
+        path: '/auth',
+        name: 'AuthPageRoute',
+        components: {default: AuthPage},
+    },
+    {
+        path: '/profile',
+        name: 'ProfilePageRoute',
+        components: {default: ProfilePage, header: HeaderComponent, footer: FooterComponent},
+    },
+    {
+        path: '/search',
+        name: 'SearchPageRoute',
+        components: {default: SearchPage, header: HeaderComponent, footer: FooterComponent},
+    },
     {
         path: '/edit',
-        name: 'edit',
-        components: {asideLeft: UserInfo, contentRight: Edit, header: Header, footer: Footer},
+        name: 'EditPageRoute',
+        components: {default: EditPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/material-creation',
-        name: 'materialCreation',
-        components: {default: MaterialCreation, header: Header, footer: Footer},
+        name: 'MaterialCreationPageRoute',
+        components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/chapter-list',
-        name: 'chapterList',
-        components: {default: ChapterList, header: Header, footer: Footer},
+        name: 'ChapterListPageRoute',
+        components: {default: ChapterListPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/chapter-creation',
-        name: 'chapterCreation',
-        components: {default: ChapterCreation, header: Header, footer: Footer},
+        name: 'ChapterCreationPageRoute',
+        components: {default: ChapterCreationPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/material/:id',
-        name: 'material',
-        components: {default: Material, header: Header, footer: Footer},
+        name: 'MaterialItemPageRoute',
+        components: {default: MaterialPage, header: HeaderComponent, footer: FooterComponent},
     },
 ];
 

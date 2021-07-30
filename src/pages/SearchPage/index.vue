@@ -1,5 +1,5 @@
 <template>
-    <h1>Фильтры для поиска</h1>
+    <h1>Search Page</h1>
 </template>
 
 <script>
