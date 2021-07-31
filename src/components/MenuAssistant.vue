@@ -23,7 +23,6 @@ export default {};
     font-size: 14px;
     padding: 5px 10px;
     background-color: #333;
-    margin-top: 40px;
 }
 .menu-assistant A {
     color: #aaa;

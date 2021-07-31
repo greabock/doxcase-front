@@ -12,4 +12,6 @@ export default {
     components: {MenuAssistant},
 };
 </script>
-<style></style>
+<style>
+@import '../public/css/main.min.css';
+</style>
