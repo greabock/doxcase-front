@@ -3,10 +3,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-auto">
-                    <a class="topLine__link-back" href="#">
+                    <router-link to="/" class="topLine__link-back">
                         <svg class="icon icon-arrow-left">
-                            <use xlink:href="img/svg/sprite.svg#arrow-left"></use></svg
-                    ></a>
+                            <use xlink:href="img/svg/sprite.svg#arrow-left"></use>
+                        </svg>
+                    </router-link>
                 </div>
                 <div class="col-auto d-lg-none">
                     <div class="topLine__toggle-wrap">
@@ -14,115 +15,31 @@
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
-                    <a href="/">
+                    <router-link to="/">
                         <div class="d-sm-none">
-                            <svg
-                                class="logo"
-                                width="82"
-                                height="26"
-                                viewBox="0 0 82 26"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M18.6169 22.3661H4.25437V4.61131H7.85413V0.977539H4.25437H2.80623H0.666016V25.9999H2.59838H4.25437H18.6169H21.6616H22.2029V8.24276H18.6169V22.3661Z"
-                                    fill="#252F6C"
-                                />
-                                <path
-                                    d="M11.4395 0.977539V3.42935V4.61131V18.7347H15.0278V4.61131H29.3903V22.3661H25.7906V25.9999H29.3903H32.9787V22.3661V4.61131V3.42935V0.977539H11.4395Z"
-                                    fill="#252F6C"
-                                />
-                                <path
-                                    d="M42.6738 13.9987C42.6738 10.9756 44.8689 8.70654 47.8268 8.70654C50.7847 8.70654 52.9501 10.9756 52.9501 13.9987C52.9501 17.0219 50.755 19.2933 47.8268 19.2933C44.8986 19.2933 42.6738 17.0242 42.6738 13.9987ZM51.1776 13.9987C51.1776 11.9679 49.7295 10.4274 47.8268 10.4274C45.9241 10.4274 44.444 11.9679 44.444 13.9987C44.444 16.0296 45.8944 17.5654 47.8268 17.5654C49.7592 17.5654 51.1776 16.0319 51.1776 13.9987Z"
-                                    fill="#252F6C"
-                                />
-                                <path
-                                    d="M62.9641 19.143H60.7256L56.5959 14.355V19.143H54.8691V8.85693H56.5959V13.2887L60.6365 8.85693H62.8133L58.3501 13.7328L62.9641 19.143Z"
-                                    fill="#252F6C"
-                                />
-                                <path
-                                    d="M72.2026 8.85693V10.5154H68.7627V19.143H67.0359V10.5154H63.5801V8.85693H72.2026Z"
-                                    fill="#252F6C"
-                                />
-                                <path
-                                    d="M79.4865 19.143L78.6231 16.786H74.5162L73.6528 19.143H71.8096L75.6926 8.85693H77.4513L81.3343 19.143H79.4865ZM75.1101 15.1553H78.0384L76.5742 11.1399L75.1101 15.1553Z"
-                                    fill="#252F6C"
-                                />
-                            </svg>
+                            <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
                         </div>
                         <div class="d-none d-sm-block">
-                            <svg
-                                width="354"
-                                class="logo"
-                                height="157"
-                                viewBox="0 0 354 157"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M0.0351562 137.721C0.0351562 126.713 8.12896 118.451 19.0358 118.451C29.9427 118.451 37.927 126.713 37.927 137.721C37.927 148.729 29.8332 157 19.0358 157C8.23845 157 0.0351562 148.738 0.0351562 137.721ZM31.3913 137.721C31.3913 130.327 26.0516 124.717 19.0358 124.717C12.0201 124.717 6.56242 130.327 6.56242 137.721C6.56242 145.116 11.9106 150.708 19.0358 150.708C26.1611 150.708 31.3913 145.125 31.3913 137.721Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M74.8505 156.453H66.5967L51.3692 139.019V156.453H45.002V118.999H51.3692V135.136L66.2682 118.999H74.2946L57.8375 136.753L74.8505 156.453Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M108.919 118.999V125.038H96.2351V156.453H89.8679V125.038H77.125V118.999H108.919Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M135.776 156.453L132.592 147.87H117.449L114.266 156.453H107.469L121.787 118.999H128.272L142.59 156.453H135.776ZM119.639 141.933H130.436L125.038 127.312L119.639 141.933Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M171.495 118.999C182.284 118.999 191.245 125.147 191.245 137.721C191.245 150.296 182.284 156.453 171.495 156.453H161.936V118.999H171.495ZM171.495 154.078C180.616 154.078 188.71 148.957 188.71 137.721C188.71 126.486 180.616 121.365 171.495 121.365H164.412V154.078H171.495Z"
-                                    fill="white"
-                                />
-                                <path d="M202.59 118.999V156.453H200.105V118.999H202.59Z" fill="white" />
-                                <path
-                                    d="M227.908 139.128V136.753H242.588V153.648C240.483 155.434 236.33 156.891 231.639 156.891C221.28 156.891 211.426 150.305 211.426 137.722C211.426 125.796 220.977 118.561 231.016 118.561C236.684 118.561 240.575 120.557 242.681 122.562L241.241 124.6C238.42 122.184 234.805 120.897 231.092 120.987C222.291 120.987 213.978 127.084 213.978 137.772C213.978 148.46 222.459 154.448 231.665 154.448C234.608 154.497 237.513 153.771 240.087 152.343V139.12L227.908 139.128Z"
-                                    fill="white"
-                                />
-                                <path d="M254.793 118.999V156.453H252.309V118.999H254.793Z" fill="white" />
-                                <path
-                                    d="M292.853 118.999V121.365H278.653V156.453H276.126V121.365H261.977V118.999H292.853Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M321.842 156.453L317.252 144.906H299.565L294.975 156.453H292.271L307.229 118.999H309.605L324.554 156.453H321.842ZM300.525 142.531H316.334L308.434 122.561L300.525 142.531Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M334.045 154.078H353.964V156.453H331.561V118.999H334.045V154.078Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M183.616 78.5129H130.657V13.8635H143.931V0.63208H130.657H125.317H117.426V91.7443H124.551H130.657H183.616H194.843H196.839V27.0865H183.616V78.5129Z"
-                                    fill="white"
-                                />
-                                <path
-                                    d="M157.152 0.63208V9.5597V13.8635V65.2899H170.384V13.8635H223.343V78.5129H210.069V91.7443H223.343H236.574V78.5129V13.8635V9.5597V0.63208H157.152Z"
-                                    fill="white"
-                                />
-                            </svg></div
-                    ></a>
+                            <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                        </div>
+                    </router-link>
                 </div>
                 <div class="col-lg order-lg-0 order-last">
                     <div class="menu-mobile menu-mobile--js d-lg-block">
                         <div class="row">
                             <div class="col-lg-auto">
                                 <div class="menu-mobile__btn-wrap">
-                                    <a class="topLine__btn btn-info" href="#">
+                                    <router-link to="/" class="topLine__btn btn-info" v-if="userRole === 'admin'">
                                         <svg class="icon icon-setting">
-                                            <use xlink:href="img/svg/sprite.svg#setting"></use></svg
-                                        ><span class="topLine__btn-text d-lg-none">Настроить разделы</span></a
-                                    >
+                                            <use xlink:href="img/svg/sprite.svg#setting"></use>
+                                        </svg>
+                                        <span class="topLine__btn-text d-lg-none">Настроить разделы</span>
+                                    </router-link>
                                 </div>
                             </div>
                             <div class="col-lg">
                                 <ul class="menu">
-                                    <li><a href="#">О сервисе</a></li>
+                                    <li><router-link to="/">О сервисе</router-link></li>
                                 </ul>
                             </div>
                         </div>
@@ -130,7 +47,7 @@
                 </div>
                 <div class="col-auto"><a class="topLine__btn topLine__btn--plus btn-primary" href="#"></a></div>
                 <div class="col-auto">
-                    <div class="avatar-block bg-wrap"><img class="img-bg" src="img/@2x/avatar.jpg" alt="" /></div>
+                    <div class="avatar-block bg-wrap"><img class="img-bg" :src="userAvatar" alt="" /></div>
                 </div>
             </div>
         </div>
@@ -138,13 +55,44 @@
 </template>
 
 <script>
-export default {};
-</script>
+import {ref, onMounted} from 'vue';
+import {useRouter} from 'vue-router';
+import AuthService from '@/services/auth.service';
+import LogoIcon from '@/assets/LogoIcon';
+import LogoIconSmall from '../assets/LogoIconSmall';
 
-<style scoped>
-.header {
-    background-color: #f2f2f2;
-    padding: 30px;
-    margin-bottom: 40px;
-}
-</style>
+export default {
+    components: {
+        LogoIcon,
+        LogoIconSmall,
+    },
+    setup() {
+        const user = ref(null);
+        const userRole = ref(null);
+        const router = useRouter();
+        const userAvatar = 'img/@2x/avatar.jpg';
+
+        onMounted(async () => {
+            try {
+                const res = await AuthService.getUserInfo();
+                if (res.data) {
+                    user.value = res.data.data;
+                    userRole.value = res.data.data.role;
+
+                    if (res.data?.data?.avatar) {
+                        userAvatar.value = res.data.data.avatar;
+                    }
+                }
+            } catch (e) {
+                console.log(e.message);
+            }
+        });
+        return {
+            user,
+            userRole,
+            router,
+            userAvatar,
+        };
+    },
+};
+</script>

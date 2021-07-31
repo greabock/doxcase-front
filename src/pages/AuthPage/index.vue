@@ -3,7 +3,7 @@
         <!-- start sLogin-->
         <div class="sLogin section" id="sLogin">
             <div class="form-wrap">
-                <logo-icon width="354" height="157" iconColor="#fff"></logo-icon>
+                <logo-icon iconWidth="354" iconHeight="157" iconColor="#fff"></logo-icon>
                 <Form @submit="handleLogin" :validation-schema="schema">
                     <div class="form-wrap__input-wrap form-group">
                         <Field name="login" type="text" class="form-wrap__input form-control" placeholder="Логин" />

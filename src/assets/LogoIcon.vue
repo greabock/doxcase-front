@@ -2,7 +2,7 @@
     <svg
         :width="iconWidth"
         class="logo"
-        :height="IconHeight"
+        :height="iconHeight"
         :viewBox="viewBoxValue"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
