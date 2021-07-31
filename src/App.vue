@@ -1,8 +1,10 @@
 <template>
-    <router-view name="header"></router-view>
-    <router-view></router-view>
-    <router-view name="footer"></router-view>
-    <MenuAssistant></MenuAssistant>
+    <div class="main-wrapper">
+        <router-view name="header"></router-view>
+        <router-view></router-view>
+        <router-view name="footer"></router-view>
+        <MenuAssistant></MenuAssistant>
+    </div>
 </template>
 
 <script>
