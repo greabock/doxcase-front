@@ -15,7 +15,8 @@ class AuthService {
     };
     getUserInfo = async () => {
         try {
-            return await axiosInstance.get('/auth/me');
+            const res = await axiosInstance.get('/auth/me');
+            return res.data.data;
         } catch (e) {
             console.log('Error fetching UserData');
         }

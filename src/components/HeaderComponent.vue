@@ -29,7 +29,7 @@
                         <div class="row">
                             <div class="col-lg-auto">
                                 <div class="menu-mobile__btn-wrap">
-                                    <router-link to="/" class="topLine__btn btn-info" v-if="userRole === 'admin'">
+                                    <router-link to="/" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
                                             <use xlink:href="img/svg/sprite.svg#setting"></use>
                                         </svg>
@@ -45,7 +45,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto"><a class="topLine__btn topLine__btn--plus btn-primary" href="#"></a></div>
+                <div class="col-auto">
+                    <router-link
+                        to="/chapter-creation"
+                        class="topLine__btn topLine__btn--plus btn-primary"
+                    ></router-link>
+                </div>
                 <div class="col-auto">
                     <div class="avatar-block bg-wrap"><img class="img-bg" :src="userAvatar" alt="" /></div>
                 </div>
@@ -60,7 +65,6 @@ import {useRouter} from 'vue-router';
 import AuthService from '@/services/auth.service';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '../assets/LogoIconSmall';
-
 export default {
     components: {
         LogoIcon,
@@ -68,20 +72,14 @@ export default {
     },
     setup() {
         const user = ref(null);
-        const userRole = ref(null);
         const router = useRouter();
-        const userAvatar = 'img/@2x/avatar.jpg';
+        const userAvatar = ref('img/@1x/avatar-2.png');
 
         onMounted(async () => {
             try {
-                const res = await AuthService.getUserInfo();
-                if (res.data) {
-                    user.value = res.data.data;
-                    userRole.value = res.data.data.role;
-
-                    if (res.data?.data?.avatar) {
-                        userAvatar.value = res.data.data.avatar;
-                    }
+                user.value = await AuthService.getUserInfo();
+                if (user.value.avatar) {
+                    userAvatar.value = user.value.avatar;
                 }
             } catch (e) {
                 console.log(e.message);
@@ -89,7 +87,6 @@ export default {
         });
         return {
             user,
-            userRole,
             router,
             userAvatar,
         };
