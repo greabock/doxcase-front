@@ -11,10 +11,10 @@ export function useAuth() {
             loading.value = true;
             const token = await AuthService.getToken({login, password});
             localStorage.setItem('token', token);
-            const userReq = await AuthService.getUserInfo();
-            localStorage.setItem('role', userReq.data.data.role);
+            // const userReq = await AuthService.getUserInfo();
+            // localStorage.setItem('role', userReq.role);
             loading.value = false;
-            router.push('/profile');
+            await router.push('/');
         } catch (e) {
             loading.value = false;
             error.value = e.response?.data?.message || e.message || e.toString();

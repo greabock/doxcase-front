@@ -35,68 +35,6 @@
                             </ul>
                             <div v-show="pageContent === 'guides'" class="sCabinetMain__body">
                                 <div class="mb-4">
-                                    <div class="btns-group-sm">
-                                        <button class="btn-filter">
-                                            Тип клиента
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Правовая форма
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Вид обучения
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Использование во вне
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Список пользователей
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Отрасли
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Продукты
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Технологии
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Статус пресейла
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-filter">
-                                            Инструменты
-                                            <svg class="icon icon-close">
-                                                <use xlink:href="img/svg/sprite.svg#close"></use>
-                                            </svg>
-                                        </button>
-                                    </div>
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить справочник</div>
