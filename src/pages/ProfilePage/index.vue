@@ -34,6 +34,15 @@
                                 </li>
                             </ul>
                             <div v-show="pageContent === 'guides'" class="sCabinetMain__body">
+                                <!-- Enums block -->
+                                <div class="btns-group-sm">
+                                    <button v-for="item in enums" class="btn-filter" :key="item?.id">
+                                        {{ item?.title }}
+                                        <svg class="icon icon-close">
+                                            <use xlink:href="img/svg/sprite.svg#close"></use>
+                                        </svg>
+                                    </button>
+                                </div>
                                 <div class="mb-4">
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
@@ -190,8 +199,8 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td class="fw-500">Константинопольская Валентина Игоревна</td>
+                                            <tr v-for="user in usersList" :key="user?.id">
+                                                <td class="fw-500">{{ user.name }}</td>
                                                 <td>
                                                     <div class="sCabinetMain__input-wrap form-group">
                                                         <select
@@ -199,154 +208,8 @@
                                                             name="select"
                                                         >
                                                             <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Зубарев Артур Фролович</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Набережнева Жанна Леонидовна</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Николаев Виктор Владимирович</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Бугакова Яна Данииловна</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Зуева Эмилия Ивановна</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Пустоходов Викентий Тарасович</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Углицкий Павел Эрнстович</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- +e.input-wrap-->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-500">Константинопольская Валентина Игоревна</td>
-                                                <td>
-                                                    <div class="sCabinetMain__input-wrap form-group">
-                                                        <select
-                                                            class="sCabinetMain__input form-select select-small"
-                                                            name="select"
-                                                        >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">placeholder 1</option>
-                                                            <option value=" placeholder 2">placeholder 2</option>
-                                                            <option value=" placeholder 3">placeholder 3</option>
-                                                            <option value=" placeholder 4">placeholder 4</option>
+                                                            <option value=" placeholder 1">Модератор</option>
+                                                            <option value=" placeholder 2">Пользователь</option>
                                                         </select>
                                                     </div>
                                                     <!-- +e.input-wrap-->
@@ -377,6 +240,8 @@ import {ref, onMounted} from 'vue';
 import {useAuth} from '@/hooks/useAuth';
 import AuthService from '@/services/auth.service';
 import UserProfileAside from '@/pages/ProfilePage/UserProfileAside';
+import enumsService from '@/services/enums.service';
+import usersService from '@/services/users.service';
 export default {
     name: 'ProfilePage',
     components: {
@@ -385,6 +250,8 @@ export default {
     setup() {
         const pageContent = ref('guides');
         const user = ref(null);
+        const enums = ref([]);
+        const usersList = ref([]);
         const {handleLogout} = useAuth();
         function switchPageContent(to) {
             pageContent.value = to;
@@ -392,8 +259,11 @@ export default {
         onMounted(async () => {
             try {
                 user.value = await AuthService.getUserInfo();
+                enums.value = await enumsService.getEnums();
+                usersList.value = await usersService.getUsers();
+                console.log(usersList.value.length);
             } catch (e) {
-                console.log(e);
+                console.log(e.message);
             }
         });
         return {
@@ -401,6 +271,8 @@ export default {
             pageContent,
             switchPageContent,
             user,
+            enums,
+            usersList,
         };
     },
 };

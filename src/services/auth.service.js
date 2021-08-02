@@ -9,7 +9,7 @@ class AuthService {
             });
             return resp.data.data?.token;
         } catch (e) {
-            throw new Error('Ошибка авторизации');
+            throw new Error('Auth error');
         }
     };
     getUserInfo = async () => {
@@ -17,7 +17,7 @@ class AuthService {
             const res = await axiosInstance.get('/auth/me');
             return res.data.data;
         } catch (e) {
-            console.log('Error fetching UserData');
+            throw new Error('Error fetching User Data');
         }
     };
 }
