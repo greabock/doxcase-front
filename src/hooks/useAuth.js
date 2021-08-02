@@ -7,18 +7,17 @@ export function useAuth() {
     const router = useRouter();
     const error = ref(null);
     const loading = ref(false);
-    const handleLogin = async ({login, password}) => {
-        const store = useStore();
+    const store = useStore();
 
+    const handleLogin = async ({login, password}) => {
         try {
             loading.value = true;
             const token = await AuthService.getToken({login, password});
             localStorage.setItem('token', token);
-            await store.dispatch('fetchUserData');
+            await store.dispatch('user/fetchUserData');
             await router.push('/');
         } catch (e) {
             loading.value = false;
-            error.value = e.message;
         }
     };
 
