@@ -60,35 +60,28 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue';
-import {useRouter} from 'vue-router';
-import AuthService from '@/services/auth.service';
+import {computed, onMounted} from 'vue';
+import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '../assets/LogoIconSmall';
+
 export default {
     components: {
         LogoIcon,
         LogoIconSmall,
     },
     setup() {
-        const user = ref(null);
-        const router = useRouter();
-        const userAvatar = ref('img/@1x/avatar-2.png');
+        const store = useStore();
 
         onMounted(async () => {
-            try {
-                user.value = await AuthService.getUserInfo();
-                if (user.value.avatar) {
-                    userAvatar.value = user.value.avatar;
-                }
-            } catch (e) {
-                console.log(e.message);
+            if (store.state.user.user === null) {
+                await store.dispatch('user/fetchUserData');
             }
         });
+
         return {
-            user,
-            router,
-            userAvatar,
+            user: computed(() => store.state.user.user),
+            userAvatar: computed(() => store.getters['user/getUserAvatar']),
         };
     },
 };

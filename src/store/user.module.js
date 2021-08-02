@@ -8,6 +8,12 @@ export const userModule = {
         getUser(state) {
             return state.user;
         },
+        getUserAvatar(state) {
+            if (state.user && state.user.avatar) {
+                return state.user.avatar;
+            }
+            return 'img/@1x/avatar-2.png';
+        },
     },
     mutations: {
         setUser(state, arg) {
