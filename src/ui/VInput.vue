@@ -1,20 +1,42 @@
 <template>
     <div class="input__container">
-        <div class="input__left-icon">
+        <div
+            v-if="$slots.left"
+            class="input__left-icon"
+            :style="{
+                width: offset,
+            }"
+        >
             <slot name="left"></slot>
         </div>
         <input
             :class="[
-                'form-control',
+                'form-control input__element',
+                size ? `form-control-${size}` : '',
                 {'input__left-offset': $slots.left},
                 {'input__right-offset': $slots.right},
+                {input_shadow: shadow},
+                {input_bordered: bordered},
                 classInput,
             ]"
+            :style="{
+                'padding-left': $slots.left ? offset : '',
+                'padding-right': $slots.right ? offset : '',
+            }"
+            :placeholder="placeholder"
+            :disabled="disabled"
+            :readonly="readonly"
             type="text"
             v-bind="inputListeners"
-            :value="modelValue"
+            :value="modelValue || ''"
         />
-        <div class="input__right-icon">
+        <div
+            v-if="$slots.right"
+            class="input__right-icon"
+            :style="{
+                width: offset,
+            }"
+        >
             <slot name="right"></slot>
         </div>
     </div>
@@ -26,9 +48,15 @@ import {computed} from '@vue/runtime-core';
 export default {
     inheritAttrs: false,
     props: {
-        placeholder: String,
         modelValue: String,
+        placeholder: String,
         classInput: String,
+        bordered: Boolean,
+        shadow: Boolean,
+        disabled: Boolean,
+        readonly: Boolean,
+        size: String,
+        offset: String,
     },
     setup(props, ctx) {
         console.log(props);
@@ -52,8 +80,21 @@ export default {
     position: relative;
 }
 
+.input__element {
+    border: none;
+}
+
+.input_shadow {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
+}
+
+.input_bordered {
+    border: 1px solid #d6d6d6;
+}
+
 .input__left-icon {
     position: absolute;
+    display: flex;
     top: 0;
     left: 0;
     width: 3rem;
@@ -62,6 +103,7 @@ export default {
 
 .input__right-icon {
     position: absolute;
+    display: flex;
     top: 0;
     right: 0;
     width: 3rem;

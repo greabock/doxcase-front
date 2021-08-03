@@ -1,6 +1,17 @@
 <template>
     <div ref="root" class="select__container">
-        <VInput @focus="isActive = true" v-model="privateSelected" @input="search">
+        <VInput
+            v-model="privateSelected"
+            :placeholder="placeholder"
+            :classInput="classInput"
+            :bordered="bordered"
+            :shadow="shadow"
+            :disabled="disabled"
+            :readonly="readonly"
+            :size="size"
+            @focus="isActive = true"
+            @input="search"
+        >
             <template #right>
                 <div @click="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
                     <ArrowDown class="select__icon" />
@@ -47,8 +58,15 @@ export default {
         ArrowDown,
     },
     props: {
-        options: Array,
         modelValue: Object,
+        options: Array,
+        placeholder: String,
+        classInput: String,
+        bordered: Boolean,
+        shadow: Boolean,
+        disabled: Boolean,
+        readonly: Boolean,
+        size: String,
     },
     setup(props, ctx) {
         const root = ref(null);
@@ -71,7 +89,9 @@ export default {
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
                 privateOptions.value = props.options;
-                privateSelected.value = props.modelValue.name.toString();
+                if (props.modelValue) {
+                    privateSelected.value = props.modelValue.name.toString();
+                }
             }
         };
 
@@ -108,6 +128,7 @@ export default {
     transition: 0.3s;
     height: 100%;
     cursor: pointer;
+    width: 3rem;
 }
 
 .select__arrow_up {
