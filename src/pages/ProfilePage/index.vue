@@ -25,8 +25,8 @@
                                         @click.prevent="switchPageContent('guides')"
                                         class="nav-link"
                                         :class="{active: pageContent === 'guides'}"
-                                        >Справочники</span
-                                    >
+                                        >Справочники
+                                    </span>
                                 </li>
                                 <li v-if="user?.role === 'admin'" class="nav-item">
                                     <span
@@ -179,6 +179,7 @@
                                         <form>
                                             <div class="search-block__input-wrap form-group">
                                                 <input
+                                                    v-model="searchUserValue"
                                                     class="search-block__input form-control"
                                                     name="text"
                                                     type="text"
@@ -203,17 +204,19 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="user in usersList" :key="user?.id">
+                                            <tr v-for="user in searchedUsersList" :key="user?.id">
                                                 <td class="fw-500">{{ user.name }}</td>
                                                 <td>
                                                     <div class="sCabinetMain__input-wrap form-group">
                                                         <select
+                                                            @change="switchUserRole($event.target.value, user)"
+                                                            v-model="user.role"
                                                             class="sCabinetMain__input form-select select-small"
                                                             name="select"
                                                         >
-                                                            <option value="Администратор">Администратор</option>
-                                                            <option value=" placeholder 1">Модератор</option>
-                                                            <option value=" placeholder 2">Пользователь</option>
+                                                            <option value="admin">Администратор</option>
+                                                            <option value="moderator">Модератор</option>
+                                                            <option value="user">Пользователь</option>
                                                         </select>
                                                     </div>
                                                     <!-- +e.input-wrap-->
@@ -259,6 +262,19 @@ export default {
         const {handleLogout} = useAuth();
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
+        const loading = ref(false);
+        const error = ref(null);
+        const searchUserValue = ref('');
+        const switchUserRole = async (e, user) => {
+            try {
+                loading.value = true;
+                await usersService.setNewRole(e, user);
+            } catch (e) {
+                error.value = e.message;
+            } finally {
+                loading.value = false;
+            }
+        };
 
         function switchPageContent(to) {
             pageContent.value = to;
@@ -268,7 +284,6 @@ export default {
             try {
                 enums.value = await enumsService.getEnums();
                 usersList.value = await usersService.getUsers();
-                console.log(usersList.value.length);
             } catch (e) {
                 console.log(e.message);
             }
@@ -279,7 +294,13 @@ export default {
             switchPageContent,
             user,
             enums,
-            usersList,
+            searchedUsersList: computed(() => {
+                return [...usersList.value].filter((user) =>
+                    user.name.toLowerCase().includes(searchUserValue.value.toLowerCase())
+                );
+            }),
+            switchUserRole,
+            searchUserValue,
         };
     },
 };
