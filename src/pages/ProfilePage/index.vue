@@ -11,7 +11,11 @@
                     </div>
                     <div class="col col--main">
                         <!-- start sCabinetMain-->
-                        <div class="sCabinetMain section" id="sCabinetMain">
+                        <div
+                            v-if="user?.role === 'admin' || user?.role === 'moderator'"
+                            class="sCabinetMain section"
+                            id="sCabinetMain"
+                        >
                             <div class="sCabinetMain__head">
                                 <div class="h3">Редактирование</div>
                             </div>
@@ -24,7 +28,7 @@
                                         >Справочники</span
                                     >
                                 </li>
-                                <li class="nav-item">
+                                <li v-if="user?.role === 'admin'" class="nav-item">
                                     <span
                                         @click.prevent="switchPageContent('users')"
                                         class="nav-link"
