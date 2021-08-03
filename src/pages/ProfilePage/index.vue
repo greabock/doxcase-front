@@ -236,12 +236,13 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
+import {useStore} from 'vuex';
 import {useAuth} from '@/hooks/useAuth';
-import AuthService from '@/services/auth.service';
 import UserProfileAside from '@/pages/ProfilePage/UserProfileAside';
 import enumsService from '@/services/enums.service';
 import usersService from '@/services/users.service';
+
 export default {
     name: 'ProfilePage',
     components: {
@@ -249,16 +250,18 @@ export default {
     },
     setup() {
         const pageContent = ref('guides');
-        const user = ref(null);
         const enums = ref([]);
         const usersList = ref([]);
         const {handleLogout} = useAuth();
+        const store = useStore();
+        const user = computed(() => store.getters['user/getUser']);
+
         function switchPageContent(to) {
             pageContent.value = to;
         }
+
         onMounted(async () => {
             try {
-                user.value = await AuthService.getUserInfo();
                 enums.value = await enumsService.getEnums();
                 usersList.value = await usersService.getUsers();
                 console.log(usersList.value.length);

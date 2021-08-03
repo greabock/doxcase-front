@@ -80,7 +80,7 @@ export default {
         });
 
         return {
-            user: computed(() => store.state.user.user),
+            user: computed(() => store.getters['user/getUser']),
             userAvatar: computed(() => store.getters['user/getUserAvatar']),
         };
     },
