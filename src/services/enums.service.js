@@ -1,4 +1,5 @@
 import {axiosInstance} from '@/utils/API';
+import {v4 as uuidv4} from 'uuid';
 
 class enumService {
     getEnums = async () => {
@@ -14,10 +15,16 @@ class enumService {
         } else throw new Error('Error fetching enum Object');
     };
     createEnum = async (title) => {
-        return await axiosInstance.post(`/enums`, {
+        const newEnum = {
             ...title,
+            id: uuidv4(),
             values: [],
-        });
+        };
+        await axiosInstance.post(`/enums`, newEnum);
+        return newEnum;
+    };
+    removeEnum = async (id) => {
+        return await axiosInstance.delete(`/enums/${id}`);
     };
 }
 export default new enumService();

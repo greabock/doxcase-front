@@ -3,7 +3,7 @@
     <div class="btns-group-sm">
         <button v-for="item in enums" @click="updateEnumObject(item)" class="btn-filter" :key="item?.id">
             {{ item?.title }}
-            <svg class="icon icon-close">
+            <svg @click.stop="removeEnum(item.id)" class="icon icon-close">
                 <use xlink:href="img/svg/sprite.svg#close"></use>
             </svg>
         </button>
@@ -110,13 +110,7 @@ export default {
         const schema = yup.object().shape({
             title: yup.string().required('Введите название справочника'),
         });
-        const updateEnumObject = async (item) => {
-            try {
-                enumObject.value = await enumsService.getEnumsItems(item.id);
-            } catch (e) {
-                console.log(e.message);
-            }
-        };
+
         onMounted(async () => {
             try {
                 enums.value = await enumsService.getEnums();
@@ -127,18 +121,35 @@ export default {
                 console.log(e.message);
             }
         });
-
+        // Enums ___________________________________________________________
         const isModalVisible = ref(false);
         const setModalVisible = (bool) => {
             isModalVisible.value = bool;
         };
         const addNewEnum = async (name) => {
             try {
-                await enumsService.createEnum(name);
+                const newEnum = await enumsService.createEnum(name);
+                enums.value = [...enums.value, newEnum];
                 setModalVisible(false);
             } catch (e) {
                 console.log(e.message);
                 setModalVisible(false);
+            }
+        };
+        const removeEnum = async (id) => {
+            try {
+                await enumsService.removeEnum(id);
+                enums.value = [...enums.value].filter((item) => item.id !== id);
+            } catch (e) {
+                console.log(e.message);
+            }
+        };
+        // Enum ITEMS _________________________________________________________
+        const updateEnumObject = async (item) => {
+            try {
+                enumObject.value = await enumsService.getEnumsItems(item.id);
+            } catch (e) {
+                console.log(e.message);
             }
         };
 
@@ -150,6 +161,7 @@ export default {
             schema,
             addNewEnum,
             updateEnumObject,
+            removeEnum,
         };
     },
 };
