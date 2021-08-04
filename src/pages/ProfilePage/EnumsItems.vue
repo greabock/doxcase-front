@@ -50,7 +50,7 @@
                         <use xlink:href="img/svg/sprite.svg#edit"></use>
                     </svg>
                 </div>
-                <div @click="removeEnumItem(enumObject, item.id)" class="btn-edit-sm btn-danger">
+                <div @click="setEnumItemToRemove(item)" class="btn-edit-sm btn-danger">
                     <svg class="icon icon-basket">
                         <use xlink:href="img/svg/sprite.svg#basket"></use>
                     </svg>
@@ -59,6 +59,24 @@
         </div>
 
         <div class="block-position__item block-position__item--edit"></div>
+    </div>
+
+    <!-- Remove enumItem alert -->
+    <div class="mock-modal__wrapper" v-show="isRemoveAlertVisible">
+        <div class="mock-modal__cont">
+            <div class="mock-modal__header">
+                <span
+                    >Уверены, что хотите удалить позицию
+                    <b> {{ enumItemToRemove?.title }}</b>
+                </span>
+
+                <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
+            </div>
+            <div class="mock-modal__buttons">
+                <button class="btn btn-danger" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</button>
+                <button class="btn" @click="setRemoveAlertVisible(false)">Отменить</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -83,6 +101,14 @@ export default {
         const newEnumItemSchema = yup.object().shape({
             title: yup.string().required('Введите название справочника'),
         });
+
+        onMounted(async () => {
+            await updateEnumObject(enumId.value);
+        });
+        watch(enumId, async () => {
+            await updateEnumObject(enumId.value);
+        });
+
         const isShownEnumItemForm = ref(false);
         const setShownEnumItemForm = (bool) => {
             isShownEnumItemForm.value = bool;
@@ -94,26 +120,32 @@ export default {
                 console.log(e.message);
             }
         };
-        const addEnumsItem = async (title) => {
+        const addEnumsItem = async (title, actions) => {
             try {
                 enumObject.value = await enumsService.addEnumsItem(enumObject.value, title);
+                actions.resetForm();
             } catch (e) {
                 console.log(e.message);
             }
+        };
+        // Remove EnumItem__________________________
+        const isRemoveAlertVisible = ref(false);
+        const setRemoveAlertVisible = (bool) => {
+            isRemoveAlertVisible.value = bool;
+        };
+        const enumItemToRemove = ref(null);
+        const setEnumItemToRemove = (item) => {
+            enumItemToRemove.value = item;
+            setRemoveAlertVisible(true);
         };
         const removeEnumItem = async (myEnum, enumItemId) => {
             try {
                 enumObject.value = await enumsService.removeEnumsItem(myEnum, enumItemId);
+                setRemoveAlertVisible(false);
             } catch (e) {
                 console.log(e.message);
             }
         };
-        onMounted(async () => {
-            await updateEnumObject(enumId.value);
-        });
-        watch(enumId, async () => {
-            await updateEnumObject(enumId.value);
-        });
 
         return {
             newEnumItemSchema,
@@ -123,9 +155,54 @@ export default {
             setShownEnumItemForm,
             updateEnumObject,
             enumObject,
+            enumItemToRemove,
+            setEnumItemToRemove,
+            isRemoveAlertVisible,
+            setRemoveAlertVisible,
         };
     },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.mock-modal__wrapper {
+    display: flex;
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+.mock-modal__cont {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    background-color: #fff;
+    padding: 30px;
+    box-shadow: 0 0 30px 0 rgba(50, 50, 50, 0.46);
+}
+.mock-modal__header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.mock-modal__closer {
+    display: block;
+    position: relative;
+    top: -20px;
+    right: -15px;
+    cursor: pointer;
+}
+.mock-modal__buttons {
+    display: flex;
+    justify-content: center;
+}
+.mock-modal__buttons button:first-child {
+    margin-right: 5px;
+}
+</style>
