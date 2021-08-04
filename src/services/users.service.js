@@ -12,8 +12,6 @@ class usersService {
             const newUser = {
                 ...user,
                 role: newRole,
-                email: Date.now() + '@mydomain.com',
-                login: Date.now() + 'login',
             };
             return await axiosInstance.patch(`/users/${user.id}`, newUser);
         } catch (e) {
