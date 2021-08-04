@@ -126,6 +126,15 @@ export default {
             try {
                 await enumsService.removeEnum(id);
                 enums.value = [...enums.value].filter((item) => item.id !== id);
+
+                // При удалении активного енума
+                if (enumToRemove.value.id === activeEnumId.value) {
+                    if (enums.value.length !== 0) {
+                        updateActiveEnumId(enums.value[0].id);
+                    } else {
+                        updateActiveEnumId(null);
+                    }
+                }
                 setRemoveAlertVisible(false);
             } catch (e) {
                 console.log(e.message);
