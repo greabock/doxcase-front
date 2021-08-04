@@ -45,12 +45,6 @@
                                 <!-- Users block -->
                                 <users-tab></users-tab>
                             </div>
-                            <div class="sCabinetMain__footer">
-                                <button class="btn btn-primary">
-                                    Сохранить <span class="d-none d-sm-inline">изменения</span>
-                                </button>
-                                <button class="btn btn-outline-primary ms-2">Отмена</button>
-                            </div>
                         </div>
                         <!-- end sCabinetMain-->
                     </div>

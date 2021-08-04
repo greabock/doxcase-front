@@ -1,7 +1,13 @@
 <template>
     <!-- Enums block -->
     <div class="btns-group-sm">
-        <button v-for="item in enums" @click="updateEnumObject(item)" class="btn-filter" :key="item?.id">
+        <button
+            v-for="item in enums"
+            @click="updateActiveEnumId(item.id)"
+            class="btn-filter"
+            :class="{active: item.id === activeEnumId}"
+            :key="item?.id"
+        >
             {{ item?.title }}
             <svg @click.stop="removeEnum(item.id)" class="icon icon-close">
                 <use xlink:href="img/svg/sprite.svg#close"></use>
@@ -14,80 +20,28 @@
             <div class="btn-add__text">Добавить справочник</div>
         </div>
     </div>
-    <div class="h3 mb-3">{{}}</div>
-    <div class="search-block">
-        <form>
-            <div class="search-block__input-wrap form-group">
-                <input class="search-block__input form-control" name="text" type="text" placeholder="Поиск" />
+    <enums-items v-if="activeEnumId" :enumId="activeEnumId"></enums-items>
+    <div class="mock-modal__wrapper" v-show="isModalVisible">
+        <div class="mock-modal__cont">
+            <div class="mock-modal__header">
+                <span>Новый справочник</span> <b class="mock-modal__closer" @click="setModalVisible(false)">x</b>
             </div>
-            <!-- +e.input-wrap-->
-            <button class="search-block__btn" type="submit">
-                <svg class="icon icon-search">
-                    <use xlink:href="img/svg/sprite.svg#search"></use>
-                </svg>
-            </button>
-        </form>
-    </div>
-    <div class="my-3">
-        <div class="btn-add">
-            <div class="btn-add__plus"></div>
-            <div class="btn-add__text">Добавить позицию</div>
-        </div>
-    </div>
-    <div class="block-position">
-        <div class="block-position__item" v-for="item in enumObject.values" :key="item.name">
-            <div class="block-position__title">{{ item.title }}</div>
-            <div class="block-position__btns">
-                <div class="btn-edit-sm btn-secondary">
-                    <svg class="icon icon-edit">
-                        <use xlink:href="img/svg/sprite.svg#edit"></use>
-                    </svg>
-                </div>
-                <div class="btn-edit-sm btn-danger">
-                    <svg class="icon icon-basket">
-                        <use xlink:href="img/svg/sprite.svg#basket"></use>
-                    </svg>
-                </div>
-            </div>
-        </div>
-        <div class="block-position__item block-position__item--edit">
-            <div class="block-position__title" contenteditable="true">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            </div>
-            <div class="block-position__btns">
-                <div class="btn-edit-sm btn-success">
-                    <svg class="icon icon-check">
-                        <use xlink:href="img/svg/sprite.svg#check"></use>
-                    </svg>
-                </div>
-                <div class="btn-edit-sm btn-danger">
-                    <svg class="icon icon-close">
-                        <use xlink:href="img/svg/sprite.svg#close"></use>
-                    </svg>
-                </div>
-            </div>
-        </div>
-        <div class="mock-modal__wrapper" v-show="isModalVisible">
-            <div class="mock-modal__cont">
-                <div class="mock-modal__header">
-                    <span>Новый справочник</span> <b class="mock-modal__closer" @click="setModalVisible(false)">x</b>
-                </div>
-                <div class="mock-modal__form">
-                    <Form @submit="addNewEnum" :validation-schema="schema">
-                        <div class="form-wrap__input-wrap form-group">
-                            <Field
-                                name="title"
-                                type="text"
-                                class="form-wrap__input form-control"
-                                placeholder="Название справончика"
-                            />
-                            <ErrorMessage name="enumName" class="error-feedback" />
-                        </div>
-                        <button class="btn btn-primary w-100">
-                            <span>Добавить</span>
-                        </button>
-                    </Form>
-                </div>
+            <div class="mock-modal__form">
+                <Form @submit="addNewEnum" :validation-schema="newEnumSchema">
+                    <div class="form-wrap__input-wrap form-group">
+                        <Field
+                            name="title"
+                            v-model="newEnumTitle"
+                            type="text"
+                            class="form-wrap__input form-control"
+                            placeholder="Название справончика"
+                        />
+                        <ErrorMessage name="title" class="error-feedback" />
+                    </div>
+                    <button class="btn btn-primary w-100">
+                        <span>Добавить</span>
+                    </button>
+                </Form>
             </div>
         </div>
     </div>
@@ -97,17 +51,20 @@ import {onMounted, ref} from 'vue';
 import enumsService from '@/services/enums.service';
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
+import EnumsItems from '@/pages/ProfilePage/EnumsItems';
 
 export default {
     components: {
         Form,
         Field,
         ErrorMessage,
+        EnumsItems,
     },
     setup() {
         const enums = ref([]);
-        const enumObject = ref('');
-        const schema = yup.object().shape({
+        const activeEnumId = ref(null);
+        const newEnumTitle = ref('');
+        const newEnumSchema = yup.object().shape({
             title: yup.string().required('Введите название справочника'),
         });
 
@@ -115,22 +72,25 @@ export default {
             try {
                 enums.value = await enumsService.getEnums();
                 if (enums.value.length !== 0) {
-                    enumObject.value = await enumsService.getEnumsItems(enums.value[0].id);
+                    activeEnumId.value = enums.value[0].id;
                 }
             } catch (e) {
                 console.log(e.message);
             }
         });
-        // Enums ___________________________________________________________
         const isModalVisible = ref(false);
         const setModalVisible = (bool) => {
             isModalVisible.value = bool;
+        };
+        const updateActiveEnumId = (id) => {
+            activeEnumId.value = id;
         };
         const addNewEnum = async (name) => {
             try {
                 const newEnum = await enumsService.createEnum(name);
                 enums.value = [...enums.value, newEnum];
                 setModalVisible(false);
+                newEnumTitle.value = '';
             } catch (e) {
                 console.log(e.message);
                 setModalVisible(false);
@@ -144,24 +104,17 @@ export default {
                 console.log(e.message);
             }
         };
-        // Enum ITEMS _________________________________________________________
-        const updateEnumObject = async (item) => {
-            try {
-                enumObject.value = await enumsService.getEnumsItems(item.id);
-            } catch (e) {
-                console.log(e.message);
-            }
-        };
 
         return {
             enums,
-            enumObject,
+            activeEnumId,
+            updateActiveEnumId,
             isModalVisible,
             setModalVisible,
-            schema,
+            newEnumSchema,
             addNewEnum,
-            updateEnumObject,
             removeEnum,
+            newEnumTitle,
         };
     },
 };
