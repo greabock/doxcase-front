@@ -109,11 +109,9 @@ export default {
             }
         };
         onMounted(async () => {
-            console.log(enumId.value);
             await updateEnumObject(enumId.value);
         });
         watch(enumId, async () => {
-            console.log(enumId.value);
             await updateEnumObject(enumId.value);
         });
 
