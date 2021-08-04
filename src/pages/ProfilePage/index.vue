@@ -39,7 +39,7 @@
                             </ul>
                             <div v-show="pageContent === 'enums'" class="sCabinetMain__body">
                                 <!-- Enums block -->
-                                <enums-tab :enums="enums"></enums-tab>
+                                <enums-tab></enums-tab>
                             </div>
                             <div v-show="pageContent === 'users'" class="sCabinetMain__body">
                                 <!-- Users block -->
@@ -58,7 +58,6 @@
             </div>
         </section>
         <!-- end sCabinet-->
-        <div v-show="pageLoading" class="page-loader"></div>
     </main>
 </template>
 
