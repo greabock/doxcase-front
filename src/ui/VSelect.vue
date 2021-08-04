@@ -142,21 +142,35 @@ export default {
     width: 100%;
     list-style: none;
     margin: 0;
+    margin-top: 5px;
+
     padding: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
     transform: translateY(100%);
     background: #fff;
-    border: 1px solid $blue;
-    border-top: none;
     border-radius: 0 0 4px 4px;
+
+    border: 1px solid #f8f8f8;
+    box-sizing: border-box;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+    z-index: 20;
+    background-color: #fff;
 }
 
 .select-list__item {
     margin: 0;
     padding: 0.2rem 1rem;
     cursor: pointer;
+    color: $blue;
+    cursor: pointer;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    position: relative;
+    font-size: 15px;
 
     &:hover {
-        background: rgba($blue, 0.1);
+        background-color: #f8f8f8;
     }
 
     &_active {
