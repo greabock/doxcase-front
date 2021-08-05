@@ -1,0 +1,60 @@
+<template>
+    <svg
+        :width="iconWidth"
+        class="logo"
+        :height="iconHeight"
+        :viewBox="viewBoxValue"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path
+            d="M18.6169 22.3661H4.25437V4.61131H7.85413V0.977539H4.25437H2.80623H0.666016V25.9999H2.59838H4.25437H18.6169H21.6616H22.2029V8.24276H18.6169V22.3661Z"
+            :fill="iconColor"
+        />
+        <path
+            d="M11.4395 0.977539V3.42935V4.61131V18.7347H15.0278V4.61131H29.3903V22.3661H25.7906V25.9999H29.3903H32.9787V22.3661V4.61131V3.42935V0.977539H11.4395Z"
+            :fill="iconColor"
+        />
+        <path
+            d="M42.6738 13.9987C42.6738 10.9756 44.8689 8.70654 47.8268 8.70654C50.7847 8.70654 52.9501 10.9756 52.9501 13.9987C52.9501 17.0219 50.755 19.2933 47.8268 19.2933C44.8986 19.2933 42.6738 17.0242 42.6738 13.9987ZM51.1776 13.9987C51.1776 11.9679 49.7295 10.4274 47.8268 10.4274C45.9241 10.4274 44.444 11.9679 44.444 13.9987C44.444 16.0296 45.8944 17.5654 47.8268 17.5654C49.7592 17.5654 51.1776 16.0319 51.1776 13.9987Z"
+            :fill="iconColor"
+        />
+        <path
+            d="M62.9641 19.143H60.7256L56.5959 14.355V19.143H54.8691V8.85693H56.5959V13.2887L60.6365 8.85693H62.8133L58.3501 13.7328L62.9641 19.143Z"
+            :fill="iconColor"
+        />
+        <path d="M72.2026 8.85693V10.5154H68.7627V19.143H67.0359V10.5154H63.5801V8.85693H72.2026Z" :fill="iconColor" />
+        <path
+            d="M79.4865 19.143L78.6231 16.786H74.5162L73.6528 19.143H71.8096L75.6926 8.85693H77.4513L81.3343 19.143H79.4865ZM75.1101 15.1553H78.0384L76.5742 11.1399L75.1101 15.1553Z"
+            :fill="iconColor"
+        />
+    </svg>
+</template>
+<script>
+import {toRefs} from 'vue';
+export default {
+    props: {
+        iconColor: {
+            type: String,
+            default: '#252f6c',
+        },
+        iconWidth: {
+            type: String,
+            default: '82',
+        },
+        iconHeight: {
+            type: String,
+            default: '26',
+        },
+    },
+    setup(props) {
+        const {iconWidth, iconHeight} = toRefs(props);
+        const viewBoxValue = `0 0 ${iconWidth.value} ${iconHeight.value}`;
+
+        return {
+            viewBoxValue,
+        };
+    },
+};
+</script>
+<style scoped></style>

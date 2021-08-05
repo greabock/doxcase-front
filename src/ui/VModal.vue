@@ -53,7 +53,7 @@ export default {
 .modal {
     padding: 32px;
     background: #ffffff;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
     border-radius: 5px;
     position: relative;
 }
