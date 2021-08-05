@@ -45,7 +45,7 @@
         <div class="block-position__item" v-for="item in enumObject.values" :key="item.name">
             <div class="block-position__title">{{ item.title }}</div>
             <div class="block-position__btns">
-                <div class="btn-edit-sm btn-secondary">
+                <div @click="setItemToChangeId(item.id)" class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
                         <use xlink:href="img/svg/sprite.svg#edit"></use>
                     </svg>
@@ -56,9 +56,33 @@
                     </svg>
                 </div>
             </div>
-        </div>
 
-        <div class="block-position__item block-position__item--edit"></div>
+            <!-- Change enum item Form -->
+            <div
+                v-show="itemToChangeId === item.id"
+                class="block-position__item block-position__item--edit change-enum-item__form"
+            >
+                <Form @submit="changeEnumsItem" :validation-schema="newEnumItemSchema">
+                    <Field type="text" name="title" class="block-position__title" />
+                    <div class="block-position__btns">
+                        <button class="btn-edit-sm btn-success">
+                            <svg class="icon icon-check">
+                                <use xlink:href="img/svg/sprite.svg#check"></use>
+                            </svg>
+                        </button>
+                        <div
+                            style="margin-left: 4px"
+                            class="btn-edit-sm btn-danger"
+                            @click.prevent.stop="setShownEnumItemForm(false)"
+                        >
+                            <svg @click="setItemToChangeId('')" class="icon icon-close">
+                                <use xlink:href="img/svg/sprite.svg#close"></use>
+                            </svg>
+                        </div>
+                    </div>
+                </Form>
+            </div>
+        </div>
     </div>
 
     <!-- Remove enumItem alert -->
@@ -146,6 +170,11 @@ export default {
                 console.log(e.message);
             }
         };
+        // Change EnumItem______________________________
+        const itemToChangeId = ref('');
+        const setItemToChangeId = (newId) => {
+            itemToChangeId.value = newId;
+        };
 
         return {
             newEnumItemSchema,
@@ -159,6 +188,8 @@ export default {
             setEnumItemToRemove,
             isRemoveAlertVisible,
             setRemoveAlertVisible,
+            itemToChangeId,
+            setItemToChangeId,
         };
     },
 };
@@ -204,5 +235,14 @@ export default {
 }
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
+}
+.change-enum-item__form {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
 }
 </style>
