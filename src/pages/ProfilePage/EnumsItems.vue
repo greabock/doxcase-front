@@ -27,7 +27,7 @@
         </div>
         <div v-if="isShownEnumItemForm" class="block-position__item block-position__item--edit">
             <Form @submit="addEnumsItem" :validation-schema="newEnumItemSchema">
-                <Field type="text" name="title" class="block-position__title" />
+                <Field type="text" name="title" placeholder="Новая позиция" class="block-position__title" />
                 <div class="block-position__btns">
                     <button class="btn-edit-sm btn-success">
                         <svg class="icon icon-check">
@@ -96,7 +96,7 @@
         <div class="mock-modal__cont">
             <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
             <div class="mock-modal__header">
-                <h3>Удаление справочника</h3>
+                <h3>Удаление позиции</h3>
             </div>
             <span
                 >Вы действительно хотите удалить позицию "{{ enumItemToRemove?.title }}" из справочника "{{
@@ -232,6 +232,9 @@ export default {
 </script>
 
 <style scoped>
+INPUT::placeholder {
+    color: #d6d6d6;
+}
 .mock-modal__wrapper {
     display: flex;
     z-index: 10;
@@ -276,5 +279,17 @@ export default {
 }
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
+}
+.change-enum-item__form {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+}
+.block-position__item {
+    margin-top: 10px;
 }
 </style>
