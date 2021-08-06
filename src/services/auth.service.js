@@ -1,4 +1,4 @@
-import {axiosInstance} from '../utils/API';
+import {axiosInstance} from '@/utils/API';
 
 class AuthService {
     getToken = async ({login, password}) => {
@@ -9,14 +9,15 @@ class AuthService {
             });
             return resp.data.data?.token;
         } catch (e) {
-            console.log('Error fetching token');
+            throw new Error('Auth error');
         }
     };
     getUserInfo = async () => {
         try {
-            return await axiosInstance.get('/auth/me');
+            const res = await axiosInstance.get('/auth/me');
+            return res.data.data;
         } catch (e) {
-            console.log('Error fetching UserData');
+            throw new Error('Error fetching User Data');
         }
     };
 }

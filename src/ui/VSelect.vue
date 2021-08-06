@@ -22,7 +22,7 @@
             <li
                 v-for="(item, i) of privateOptions"
                 :key="i"
-                :class="['select-list__item', {'select-list__item_active': modelValue && item.key == modelValue.key}]"
+                :class="['select-list__item', {'select-list__item_active': modelValue && item.key === modelValue.key}]"
                 @click="select(item)"
             >
                 <slot name="option" :item="item">
@@ -149,7 +149,6 @@ export default {
     padding-bottom: 0.5rem;
 
     transform: translateY(100%);
-    background: #fff;
     border-radius: 0 0 4px 4px;
 
     border: 1px solid #f8f8f8;
@@ -161,10 +160,8 @@ export default {
 
 .select-list__item {
     margin: 0;
-    padding: 0.2rem 1rem;
     cursor: pointer;
     color: $blue;
-    cursor: pointer;
     padding: 0.5rem 2.5rem 0.5rem 1rem;
     position: relative;
     font-size: 15px;

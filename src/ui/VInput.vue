@@ -85,7 +85,7 @@ export default {
 }
 
 .input_shadow {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
 }
 
 .input_bordered {
