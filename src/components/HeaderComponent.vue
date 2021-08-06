@@ -63,7 +63,7 @@
 import {computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
-import LogoIconSmall from '../assets/LogoIconSmall';
+import LogoIconSmall from '@/assets/LogoIconSmall';
 
 export default {
     components: {
