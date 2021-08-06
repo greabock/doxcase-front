@@ -176,6 +176,7 @@ export default {
         const isRemoveAlertVisible = ref(false);
         const setRemoveAlertVisible = (bool) => {
             isRemoveAlertVisible.value = bool;
+            setItemToChange(null);
         };
         const enumItemToRemove = ref(null);
         const setEnumItemToRemove = (item) => {
