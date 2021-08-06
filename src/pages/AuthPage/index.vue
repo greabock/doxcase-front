@@ -20,17 +20,18 @@
                         <ErrorMessage name="password" class="error-feedback" />
                     </div>
                     <!-- +e.input-wrap-->
-                    <button class="btn btn-primary w-100" :disabled="loading">
+                    <v-button :disabled="loading" class="w-100">
                         <span v-show="loading" class="spinner-border spinner-border-sm"></span>
                         <span>Login</span>
-                    </button>
+                    </v-button>
                 </Form>
-                <button class="btn btn-outline-white w-100">Войти с помощью Azure</button>
+                <v-button outline="true" color="white" class="w-100"> Войти с помощью Azure </v-button>
             </div>
         </div>
     </div>
 </template>
 <script>
+import VButton from '../../ui/VButton';
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
@@ -43,6 +44,7 @@ export default {
         Field,
         ErrorMessage,
         LogoIcon,
+        VButton,
     },
     setup() {
         const schema = yup.object().shape({

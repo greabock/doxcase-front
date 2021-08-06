@@ -12,7 +12,7 @@
                     />
                 </div>
                 <!-- +e.input-wrap-->
-                <button class="search-block__btn" type="submit">
+                <button class="search-block__btn" @click.stop.prevent type="submit">
                     <svg class="icon icon-search">
                         <use xlink:href="img/svg/sprite.svg#search"></use>
                     </svg>
