@@ -15,6 +15,8 @@
     "vee-validate": "^4.4.7",
     "vue": "^3.0.0",
     "vue-router": "4",
+    "vue3-dropzone": "^0.0.7",
+    "vuejs3-datepicker": "^0.0.6",
     "vuex": "^4.0.2",
     "yup": "^0.32.9"
   },
