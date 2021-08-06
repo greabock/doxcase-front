@@ -29,9 +29,9 @@ class enumService {
             return res.data.data;
         } else throw new Error('Error fetching enum Object');
     };
-    addEnumsItem = async (myEnum, title) => {
+    addEnumsItem = async (myEnum, {title}) => {
         const newEnumItem = {
-            ...title,
+            title,
             id: uuidv4(),
         };
         const newEnum = {
@@ -46,6 +46,19 @@ class enumService {
             ...myEnum,
             values: [...myEnum.values].filter((item) => item.id !== enumItemId),
         };
+        await axiosInstance.patch(`/enums/${myEnum.id}`, newEnum);
+        return newEnum;
+    };
+    changeEnumsItem = async (myEnum, myEnumItem, {title}) => {
+        const idx = myEnum.values.indexOf(myEnumItem);
+        const newEnumItem = {...myEnumItem, title};
+        const newValues = [...myEnum.values];
+        newValues.splice(idx, 1, newEnumItem);
+        const newEnum = {
+            ...myEnum,
+            values: newValues,
+        };
+        console.log(myEnum, newEnum);
         await axiosInstance.patch(`/enums/${myEnum.id}`, newEnum);
         return newEnum;
     };

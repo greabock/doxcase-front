@@ -3,10 +3,16 @@
     <div class="search-block">
         <form>
             <div class="search-block__input-wrap form-group">
-                <input class="search-block__input form-control" name="text" type="text" placeholder="Поиск" />
+                <input
+                    v-model="searchValue"
+                    class="search-block__input form-control"
+                    name="text"
+                    type="text"
+                    placeholder="Поиск"
+                />
             </div>
             <!-- +e.input-wrap-->
-            <button class="search-block__btn" type="submit">
+            <button class="search-block__btn" @click.stop.prevent type="submit">
                 <svg class="icon icon-search">
                     <use xlink:href="img/svg/sprite.svg#search"></use>
                 </svg>
@@ -42,10 +48,10 @@
         </div>
     </div>
     <div class="block-position" v-if="enumObject">
-        <div class="block-position__item" v-for="item in enumObject.values" :key="item.name">
+        <div class="block-position__item" v-for="item in searchedEnums" :key="item.name">
             <div class="block-position__title">{{ item.title }}</div>
             <div class="block-position__btns">
-                <div @click="setItemToChangeId(item.id)" class="btn-edit-sm btn-secondary">
+                <div @click="setItemToChange(item)" class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
                         <use xlink:href="img/svg/sprite.svg#edit"></use>
                     </svg>
@@ -59,11 +65,11 @@
 
             <!-- Change enum item Form -->
             <div
-                v-show="itemToChangeId === item.id"
+                v-show="itemToChange?.id === item.id"
                 class="block-position__item block-position__item--edit change-enum-item__form"
             >
-                <Form @submit="changeEnumsItem" :validation-schema="newEnumItemSchema">
-                    <Field type="text" name="title" class="block-position__title" />
+                <Form @submit="changeEnumsItem" :validation-schema="changeEnumItemSchema">
+                    <Field type="text" name="title" class="block-position__title" v-model="itemToChangeFieldValue" />
                     <div class="block-position__btns">
                         <button class="btn-edit-sm btn-success">
                             <svg class="icon icon-check">
@@ -75,7 +81,7 @@
                             class="btn-edit-sm btn-danger"
                             @click.prevent.stop="setShownEnumItemForm(false)"
                         >
-                            <svg @click="setItemToChangeId('')" class="icon icon-close">
+                            <svg @click="setItemToChange(null)" class="icon icon-close">
                                 <use xlink:href="img/svg/sprite.svg#close"></use>
                             </svg>
                         </div>
@@ -88,24 +94,26 @@
     <!-- Remove enumItem alert -->
     <div class="mock-modal__wrapper" v-show="isRemoveAlertVisible">
         <div class="mock-modal__cont">
+            <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
             <div class="mock-modal__header">
-                <span
-                    >Уверены, что хотите удалить позицию
-                    <b> {{ enumItemToRemove?.title }}</b>
-                </span>
-
-                <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
+                <h3>Удаление справочника</h3>
             </div>
+            <span
+                >Вы действительно хотите удалить позицию "{{ enumItemToRemove?.title }}" из справочника "{{
+                    enumObject?.title
+                }}"?
+            </span>
             <div class="mock-modal__buttons">
-                <button class="btn btn-danger" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</button>
-                <button class="btn" @click="setRemoveAlertVisible(false)">Отменить</button>
+                <v-button outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+                <v-button class="w-100" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</v-button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import {onMounted, ref, watch, toRefs} from 'vue';
+import VButton from '@/ui/VButton';
+import {onMounted, ref, watch, toRefs, computed} from 'vue';
 import enumsService from '@/services/enums.service';
 import {Form, Field} from 'vee-validate';
 import * as yup from 'yup';
@@ -113,6 +121,7 @@ export default {
     components: {
         Form,
         Field,
+        VButton,
     },
     props: {
         enumId: {
@@ -122,10 +131,21 @@ export default {
     setup(props) {
         const {enumId} = toRefs(props);
         const enumObject = ref(null);
-        const newEnumItemSchema = yup.object().shape({
-            title: yup.string().required('Введите название справочника'),
+        const searchValue = ref('');
+        const searchedEnums = computed(() => {
+            if (enumObject.value) {
+                return [...enumObject.value.values].filter((enumItem) => {
+                    return enumItem.title.toLowerCase().includes(searchValue.value.toLowerCase());
+                });
+            }
+            return [];
         });
-
+        const newEnumItemSchema = yup.object().shape({
+            title: yup.string().required('Введите название позиции'),
+        });
+        const changeEnumItemSchema = yup.object().shape({
+            title: yup.string().required('Введите название позиции'),
+        });
         onMounted(async () => {
             await updateEnumObject(enumId.value);
         });
@@ -171,12 +191,24 @@ export default {
             }
         };
         // Change EnumItem______________________________
-        const itemToChangeId = ref('');
-        const setItemToChangeId = (newId) => {
-            itemToChangeId.value = newId;
+        const itemToChangeFieldValue = ref('');
+        const itemToChange = ref(null);
+        const setItemToChange = (item) => {
+            itemToChange.value = item;
+            itemToChangeFieldValue.value = itemToChange.value.title;
+        };
+        const changeEnumsItem = async (title, actions) => {
+            try {
+                enumObject.value = await enumsService.changeEnumsItem(enumObject.value, itemToChange.value, title);
+                actions.resetForm();
+                setItemToChange(null);
+            } catch (e) {
+                console.log(e.message);
+            }
         };
 
         return {
+            searchValue,
             newEnumItemSchema,
             addEnumsItem,
             removeEnumItem,
@@ -184,12 +216,16 @@ export default {
             setShownEnumItemForm,
             updateEnumObject,
             enumObject,
+            searchedEnums,
             enumItemToRemove,
             setEnumItemToRemove,
             isRemoveAlertVisible,
             setRemoveAlertVisible,
-            itemToChangeId,
-            setItemToChangeId,
+            itemToChange,
+            setItemToChange,
+            changeEnumItemSchema,
+            changeEnumsItem,
+            itemToChangeFieldValue,
         };
     },
 };
@@ -210,11 +246,13 @@ export default {
 }
 .mock-modal__cont {
     display: flex;
+    position: relative;
     flex-direction: column;
     width: 400px;
     background-color: #fff;
-    padding: 30px;
-    box-shadow: 0 0 30px 0 rgba(50, 50, 50, 0.46);
+    padding: 32px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
 }
 .mock-modal__header {
     display: flex;
@@ -224,25 +262,19 @@ export default {
 }
 .mock-modal__closer {
     display: block;
-    position: relative;
-    top: -20px;
-    right: -15px;
+    position: absolute;
+    font-size: 26px;
+    line-height: 26px;
+    top: 15px;
+    right: 20px;
     cursor: pointer;
 }
 .mock-modal__buttons {
     display: flex;
     justify-content: center;
+    padding-top: 20px;
 }
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
-}
-.change-enum-item__form {
-    position: absolute;
-    z-index: 10;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #fff;
 }
 </style>

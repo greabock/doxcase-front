@@ -25,8 +25,9 @@
     <enums-items v-if="activeEnumId" :enumId="activeEnumId"></enums-items>
     <div class="mock-modal__wrapper" v-show="isModalVisible">
         <div class="mock-modal__cont">
+            <b class="mock-modal__closer" @click="setModalVisible(false)">x</b>
             <div class="mock-modal__header">
-                <span>Новый справочник</span> <b class="mock-modal__closer" @click="setModalVisible(false)">x</b>
+                <h3>Новый справочник</h3>
             </div>
             <div class="mock-modal__form">
                 <Form @submit="addNewEnum" :validation-schema="newEnumSchema">
@@ -47,23 +48,38 @@
         </div>
     </div>
     <!-- Remove enum alert -->
+
+    <!--    <v-modal @close="setRemoveAlertVisible(false)" v-model="isRemoveAlertVisible">-->
+    <!--        <div class="mock-modal__cont">-->
+    <!--            <div class="mock-modal__header">-->
+    <!--                <h3>-->
+    <!--                    Уверены, что хотите удалить справочник <b> {{ enumToRemove?.title }}</b>-->
+    <!--                </h3>-->
+    <!--            </div>-->
+    <!--            <div class="mock-modal__buttons">-->
+    <!--                <button class="btn btn-danger" @click="removeEnum(enumToRemove.id)">Удалить</button>-->
+    <!--                <button class="btn" @click="setRemoveAlertVisible(false)">Отменить</button>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </v-modal>-->
+
     <div class="mock-modal__wrapper" v-show="isRemoveAlertVisible">
         <div class="mock-modal__cont">
+            <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
             <div class="mock-modal__header">
-                <span
-                    >Уверены, что хотите удалить справочник <b> {{ enumToRemove?.title }}</b></span
-                >
-
-                <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
+                <h3>Удаление справочника</h3>
             </div>
+            <p>Вы действительно хотите удалить справочник "{{ enumToRemove?.title }}"?</p>
             <div class="mock-modal__buttons">
-                <button class="btn btn-danger" @click="removeEnum(enumToRemove.id)">Удалить</button>
-                <button class="btn" @click="setRemoveAlertVisible(false)">Отменить</button>
+                <v-button outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+                <v-button class="w-100" @click="removeEnum(enumToRemove?.id)">Удалить</v-button>
             </div>
         </div>
     </div>
 </template>
 <script>
+// import VModal from '@/ui/VModal';
+import VButton from '@/ui/VButton';
 import {onMounted, ref} from 'vue';
 import enumsService from '@/services/enums.service';
 import {Form, Field, ErrorMessage} from 'vee-validate';
@@ -76,6 +92,8 @@ export default {
         Field,
         ErrorMessage,
         EnumsItems,
+        VButton,
+        // VModal,
     },
     setup() {
         const enums = ref([]);
@@ -173,11 +191,13 @@ export default {
 }
 .mock-modal__cont {
     display: flex;
+    position: relative;
     flex-direction: column;
     width: 400px;
     background-color: #fff;
-    padding: 30px;
-    box-shadow: 0 0 30px 0 rgba(50, 50, 50, 0.46);
+    padding: 32px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
 }
 .mock-modal__header {
     display: flex;
@@ -187,14 +207,17 @@ export default {
 }
 .mock-modal__closer {
     display: block;
-    position: relative;
-    top: -20px;
-    right: -15px;
+    position: absolute;
+    font-size: 26px;
+    line-height: 26px;
+    top: 15px;
+    right: 20px;
     cursor: pointer;
 }
 .mock-modal__buttons {
     display: flex;
     justify-content: center;
+    padding-top: 20px;
 }
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
