@@ -30,14 +30,14 @@
                 </div>
 
                 <!-- Sections -->
-                <div v-if="sections.length !== 0 && !isSectionsLoading">
-                    <div class="sSections__body">
+                <div v-if="sections?.length !== 0 && !isSectionsLoading">
+                    <div v-for="section in sections" :key="section.id" class="sSections__body">
                         <div class="sSections__item">
                             <div class="row">
                                 <div class="col-auto">
                                     <div class="sSections__count">1</div>
                                 </div>
-                                <div class="col fw-500 text-primary">О сервисе</div>
+                                <div class="col fw-500 text-primary">{{ section.title }}</div>
                                 <div class="col-12 d-lg-none pb-3"></div>
                                 <div class="sSections__col col-lg-auto col-md">
                                     <label class="custom-input form-check"
@@ -45,7 +45,7 @@
                                             class="custom-input__input form-check-input"
                                             name="checkbox"
                                             type="checkbox"
-                                            checked="checked"
+                                            v-model="section.is_dictionary"
                                         /><span class="custom-input__text form-check-label"
                                             >Использовать как справочник</span
                                         >
@@ -57,7 +57,7 @@
                                             class="custom-input__input form-check-input"
                                             name="checkbox"
                                             type="checkbox"
-                                            checked="checked"
+                                            v-model="section.is_navigation"
                                         /><span class="custom-input__text form-check-label"
                                             >Отображать в навигации</span
                                         >
@@ -75,12 +75,18 @@
                                                 <use xlink:href="img/svg/sprite.svg#basket"></use>
                                             </svg>
                                         </div>
-                                        <div class="btn-edit-sm btn-secondary">
+                                        <div
+                                            @click="sortUpSectionItem(section, sections)"
+                                            class="btn-edit-sm btn-secondary"
+                                        >
                                             <svg class="icon icon-chevron-up text-primary">
                                                 <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
                                             </svg>
                                         </div>
-                                        <div class="btn-edit-sm btn-secondary">
+                                        <div
+                                            @click="sortDownSectionItem(section, sections)"
+                                            class="btn-edit-sm btn-secondary"
+                                        >
                                             <svg class="icon icon-chevron-down text-primary">
                                                 <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
                                             </svg>
@@ -100,7 +106,7 @@
                             </div>
                         </div>
                         <button class="btn btn-primary">Сохранить</button>
-                        <button class="btn btn-outline-primary ms-2">Отмена</button>
+                        <button @click="resetSections" class="btn btn-outline-primary ms-2">Отмена</button>
                     </div>
                 </div>
 
@@ -126,16 +132,78 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue';
-import sectionsService from '@/services/sections.service';
+import {ref, reactive, onMounted} from 'vue';
+// import sectionsService from '@/services/sections.service';
 export default {
     setup() {
         const sections = ref([]);
+        const initSections = ref([]);
         const isSectionsLoading = ref(true);
+        const mockData = [
+            {
+                id: 'f2a6b279-f6cd-4c78-87aa-b998b707e3a7',
+                title: 'Агенты',
+                image: 'absolute://path.to/image.jpg',
+                is_dictionary: true,
+                is_navigation: true,
+                sort_index: 1,
+            },
+            {
+                id: '09c45d85-4e31-4c99-ac20-1e75dfa5f106',
+                title: 'Поставщики',
+                image: 'absolute://path.to/image.jpg',
+                is_dictionary: true,
+                is_navigation: true,
+                sort_index: 3,
+            },
+            {
+                id: 'b6363315-f190-40ba-a183-a78baabda52c',
+                title: 'Автомобили',
+                image: 'absolute://path.to/image.jpg',
+                is_dictionary: true,
+                is_navigation: true,
+                sort_index: 2,
+            },
+        ];
+
+        const resetSections = () => {
+            sections.value = reactive(JSON.parse(JSON.stringify(initSections.value)));
+        };
+
+        const sortUpSectionItem = (item, arr) => {
+            sections.value = sortIndexUp(item, arr);
+        };
+        const sortDownSectionItem = (item, arr) => {
+            sections.value = sortIndexDown(item, arr);
+        };
+
+        const sortIndexUp = (item, arr) => {
+            const idx = arr.indexOf(item);
+            if (idx > 0) {
+                const oldSort_index = arr[idx].sort_index;
+                const newSort_index = arr[idx - 1].sort_index;
+                const newUpItem = {...arr[idx], sort_index: newSort_index};
+                const newDownItem = {...arr[idx - 1], sort_index: oldSort_index};
+                return [...arr.slice(0, idx - 1), newUpItem, newDownItem, ...arr.slice(idx + 1)];
+            }
+        };
+
+        const sortIndexDown = (item, arr) => {
+            const idx = arr.indexOf(item);
+            if (idx < arr.length + 1) {
+                const oldSort_index = arr[idx].sort_index;
+                const newSort_index = arr[idx + 1].sort_index;
+                const newUpItem = {...arr[idx], sort_index: newSort_index};
+                const newDownItem = {...arr[idx + 1], sort_index: oldSort_index};
+                return [...arr.slice(0, idx), newDownItem, newUpItem, ...arr.slice(idx + 2)];
+            }
+        };
 
         onMounted(async () => {
             try {
-                sections.value = await sectionsService.getSections();
+                // initSections.value = await sectionsService.getSections();
+                initSections.value = JSON.parse(JSON.stringify(mockData));
+                sections.value = reactive(JSON.parse(JSON.stringify(mockData)));
                 isSectionsLoading.value = false;
             } catch (e) {
                 isSectionsLoading.value = false;
@@ -146,6 +214,10 @@ export default {
         return {
             sections,
             isSectionsLoading,
+            resetSections,
+            initSections,
+            sortUpSectionItem,
+            sortDownSectionItem,
         };
     },
 };
