@@ -35,6 +35,7 @@
                                     <label
                                         ><span class="form-wrap__input-title">Название раздела</span
                                         ><input
+                                            v-model="section.title"
                                             class="form-wrap__input form-control"
                                             name="text"
                                             type="text"
@@ -49,12 +50,26 @@
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-auto mb-3">
-                                        <button class="form-wrap__btn-choose">Выбрать...</button>
+                                        <div class="file-uploader__wrapper">
+                                            <input
+                                                id="file-upload-input"
+                                                type="file"
+                                                ref="fileInput"
+                                                @change="onFileSelected"
+                                            />
+                                            <div class="file-uploader__cont">
+                                                <button class="form-wrap__btn-choose" @click="clickInput">
+                                                    Выбрать...
+                                                </button>
+                                                <span>{{ imageName ? imageName : 'Файл не выбран' }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
                                         ><input
+                                            v-model="section.is_dictionary"
                                             class="custom-input__input form-check-input"
                                             name="checkbox"
                                             type="checkbox"
@@ -65,6 +80,7 @@
                                     </label>
                                     <label class="custom-input form-check"
                                         ><input
+                                            v-model="section.is_navigation"
                                             class="custom-input__input form-check-input"
                                             name="checkbox"
                                             type="checkbox"
@@ -167,27 +183,7 @@
                                             <div class="text-dark small">Содержание</div>
                                             <div class="sSectionMain__content">
                                                 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Debitis nam
-                                                amet assumenda, laudantium molestias officia odio quis veritatis
-                                                consequuntur sapiente cum omnis facere corporis, expedita quasi neque
-                                                vel at dignissimos sit placeat ipsam. Tenetur molestias totam velit
-                                                maxime dolorum quibusdam nostrum labore illum ab omnis est dignissimos
-                                                deserunt minus ducimus quidem repellat vitae, illo ipsum sit alias
-                                                veritatis rem expedita qui cum. Eaque dolorem animi sit rem iure beatae
-                                                aliquam blanditiis libero laborum sint odit nulla debitis, perferendis
-                                                minus est consequuntur fuga, totam inventore enim laboriosam corporis?
-                                                Sequi, aliquam. Veniam, optio! Ut accusamus possimus doloremque?
-                                                Doloremque exercitationem, expedita fugit quod sunt ab id obcaecati
-                                                harum commodi quaerat dolore voluptas fuga nihil laboriosam repellendus
-                                                excepturi dolores incidunt voluptatibus labore? Earum atque assumenda ad
-                                                veritatis, deserunt qui, labore eos quibusdam rem distinctio incidunt
-                                                velit natus aliquid doloribus quaerat commodi in autem! Assumenda ex
-                                                porro libero fuga velit corrupti quae facere harum placeat beatae vel,
-                                                rem maxime vitae, repudiandae eaque laboriosam ipsam, ipsa consectetur.
-                                                Explicabo, porro? Perspiciatis quidem ex vel, totam sequi tenetur hic
-                                                minima, ad porro debitis, blanditiis quam laborum dolor voluptatem.
-                                                Maiores fuga voluptatum, rem mollitia dolorem magnam eveniet ipsa
-                                                perferendis culpa quasi accusamus molestiae earum unde possimus
-                                                voluptatem minus neque.
+                                                amet assumenda
                                             </div>
                                         </div>
                                         <div class="sSectionMain__col-cut col-auto order-first order-lg-0">
@@ -224,7 +220,55 @@
 </template>
 
 <script>
-export default {};
+import {reactive, ref} from 'vue';
+import {v4 as uuidv4} from 'uuid';
+export default {
+    setup() {
+        let initUser = {
+            id: uuidv4(),
+            title: '',
+            is_dictionary: true,
+            is_navigation: true,
+            image: null,
+            fields: [],
+        };
+        const section = reactive({...initUser});
+        const fileInput = ref(null);
+        const imageName = ref('');
+        const onFileSelected = (e) => {
+            imageName.value = e.target.files[0].name;
+        };
+        const clickInput = () => {
+            fileInput.value.click();
+        };
+
+        return {
+            section,
+            onFileSelected,
+            imageName,
+            fileInput,
+            clickInput,
+        };
+    },
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+#file-upload-input {
+    visibility: hidden;
+    height: 40px;
+}
+.file-uploader__wrapper {
+    position: relative;
+    height: 40px;
+}
+.file-uploader__cont {
+    position: absolute;
+    top: 0;
+    display: flex;
+    align-items: center;
+}
+.file-uploader__cont > button {
+    margin-right: 5px;
+}
+</style>
