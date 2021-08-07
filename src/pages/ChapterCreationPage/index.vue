@@ -31,7 +31,7 @@
 
                 <!-- Sections -->
                 <div v-if="sections?.length !== 0 && !isSectionsLoading">
-                    <div v-for="section in sections" :key="section.id" class="sSections__body">
+                    <div v-for="section in sortedSections" :key="section.id" class="sSections__body">
                         <div class="sSections__item">
                             <div class="row">
                                 <div class="col-auto">
@@ -76,7 +76,7 @@
                                             </svg>
                                         </div>
                                         <div
-                                            @click="sortUpSectionItem(section, sections)"
+                                            @click="sortUpSectionItem(section, sortedSections)"
                                             class="btn-edit-sm btn-secondary"
                                         >
                                             <svg class="icon icon-chevron-up text-primary">
@@ -84,7 +84,7 @@
                                             </svg>
                                         </div>
                                         <div
-                                            @click="sortDownSectionItem(section, sections)"
+                                            @click="sortDownSectionItem(section, sortedSections)"
                                             class="btn-edit-sm btn-secondary"
                                         >
                                             <svg class="icon icon-chevron-down text-primary">
@@ -128,16 +128,33 @@
                 </div>
             </div>
         </div>
+        <teleport to="#header-sections">
+            <ul class="menu" id="header-sections">
+                <li v-for="section in sectionsToHeader" :key="section?.id">
+                    <router-link :to="'/enums/' + section?.id">{{ section?.title }}</router-link>
+                </li>
+            </ul>
+        </teleport>
+        >
     </main>
 </template>
 
 <script>
-import {ref, reactive, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 // import sectionsService from '@/services/sections.service';
+import {sortByIndexUp, sortByIndexDown} from '@/utils/sortByIndex';
+
 export default {
     setup() {
+        let initSections;
         const sections = ref([]);
-        const initSections = ref([]);
+        const sortedSections = computed(() => {
+            return [...sections.value].sort((a, b) => a.sort_index - b.sort_index);
+        });
+        const sectionsToHeader = computed(() =>
+            [...sortedSections.value].filter((item) => item.is_navigation === true)
+        );
+
         const isSectionsLoading = ref(true);
         const mockData = [
             {
@@ -167,43 +184,21 @@ export default {
         ];
 
         const resetSections = () => {
-            sections.value = reactive(JSON.parse(JSON.stringify(initSections.value)));
+            sections.value = JSON.parse(JSON.stringify(initSections));
         };
 
         const sortUpSectionItem = (item, arr) => {
-            sections.value = sortIndexUp(item, arr);
+            sections.value = sortByIndexUp(item, arr);
         };
         const sortDownSectionItem = (item, arr) => {
-            sections.value = sortIndexDown(item, arr);
-        };
-
-        const sortIndexUp = (item, arr) => {
-            const idx = arr.indexOf(item);
-            if (idx > 0) {
-                const oldSort_index = arr[idx].sort_index;
-                const newSort_index = arr[idx - 1].sort_index;
-                const newUpItem = {...arr[idx], sort_index: newSort_index};
-                const newDownItem = {...arr[idx - 1], sort_index: oldSort_index};
-                return [...arr.slice(0, idx - 1), newUpItem, newDownItem, ...arr.slice(idx + 1)];
-            }
-        };
-
-        const sortIndexDown = (item, arr) => {
-            const idx = arr.indexOf(item);
-            if (idx < arr.length + 1) {
-                const oldSort_index = arr[idx].sort_index;
-                const newSort_index = arr[idx + 1].sort_index;
-                const newUpItem = {...arr[idx], sort_index: newSort_index};
-                const newDownItem = {...arr[idx + 1], sort_index: oldSort_index};
-                return [...arr.slice(0, idx), newDownItem, newUpItem, ...arr.slice(idx + 2)];
-            }
+            sections.value = sortByIndexDown(item, arr);
         };
 
         onMounted(async () => {
             try {
                 // initSections.value = await sectionsService.getSections();
-                initSections.value = JSON.parse(JSON.stringify(mockData));
-                sections.value = reactive(JSON.parse(JSON.stringify(mockData)));
+                initSections = JSON.parse(JSON.stringify(mockData));
+                sections.value = JSON.parse(JSON.stringify(mockData));
                 isSectionsLoading.value = false;
             } catch (e) {
                 isSectionsLoading.value = false;
@@ -218,6 +213,8 @@ export default {
             initSections,
             sortUpSectionItem,
             sortDownSectionItem,
+            sortedSections,
+            sectionsToHeader,
         };
     },
 };

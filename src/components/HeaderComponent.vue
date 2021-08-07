@@ -38,9 +38,7 @@
                                 </div>
                             </div>
                             <div class="col-lg">
-                                <ul class="menu">
-                                    <li><router-link to="/">О сервисе</router-link></li>
-                                </ul>
+                                <div id="header-sections"></div>
                             </div>
                         </div>
                     </div>
@@ -86,3 +84,10 @@ export default {
     },
 };
 </script>
+<style scoped>
+#header-sections {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+</style>
