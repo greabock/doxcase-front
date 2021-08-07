@@ -284,7 +284,7 @@ INPUT::placeholder {
 .change-enum-item__form {
     position: absolute;
     z-index: 100;
-    top: 0;
+    top: -10px;
     bottom: 0;
     left: 0;
     right: 0;

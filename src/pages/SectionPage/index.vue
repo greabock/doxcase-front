@@ -1,5 +1,5 @@
 <template>
-    <h1>Chapter creation</h1>
+    <h1>Edit Section id: {{ $route.params.id }}</h1>
 </template>
 
 <script>

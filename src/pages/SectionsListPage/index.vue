@@ -22,7 +22,7 @@
                         <h1>Разделы</h1>
                     </div>
                     <div class="col-auto d-none d-sm-block">
-                        <div @click="router.push('/material-creation')" class="btn-add">
+                        <div @click="router.push('/section-creation')" class="btn-add">
                             <div class="btn-add__plus"></div>
                             <div class="btn-add__text">Добавить раздел</div>
                         </div>
@@ -66,7 +66,7 @@
                                 <div class="col-md-auto">
                                     <div class="sSections__btn-control">
                                         <div
-                                            @click="router.push('/enums/' + section?.id)"
+                                            @click="router.push('/sections/' + section?.id)"
                                             class="btn-edit-sm btn-secondary"
                                         >
                                             <svg class="icon icon-edit">
