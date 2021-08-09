@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import NewFieldForm from '../SectionCreationPage/NewFieldForm';
+import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
 export default {
     components: {
         NewFieldForm,

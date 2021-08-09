@@ -96,6 +96,7 @@
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
+                                <!-- Фильтры для разделов -->
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
                                     <div class="form-wrap__text small text-dark">
@@ -163,12 +164,13 @@
                                     <h3>Конструктор полей для добавления материалов</h3>
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
-                                    <div class="btn-add">
+                                    <div class="btn-add" @click="setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
                                 </div>
                             </div>
+                            <!-- Material title Field -->
                             <div class="sSectionMain__body">
                                 <div class="sSectionMain__item disabled">
                                     <div class="row">
@@ -197,11 +199,12 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="d-lg-none">
                                 <div class="mb-3">
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
-                                        <div class="btn-add__text">Добавить</div>
+                                        <div class="btn-add__text" @click="setFieldModalVisible(true)">Добавить</div>
                                     </div>
                                 </div>
                                 <div class="sSectionAside__footer">
@@ -215,6 +218,12 @@
                 </div>
             </div>
         </section>
+
+        <new-field-form
+            :isFieldModalVisible="isFieldModalVisible"
+            @updateFieldModalVisible="setFieldModalVisible"
+        ></new-field-form>
+
         <!-- end sCabinet-->
     </main>
 </template>
@@ -224,8 +233,9 @@ import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
+import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
 export default {
-    components: {},
+    components: {NewFieldForm},
     setup() {
         let initUser = {
             id: uuidv4(),
@@ -253,10 +263,12 @@ export default {
             imageName.value = '';
             fileInput.value = null;
         };
-
+        const isFieldModalVisible = ref(false);
+        const setFieldModalVisible = (bool) => {
+            isFieldModalVisible.value = bool;
+        };
         const createSection = async () => {
             try {
-                console.log('here');
                 const newSection = await sectionsService.createSection(section.value);
                 // if (newSection?.id) {
                 const router = useRouter();
@@ -275,6 +287,8 @@ export default {
             clickInput,
             resetForm,
             createSection,
+            isFieldModalVisible,
+            setFieldModalVisible,
         };
     },
 };

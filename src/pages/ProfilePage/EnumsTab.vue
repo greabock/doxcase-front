@@ -57,7 +57,7 @@
             </div>
             <p>Вы действительно хотите удалить справочник "{{ enumToRemove?.title }}"?</p>
             <div class="mock-modal__buttons">
-                <v-button outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
                 <v-button class="w-100" @click="removeEnum(enumToRemove?.id)">Удалить</v-button>
             </div>
         </div>

@@ -49,7 +49,7 @@
     </div>
     <div class="block-position" v-if="enumObject">
         <div class="block-position__item" v-for="item in searchedEnums" :key="item.name">
-            <div class="block-position__title">{{ item.title }}</div>
+            <div class="block-position__title">{{ item?.title }}</div>
             <div class="block-position__btns">
                 <div @click="setItemToChange(item)" class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
@@ -104,7 +104,7 @@
                 }}"?
             </span>
             <div class="mock-modal__buttons">
-                <v-button outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
                 <v-button class="w-100" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</v-button>
             </div>
         </div>
@@ -196,7 +196,7 @@ export default {
         const itemToChange = ref(null);
         const setItemToChange = (item) => {
             itemToChange.value = item;
-            itemToChangeFieldValue.value = itemToChange.value.title;
+            itemToChangeFieldValue.value = item?.title;
         };
         const changeEnumsItem = async (title, actions) => {
             try {
