@@ -9,9 +9,7 @@
                         /></a>
                     </li>
                     <li class="breadcrumb-item active">
-                        <a href="#" itemprop="item"
-                            ><span itemprop="name">Разделы</span> <meta itemprop="position" content="2"
-                        /></a>
+                        <a href="#"><span>Разделы</span> <meta itemprop="position" content="2" /></a>
                     </li>
                 </ol>
             </nav>
@@ -31,11 +29,11 @@
 
                 <!-- Sections -->
                 <div v-if="sections?.length !== 0">
-                    <div v-for="section in sortedSections" :key="section.id" class="sSections__body">
+                    <div v-for="(section, i) in sortedSections" :key="section.id" class="sSections__body">
                         <div class="sSections__item">
                             <div class="row">
                                 <div class="col-auto">
-                                    <div class="sSections__count">1</div>
+                                    <div class="sSections__count">{{ i + 1 }}</div>
                                 </div>
                                 <div class="col fw-500 text-primary">{{ section?.title }}</div>
                                 <div class="col-12 d-lg-none pb-3"></div>
@@ -65,10 +63,7 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="sSections__btn-control">
-                                        <div
-                                            @click="router.push('/sections/' + section?.id)"
-                                            class="btn-edit-sm btn-secondary"
-                                        >
+                                        <div @click="createNewSection(section)" class="btn-edit-sm btn-secondary">
                                             <svg class="icon icon-edit">
                                                 <use xlink:href="img/svg/sprite.svg#edit"></use>
                                             </svg>
@@ -118,7 +113,7 @@
                 </div>
 
                 <!-- No Sections block -->
-                <div v-else class="sSections section" id="sSections">
+                <div v-if="sections?.length === 0 && !isSectionsLoading" class="sSections section" id="sSections">
                     <div class="sSections__center-empty">
                         <div class="sSections__title-empty h1">Добавьте новый раздел</div>
                         <p>
@@ -167,7 +162,7 @@
 <script>
 import {ref, onMounted, computed} from 'vue';
 import {useRouter} from 'vue-router';
-// import sectionsService from '@/services/sections.service';
+import sectionsService from '@/services/sections.service';
 import {sortByIndexUp, sortByIndexDown} from '@/utils/sortByIndex';
 import {useStore} from 'vuex';
 import VButton from '@/ui/VButton';
@@ -190,32 +185,6 @@ export default {
         );
 
         const isSectionsLoading = ref(true);
-        const mockData = [
-            {
-                id: 'f2a6b279-f6cd-4c78-87aa-b998b707e3a7',
-                title: 'Агенты',
-                image: 'absolute://path.to/image.jpg',
-                is_dictionary: true,
-                is_navigation: true,
-                sort_index: 1,
-            },
-            {
-                id: '09c45d85-4e31-4c99-ac20-1e75dfa5f106',
-                title: 'Поставщики',
-                image: 'absolute://path.to/image.jpg',
-                is_dictionary: true,
-                is_navigation: true,
-                sort_index: 3,
-            },
-            {
-                id: 'b6363315-f190-40ba-a183-a78baabda52c',
-                title: 'Автомобили',
-                image: 'absolute://path.to/image.jpg',
-                is_dictionary: true,
-                is_navigation: true,
-                sort_index: 2,
-            },
-        ];
 
         const resetSections = () => {
             sections.value = JSON.parse(JSON.stringify(initSections));
@@ -232,13 +201,20 @@ export default {
         const updateSections = async () => {
             try {
                 isSectionsLoading.value = true;
-                // await sectionsService.updateSectionsList(sortedSections.value);
-                initSections = JSON.parse(JSON.stringify(sortedSections.value));
+                const newSectionsArr = [...sortedSections.value].map((item, i) => ({...item, sort_index: i + 1}));
+                initSections = JSON.parse(JSON.stringify(newSectionsArr));
+                console.log(newSectionsArr);
+                await sectionsService.updateSectionsList(newSectionsArr);
+                initSections = newSectionsArr;
                 isSectionsLoading.value = false;
             } catch (e) {
                 isSectionsLoading.value = false;
                 console.log(e);
             }
+        };
+        //Create New Section_________________________________
+        const createNewSection = (section) => {
+            router.push('/sections/' + section.id);
         };
 
         //Remove Section______________________________________
@@ -253,7 +229,7 @@ export default {
         };
         const removeSection = async (id) => {
             try {
-                // await sectionsService.removeSection(id);
+                await sectionsService.removeSection(id);
                 sections.value = [...sortedSections.value].filter((item) => item.id !== id);
                 initSections = JSON.parse(JSON.stringify(sortedSections.value));
                 setRemoveAlertVisible(false);
@@ -265,9 +241,8 @@ export default {
 
         onMounted(async () => {
             try {
-                // initSections.value = await sectionsService.getSections();
-                initSections = JSON.parse(JSON.stringify(mockData));
-                sections.value = JSON.parse(JSON.stringify(mockData));
+                initSections = await sectionsService.getSections();
+                sections.value = initSections;
                 isSectionsLoading.value = false;
             } catch (e) {
                 isSectionsLoading.value = false;
@@ -292,6 +267,7 @@ export default {
             sectionToRemove,
             setSectionToRemove,
             removeSection,
+            createNewSection,
         };
     },
 };

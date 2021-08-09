@@ -16,6 +16,12 @@ class sectionService {
             return res.data.data;
         } else throw new Error('Error updating sections');
     };
+    createSection = async (section) => {
+        const res = await axiosInstance.post('/sections', section);
+        if (res.data?.data) {
+            return res.data.data;
+        } else throw new Error('Section Creation Error');
+    };
 
     removeSection = async (id) => {
         await axiosInstance.delete(`/sections/${id}`);

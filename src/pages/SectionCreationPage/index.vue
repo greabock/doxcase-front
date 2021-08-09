@@ -48,24 +48,20 @@
                                 <div class="small text-dark mb-1">
                                     Только svg или png c соотношеием сторон 1:1 не более 100 кБ
                                 </div>
-                                <div class="row align-items-center">
-                                    <div class="col-auto mb-3">
-                                        <div class="file-uploader__wrapper">
-                                            <input
-                                                id="file-upload-input"
-                                                type="file"
-                                                ref="fileInput"
-                                                @change="onFileSelected"
-                                            />
-                                            <div class="file-uploader__cont">
-                                                <button class="form-wrap__btn-choose" @click="clickInput">
-                                                    Выбрать...
-                                                </button>
-                                                <span>{{ imageName ? imageName : 'Файл не выбран' }}</span>
-                                            </div>
-                                        </div>
+
+                                <div class="file-uploader__wrapper">
+                                    <input
+                                        id="file-upload-input"
+                                        type="file"
+                                        ref="fileInput"
+                                        @change="onFileSelected"
+                                    />
+                                    <div class="file-uploader__cont">
+                                        <button class="form-wrap__btn-choose" @click="clickInput">Выбрать...</button>
+                                        <span>{{ imageName ? imageName : 'Файл не выбран' }}</span>
                                     </div>
                                 </div>
+
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
                                         ><input
@@ -145,10 +141,14 @@
                                         </div>
                                     </div>
                                     <div class="form-wrap__footer">
-                                        <button class="btn btn-primary">
+                                        <button
+                                            @click="createSection"
+                                            :class="{disabled: section.title === ''}"
+                                            class="btn btn-primary"
+                                        >
                                             Сохранить <span class="d-none d-lg-inline">раздел</span>
                                         </button>
-                                        <button class="btn btn-outline-primary">Отмена</button>
+                                        <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
                                     </div>
                                 </div>
                             </div>
@@ -220,19 +220,25 @@
 </template>
 
 <script>
-import {reactive, ref} from 'vue';
+import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
+import sectionsService from '@/services/sections.service';
+import {useRouter} from 'vue-router';
 export default {
+    components: {},
     setup() {
         let initUser = {
             id: uuidv4(),
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: null,
+            image: 'https://dev.cdi.msharks.ru/img/avatar-2.png',
+            sort_index: 0,
             fields: [],
         };
-        const section = reactive({...initUser});
+        const section = ref({...initUser});
+
+        // Input File_________
         const fileInput = ref(null);
         const imageName = ref('');
         const onFileSelected = (e) => {
@@ -242,12 +248,33 @@ export default {
             fileInput.value.click();
         };
 
+        const resetForm = () => {
+            section.value = {...initUser};
+            imageName.value = '';
+            fileInput.value = null;
+        };
+
+        const createSection = async () => {
+            try {
+                console.log('here');
+                const newSection = await sectionsService.createSection(section.value);
+                // if (newSection?.id) {
+                const router = useRouter();
+                await router.push(`/sections/${newSection.id}`);
+                // }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
         return {
             section,
             onFileSelected,
             imageName,
             fileInput,
             clickInput,
+            resetForm,
+            createSection,
         };
     },
 };
@@ -261,6 +288,7 @@ export default {
 .file-uploader__wrapper {
     position: relative;
     height: 40px;
+    margin-bottom: 20px;
 }
 .file-uploader__cont {
     position: absolute;

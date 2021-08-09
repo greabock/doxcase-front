@@ -45,12 +45,16 @@
                 </div>
                 <div class="col-auto">
                     <router-link
-                        to="/chapter-creation"
+                        to="/section-creation"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>
                 <div class="col-auto">
-                    <div class="avatar-block bg-wrap"><img class="img-bg" :src="userAvatar" alt="" /></div>
+                    <div class="avatar-block bg-wrap">
+                        <router-link to="/profile">
+                            <img class="img-bg" :src="userAvatar" alt="" />
+                        </router-link>
+                    </div>
                 </div>
             </div>
         </div>
