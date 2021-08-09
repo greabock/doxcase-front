@@ -9,68 +9,30 @@
                         <div class="form-wrap__input-wrap form-group">
                             <label
                                 ><span class="form-wrap__input-title">Выберите тип поля</span>
-                                <select class="form-wrap__input form-select" name="select">
-                                    <option value="Текстовое поле">Текстовое поле</option>
-                                    <option value=" placeholder 1">placeholder 1</option>
-                                    <option value=" placeholder 2">placeholder 2</option>
-                                    <option value=" placeholder 3">placeholder 3</option>
-                                    <option value=" placeholder 4">placeholder 4</option>
+                                <select class="form-wrap__input form-select" v-model="fieldType" name="select">
+                                    <option value="simple-text-field">Текстовое поле</option>
+                                    <option value="short-text-field">Короткое текстовое поле</option>
+                                    <option value="selector-field">Значения из выпадающего списка</option>
+                                    <option value="checkbox-field">Чекбокс</option>
+                                    <option value="date-field">Выбор даты</option>
+                                    <option value="document-upload-field">Загрузка документа</option>
+                                    <option value="dictionary-value-field">Значения из базы знаний</option>
                                 </select>
                             </label>
                         </div>
                         <!-- +e.input-wrap-->
-                        <div class="form-wrap__input-wrap form-group">
-                            <label
-                                ><span class="form-wrap__input-title">Заголовок</span
-                                ><input
-                                    class="form-wrap__input form-control is-valid"
-                                    name="text"
-                                    type="text"
-                                    placeholder="Заполните поле"
-                                />
-                            </label>
+                        <div class="typed-field-forms">
+                            <simple-text-field
+                                @addNewField="addNewField"
+                                v-if="fieldType === 'simple-text-field'"
+                            ></simple-text-field>
+                            <short-text-field v-if="fieldType === 'short-text-field'"></short-text-field>
+                            <selector-field v-if="fieldType === 'selector-field'"></selector-field>
+                            <checkbox-field v-if="fieldType === 'checkbox-field'"></checkbox-field>
+                            <date-field v-if="fieldType === 'date-field'"></date-field>
+                            <document-upload-field v-if="fieldType === 'document-upload-field'"></document-upload-field>
+                            <dictionary-field v-if="fieldType === 'document-upload-field'"></dictionary-field>
                         </div>
-                        <!-- +e.input-wrap-->
-                        <div class="form-wrap__input-wrap form-group">
-                            <label
-                                ><span class="form-wrap__input-title">Краткое описание поля</span
-                                ><input
-                                    class="form-wrap__input form-control is-invalid"
-                                    name="text"
-                                    type="text"
-                                    placeholder="Заполните поле"
-                                />
-                            </label>
-                        </div>
-                        <!-- +e.input-wrap-->
-                        <div class="col-6">
-                            <div class="form-wrap__input-wrap form-group">
-                                <label
-                                    ><span class="form-wrap__input-title">Максимум символов для поля</span
-                                    ><input
-                                        class="form-wrap__input form-control is-invalid"
-                                        name="text"
-                                        type="text"
-                                        placeholder="Заполните поле"
-                                    />
-                                </label>
-                            </div>
-                            <!-- +e.input-wrap-->
-                        </div>
-                        <label class="custom-input form-check"
-                            ><input class="custom-input__input form-check-input" name="checkbox" type="checkbox" /><span
-                                class="custom-input__text form-check-label"
-                                >Обязательное поле</span
-                            >
-                        </label>
-                        <label class="custom-input form-check"
-                            ><input class="custom-input__input form-check-input" name="checkbox" type="checkbox" /><span
-                                class="custom-input__text form-check-label"
-                                >Отображать на карточке материала</span
-                            >
-                        </label>
-                        <div class="text-center text-danger mb-3">Заполните все поля чтобы создать поле</div>
-                        <button class="btn btn-primary w-100" type="submit" disabled="disabled">Добавить</button>
                     </form>
                 </div>
             </div>
@@ -79,7 +41,24 @@
 </template>
 
 <script>
+import {ref} from 'vue';
+import CheckboxField from '@/pages/SectionCreationPage/FieldTypes/CheckboxField';
+import DateField from '@/pages/SectionCreationPage/FieldTypes/DateField';
+import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
+import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
+import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
+import ShortTextField from '@/pages/SectionCreationPage/FieldTypes/ShortTextField';
+import SimpleTextField from '@/pages/SectionCreationPage/FieldTypes/SimpleTextField';
 export default {
+    components: {
+        CheckboxField,
+        DateField,
+        DictionaryField,
+        DocumentUploadField,
+        SelectorField,
+        ShortTextField,
+        SimpleTextField,
+    },
     props: {
         isFieldModalVisible: {
             type: Boolean,
@@ -90,8 +69,14 @@ export default {
         const setFieldModalVisible = (bool) => {
             emit('updateFieldModalVisible', bool);
         };
+        const addNewField = (newField) => {
+            emit('addNewField', newField);
+        };
+        const fieldType = ref('simple-text-field');
         return {
             setFieldModalVisible,
+            fieldType,
+            addNewField,
         };
     },
 };
@@ -103,7 +88,7 @@ INPUT::placeholder {
 }
 .mock-modal__wrapper {
     display: flex;
-    z-index: 10;
+    z-index: 1000;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -117,7 +102,7 @@ INPUT::placeholder {
     display: flex;
     position: relative;
     flex-direction: column;
-    width: 600px;
+    width: 550px;
     background-color: #fff;
     padding: 32px;
     border-radius: 5px;

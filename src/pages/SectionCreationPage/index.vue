@@ -172,6 +172,7 @@
                             </div>
                             <!-- Material title Field -->
                             <div class="sSectionMain__body">
+                                <!-- - Untouchable -->
                                 <div class="sSectionMain__item disabled">
                                     <div class="row">
                                         <div class="col-lg-auto col order-first">
@@ -198,6 +199,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <fields-list
+                                    @sortFieldDown="sortFieldDown"
+                                    @sortFieldUp="sortFieldUp"
+                                    @removeField="removeField"
+                                    :fieldsArr="sortedFields"
+                                ></fields-list>
                             </div>
 
                             <div class="d-lg-none">
@@ -222,6 +229,7 @@
         <new-field-form
             :isFieldModalVisible="isFieldModalVisible"
             @updateFieldModalVisible="setFieldModalVisible"
+            @addNewField="addNewField"
         ></new-field-form>
 
         <!-- end sCabinet-->
@@ -229,13 +237,17 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
+import FieldsList from '@/pages/SectionCreationPage/FieldsList';
+import {sortByIndexDown} from '@/utils/sortByIndex';
+import {sortByIndexUp} from '@/utils/sortByIndex';
+
 export default {
-    components: {NewFieldForm},
+    components: {NewFieldForm, FieldsList},
     setup() {
         let initUser = {
             id: uuidv4(),
@@ -247,6 +259,9 @@ export default {
             fields: [],
         };
         const section = ref({...initUser});
+        const sortedFields = computed(() => {
+            return [...section.value.fields].sort((a, b) => a.sort_index - b.sort_index);
+        });
 
         // Input File_________
         const fileInput = ref(null);
@@ -267,6 +282,20 @@ export default {
         const setFieldModalVisible = (bool) => {
             isFieldModalVisible.value = bool;
         };
+
+        const addNewField = (newField) => {
+            const idx = section.value.fields.find((item) => item.id === newField.id);
+            if (idx) {
+                section.value.fields = [
+                    ...sortedFields.value.slice(0, idx),
+                    newField,
+                    ...sortedFields.value.slice(idx + 1),
+                ];
+            } else {
+                section.value.fields = [...sortedFields.value, newField];
+            }
+            setFieldModalVisible(false);
+        };
         const createSection = async () => {
             try {
                 const newSection = await sectionsService.createSection(section.value);
@@ -277,6 +306,15 @@ export default {
             } catch (e) {
                 console.log(e);
             }
+        };
+        const sortFieldUp = (item) => {
+            section.value.fields = sortByIndexUp(item, sortedFields.value);
+        };
+        const sortFieldDown = (item) => {
+            section.value.fields = sortByIndexDown(item, sortedFields.value);
+        };
+        const removeField = (item) => {
+            section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
         };
 
         return {
@@ -289,6 +327,11 @@ export default {
             createSection,
             isFieldModalVisible,
             setFieldModalVisible,
+            addNewField,
+            sortedFields,
+            sortFieldUp,
+            sortFieldDown,
+            removeField,
         };
     },
 };
