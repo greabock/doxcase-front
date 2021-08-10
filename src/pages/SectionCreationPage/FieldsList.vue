@@ -55,13 +55,13 @@ export default {
     },
     setup(props, {emit}) {
         const sortFieldUp = (item) => {
-            emit('sortFieldUp', item);
+            emit('sort-field-up', item);
         };
         const sortFieldDown = (item) => {
-            emit('sortFieldDown', item);
+            emit('sort-field-down', item);
         };
         const removeField = (item) => {
-            emit('removeField', item);
+            emit('remove-field', item);
         };
         return {
             sortFieldUp,

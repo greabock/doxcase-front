@@ -49,18 +49,7 @@
                                     Только svg или png c соотношеием сторон 1:1 не более 100 кБ
                                 </div>
 
-                                <div class="file-uploader__wrapper">
-                                    <input
-                                        id="file-upload-input"
-                                        type="file"
-                                        ref="fileInput"
-                                        @change="onFileSelected"
-                                    />
-                                    <div class="file-uploader__cont">
-                                        <button class="form-wrap__btn-choose" @click="clickInput">Выбрать...</button>
-                                        <span>{{ imageName ? imageName : 'Файл не выбран' }}</span>
-                                    </div>
-                                </div>
+                                <v-file-loader :multiple="false" v-model="fileInput"></v-file-loader>
 
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
@@ -200,9 +189,9 @@
                                     </div>
                                 </div>
                                 <fields-list
-                                    @sortFieldDown="sortFieldDown"
-                                    @sortFieldUp="sortFieldUp"
-                                    @removeField="removeField"
+                                    @sort-field-down="sortFieldDown"
+                                    @sort-field-up="sortFieldUp"
+                                    @remove-field="removeField"
                                     :fieldsArr="sortedFields"
                                 ></fields-list>
                             </div>
@@ -237,17 +226,18 @@
 </template>
 
 <script>
-import {ref, computed} from 'vue';
+import {ref, computed, watch} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
+import VFileLoader from '@/ui/VFileLoader';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
 
 export default {
-    components: {NewFieldForm, FieldsList},
+    components: {NewFieldForm, FieldsList, VFileLoader},
     setup() {
         let initUser = {
             id: uuidv4(),
@@ -265,17 +255,11 @@ export default {
 
         // Input File_________
         const fileInput = ref(null);
-        const imageName = ref('');
-        const onFileSelected = (e) => {
-            imageName.value = e.target.files[0].name;
-        };
-        const clickInput = () => {
-            fileInput.value.click();
-        };
-
+        watch(fileInput, (oldVal, newVal) => {
+            console.log(newVal);
+        });
         const resetForm = () => {
             section.value = {...initUser};
-            imageName.value = '';
             fileInput.value = null;
         };
         const isFieldModalVisible = ref(false);
@@ -319,10 +303,7 @@ export default {
 
         return {
             section,
-            onFileSelected,
-            imageName,
             fileInput,
-            clickInput,
             resetForm,
             createSection,
             isFieldModalVisible,
