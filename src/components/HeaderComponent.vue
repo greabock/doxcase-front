@@ -29,7 +29,7 @@
                         <div class="row">
                             <div class="col-lg-auto">
                                 <div class="menu-mobile__btn-wrap">
-                                    <router-link to="/" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
+                                    <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
                                             <use xlink:href="img/svg/sprite.svg#setting"></use>
                                         </svg>
