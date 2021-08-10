@@ -48,9 +48,7 @@
                                 <div class="small text-dark mb-1">
                                     Только svg или png c соотношеием сторон 1:1 не более 100 кБ
                                 </div>
-
-                                <v-file-loader :multiple="false" v-model="fileInput"></v-file-loader>
-
+                                <uploader-image></uploader-image>
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
                                         ><input
@@ -232,12 +230,12 @@ import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
-import VFileLoader from '@/ui/VFileLoader';
+import UploaderImage from '@/components/UploaderImage';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
 
 export default {
-    components: {NewFieldForm, FieldsList, VFileLoader},
+    components: {NewFieldForm, FieldsList, UploaderImage},
     setup() {
         let initUser = {
             id: uuidv4(),
