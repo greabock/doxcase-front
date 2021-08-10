@@ -89,45 +89,12 @@
                                     <div class="form-wrap__text small text-dark">
                                         Выберите допустимые для фильтрации поля&nbsp;из&nbsp;добавленных
                                     </div>
-                                    <div class="form-wrap__input-wrap form-group">
-                                        <div class="form-wrap__input form-select toggle-dropdown">Выберите поле</div>
-                                        <div class="form-wrap__dropdown">
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                    >
-                                                        Контрагент</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                    >
-                                                        Локация</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                        >Обучение</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                        >Файлы от менеджера</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+
+                                    <fields-to-filter
+                                        :fieldsArr="sortedFields"
+                                        @update-filter-sort="UpdateFilters"
+                                    ></fields-to-filter>
+
                                     <div class="form-wrap__footer">
                                         <button
                                             @click="createSection"
@@ -227,14 +194,15 @@ import {ref, computed} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
+import {sortByIndexDown} from '@/utils/sortByIndex';
+import {sortByIndexUp} from '@/utils/sortByIndex';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
-import {sortByIndexDown} from '@/utils/sortByIndex';
-import {sortByIndexUp} from '@/utils/sortByIndex';
+import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 
 export default {
-    components: {NewFieldForm, FieldsList, UploaderImage},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -295,6 +263,14 @@ export default {
             section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
         };
 
+        const UpdateFilters = (newFields) => {
+            console.log(newFields);
+            section.value = {
+                ...section.value,
+                fields: newFields
+            }
+        }
+
         return {
             section,
             fileInput,
@@ -307,6 +283,7 @@ export default {
             sortFieldUp,
             sortFieldDown,
             removeField,
+            UpdateFilters,
         };
     },
 };

@@ -24,8 +24,8 @@
                         <div class="typed-field-forms">
                             <text-field @addNewField="addNewField" v-if="fieldType === 'text-field'"></text-field>
                             <string-field @addNewField="addNewField" v-if="fieldType === 'string-field'"></string-field>
-                            <selector-field v-if="fieldType === 'selector-field'"></selector-field>
-                            <checkbox-field v-if="fieldType === 'checkbox-field'"></checkbox-field>
+                            <selector-field @addNewField="addNewField" v-if="fieldType === 'selector-field'"></selector-field>
+                            <checkbox-field @addNewField="addNewField" v-if="fieldType === 'checkbox-field'"></checkbox-field>
                             <date-field v-if="fieldType === 'date-field'"></date-field>
                             <document-upload-field v-if="fieldType === 'document-upload-field'"></document-upload-field>
                             <dictionary-field v-if="fieldType === 'document-upload-field'"></dictionary-field>
