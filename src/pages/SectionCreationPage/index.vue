@@ -163,7 +163,7 @@
                                 <div class="sSectionMain__item disabled">
                                     <div class="row">
                                         <div class="col-lg-auto col order-first">
-                                            <div class="sSectionMain__count">1</div>
+                                            <div class="sSectionMain__count"></div>
                                         </div>
                                         <div class="sSectionMain__col-title col-lg-auto">
                                             <div class="text-dark small">Заголовок</div>
@@ -172,8 +172,7 @@
                                         <div class="sSectionMain__col-content col-lg">
                                             <div class="text-dark small">Содержание</div>
                                             <div class="sSectionMain__content">
-                                                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Debitis nam
-                                                amet assumenda
+                                                Введите название материала
                                             </div>
                                         </div>
                                         <div class="sSectionMain__col-cut col-auto order-first order-lg-0">
