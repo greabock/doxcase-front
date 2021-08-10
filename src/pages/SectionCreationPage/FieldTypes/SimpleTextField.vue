@@ -87,8 +87,9 @@ export default {
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
             required: fieldToChange?.required || false,
             is_present_in_card: fieldToChange?.is_present_in_card || false,
+            is_filterable: false,
             type: ref({
-                name: 'string',
+                name: 'String',
                 min: 1,
                 max: fieldToChange?.max || 255,
             }),
