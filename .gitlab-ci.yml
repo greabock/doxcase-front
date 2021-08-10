@@ -11,6 +11,6 @@ before_script:
 deploy:
   script:
     # Deploy develop branch
-    - ssh -o StrictHostKeyChecking=no knowledge@knowledge.msharks.ru "cd ~/knowledge.msharks.ru/frontend/; git pull; git checkout develop; docker restart kb_node"
+    - ssh -o StrictHostKeyChecking=no knowledge@knowledge.msharks.ru "cd ~/knowledge.msharks.ru/frontend/; git pull; git checkout develop; cd ../; docker-compose up node"
   only:
     - develop

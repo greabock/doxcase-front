@@ -21,7 +21,7 @@ export default {
     },
     setup(props) {
         const btnClassName = computed(() => {
-            return `btn${props.outline ? '-outline' : '-'}${props.color ? props.color : ''}`;
+            return `btn${props.outline ? '-outline' : ''}${props.color ? '-' + props.color : ''}`;
         });
 
         return {btnClassName};
