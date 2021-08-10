@@ -6,10 +6,10 @@ import HomePage from '@/pages/HomePage';
 import AuthPage from '@/pages/AuthPage';
 import ProfilePage from '@/pages/ProfilePage';
 import SearchPage from '@/pages/SearchPage';
-import EditPage from '@/pages/EditPage';
 import MaterialCreationPage from '@/pages/MaterialCreationPage';
-import ChapterListPage from '@/pages/ChapterListPage';
-import ChapterCreationPage from '@/pages/ChapterCreationPage';
+import SectionsListPage from '@/pages/SectionsListPage';
+import SectionCreationPage from '@/pages/SectionCreationPage';
+import SectionPage from '@/pages/SectionPage';
 import MaterialPage from '@/pages/MaterialPage';
 
 const routes = [
@@ -38,24 +38,24 @@ const routes = [
         components: {default: SearchPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
-        path: '/edit',
-        name: 'EditPageRoute',
-        components: {default: EditPage, header: HeaderComponent, footer: FooterComponent},
+        path: '/sections',
+        name: 'SectionListPageRoute',
+        components: {default: SectionsListPage, header: HeaderComponent, footer: FooterComponent},
+    },
+    {
+        path: '/section-creation',
+        name: 'SectionCreationPageRoute',
+        components: {default: SectionCreationPage, header: HeaderComponent, footer: FooterComponent},
+    },
+    {
+        path: '/sections/:id',
+        name: 'SectionPageRoute',
+        components: {default: SectionPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/material-creation',
         name: 'MaterialCreationPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
-    },
-    {
-        path: '/chapter-list',
-        name: 'ChapterListPageRoute',
-        components: {default: ChapterListPage, header: HeaderComponent, footer: FooterComponent},
-    },
-    {
-        path: '/chapter-creation',
-        name: 'ChapterCreationPageRoute',
-        components: {default: ChapterCreationPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/material/:id',

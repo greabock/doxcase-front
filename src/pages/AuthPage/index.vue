@@ -31,7 +31,7 @@
     </div>
 </template>
 <script>
-import VButton from '../../ui/VButton';
+import VButton from '@/ui/VButton';
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';

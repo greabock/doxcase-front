@@ -38,21 +38,23 @@
                                 </div>
                             </div>
                             <div class="col-lg">
-                                <ul class="menu">
-                                    <li><router-link to="/">О сервисе</router-link></li>
-                                </ul>
+                                <div id="header-sections"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-auto">
                     <router-link
-                        to="/chapter-creation"
+                        to="/section-creation"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>
                 <div class="col-auto">
-                    <div class="avatar-block bg-wrap"><img class="img-bg" :src="userAvatar" alt="" /></div>
+                    <div class="avatar-block bg-wrap">
+                        <router-link to="/profile">
+                            <img class="img-bg" :src="userAvatar" alt="" />
+                        </router-link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,7 +65,7 @@
 import {computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
-import LogoIconSmall from '../assets/LogoIconSmall';
+import LogoIconSmall from '@/assets/LogoIconSmall';
 
 export default {
     components: {
@@ -86,3 +88,10 @@ export default {
     },
 };
 </script>
+<style scoped>
+#header-sections {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+</style>

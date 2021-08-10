@@ -1,5 +1,5 @@
 import {useRouter} from 'vue-router';
-import AuthService from '../services/auth.service';
+import AuthService from '@/services/auth.service';
 import {ref} from 'vue';
 import {useStore} from 'vuex';
 

@@ -1,5 +1,5 @@
 <template>
-    <h1>Разделы</h1>
+    <div>Selector form</div>
 </template>
 
 <script>

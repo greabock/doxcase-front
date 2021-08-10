@@ -49,20 +49,6 @@
     </div>
     <!-- Remove enum alert -->
 
-    <!--    <v-modal @close="setRemoveAlertVisible(false)" v-model="isRemoveAlertVisible">-->
-    <!--        <div class="mock-modal__cont">-->
-    <!--            <div class="mock-modal__header">-->
-    <!--                <h3>-->
-    <!--                    Уверены, что хотите удалить справочник <b> {{ enumToRemove?.title }}</b>-->
-    <!--                </h3>-->
-    <!--            </div>-->
-    <!--            <div class="mock-modal__buttons">-->
-    <!--                <button class="btn btn-danger" @click="removeEnum(enumToRemove.id)">Удалить</button>-->
-    <!--                <button class="btn" @click="setRemoveAlertVisible(false)">Отменить</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </v-modal>-->
-
     <div class="mock-modal__wrapper" v-show="isRemoveAlertVisible">
         <div class="mock-modal__cont">
             <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
@@ -71,7 +57,7 @@
             </div>
             <p>Вы действительно хотите удалить справочник "{{ enumToRemove?.title }}"?</p>
             <div class="mock-modal__buttons">
-                <v-button outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
                 <v-button class="w-100" @click="removeEnum(enumToRemove?.id)">Удалить</v-button>
             </div>
         </div>
