@@ -203,7 +203,6 @@ export default {
                 isSectionsLoading.value = true;
                 const newSectionsArr = [...sortedSections.value].map((item, i) => ({...item, sort_index: i + 1}));
                 initSections = JSON.parse(JSON.stringify(newSectionsArr));
-                console.log(newSectionsArr);
                 await sectionsService.updateSectionsList(newSectionsArr);
                 initSections = newSectionsArr;
                 isSectionsLoading.value = false;

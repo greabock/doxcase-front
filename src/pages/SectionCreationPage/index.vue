@@ -48,7 +48,7 @@
                                 <div class="small text-dark mb-1">
                                     Только svg или png c соотношеием сторон 1:1 не более 100 кБ
                                 </div>
-                                <uploader-image></uploader-image>
+                                <uploader-image v-model="fileInput"></uploader-image>
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
                                         ><input
@@ -224,7 +224,7 @@
 </template>
 
 <script>
-import {ref, computed, watch} from 'vue';
+import {ref, computed} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
@@ -237,7 +237,7 @@ import {sortByIndexUp} from '@/utils/sortByIndex';
 export default {
     components: {NewFieldForm, FieldsList, UploaderImage},
     setup() {
-        let initUser = {
+        let initSection = {
             id: uuidv4(),
             title: '',
             is_dictionary: true,
@@ -246,18 +246,16 @@ export default {
             sort_index: 0,
             fields: [],
         };
-        const section = ref({...initUser});
+        const router = useRouter();
+        const section = ref({...initSection});
         const sortedFields = computed(() => {
             return [...section.value.fields].sort((a, b) => a.sort_index - b.sort_index);
         });
 
         // Input File_________
         const fileInput = ref(null);
-        watch(fileInput, (oldVal, newVal) => {
-            console.log(newVal);
-        });
         const resetForm = () => {
-            section.value = {...initUser};
+            section.value = {...initSection};
             fileInput.value = null;
         };
         const isFieldModalVisible = ref(false);
@@ -282,8 +280,7 @@ export default {
             try {
                 const newSection = await sectionsService.createSection(section.value);
                 // if (newSection?.id) {
-                const router = useRouter();
-                await router.push(`/sections/${newSection.id}`);
+                router.push(`/sections/${newSection.id}`);
                 // }
             } catch (e) {
                 console.log(e);
@@ -317,21 +314,6 @@ export default {
 </script>
 
 <style scoped>
-#file-upload-input {
-    visibility: hidden;
-    height: 40px;
-}
-.file-uploader__wrapper {
-    position: relative;
-    height: 40px;
-    margin-bottom: 20px;
-}
-.file-uploader__cont {
-    position: absolute;
-    top: 0;
-    display: flex;
-    align-items: center;
-}
 .file-uploader__cont > button {
     margin-right: 5px;
 }
