@@ -28,60 +28,36 @@
                 </label>
             </div>
         </div>
-        <!-- Filters List -->
-        <div class="lines">
-            <div class="lines__item">
-                <div class="lines__title">Локация
-                </div>
-                <div class="lines__btns">
-                    <div class="btn-edit-sm btn-white">
-                        <svg class="icon icon-chevron-up ">
-                            <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
-                        </svg>
-                    </div>
-                    <div class="btn-edit-sm btn-white">
-                        <svg class="icon icon-chevron-down ">
-                            <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
-                        </svg>
-                    </div>
-                    <div class="btn-edit-sm btn-edit-sm--minus btn-danger">
-                    </div>
-                </div>
+    </div>
+    <!-- Filters List -->
+    <div class="lines">
+        <div
+            v-for="field in sortedFields"
+            :key="field.id"
+            class="lines__item"
+        >
+            <div class="lines__title">{{field?.title}}
             </div>
-            <div class="lines__item">
-                <div class="lines__title">Материал обучения
+            <div class="lines__btns">
+                <div
+                    @click="sortFilterUp(field)"
+                    class="btn-edit-sm btn-white">
+                    <svg class="icon icon-chevron-up ">
+                        <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
+                    </svg>
                 </div>
-                <div class="lines__btns">
-                    <div class="btn-edit-sm btn-white">
-                        <svg class="icon icon-chevron-up ">
-                            <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
-                        </svg>
-                    </div>
-                    <div class="btn-edit-sm btn-white">
-                        <svg class="icon icon-chevron-down ">
-                            <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
-                        </svg>
-                    </div>
-                    <div class="btn-edit-sm btn-edit-sm--minus btn-danger">
-                    </div>
+                <div
+                    @click="sortFilterDown(field)"
+                    class="btn-edit-sm btn-white"
+                >
+                    <svg class="icon icon-chevron-down ">
+                        <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
+                    </svg>
                 </div>
-            </div>
-            <div class="lines__item">
-                <div class="lines__title">Файлы от менеджера
-                </div>
-                <div class="lines__btns">
-                    <div class="btn-edit-sm btn-white">
-                        <svg class="icon icon-chevron-up ">
-                            <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
-                        </svg>
-                    </div>
-                    <div class="btn-edit-sm btn-white">
-                        <svg class="icon icon-chevron-down ">
-                            <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
-                        </svg>
-                    </div>
-                    <div class="btn-edit-sm btn-edit-sm--minus btn-danger">
-                    </div>
+                <div
+                    @click="changeHandler(field)"
+                    class="btn-edit-sm btn-edit-sm--minus btn-danger"
+                >
                 </div>
             </div>
         </div>
@@ -89,7 +65,7 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 export default {
     props: {
         fieldsArr: {
@@ -102,6 +78,13 @@ export default {
        const toggleDropDown = () => {
            isDropDown.value = !isDropDown.value;
        };
+
+       const sortedFields = computed(() => {
+           return props.fieldsArr
+               .filter((a) => a.filter_sort_index !== null)
+               .sort((a, b) => a.filter_sort_index - b.filter_sort_index);
+       })
+
        const findMaxFilterIdx = (arr) => {
            return arr.reduce((max, {filter_sort_index}) => {
                if (filter_sort_index === null || filter_sort_index < max) {
@@ -135,10 +118,50 @@ export default {
            emit('update-filter-sort', newFields)
        }
 
+       const sortFilterUp = (filter) => {
+           const idxInSortedArr = sortedFields.value.indexOf(filter);
+           if (idxInSortedArr > 0) {
+               const filterToDec = sortedFields.value[idxInSortedArr - 1];
+               const lowerSortIdx = filter.filter_sort_index;
+               const higherSortIdx = filterToDec.filter_sort_index;
+               const filterIdxInFieldsArray = props.fieldsArr.indexOf(filter);
+               const filterToDecIdxInFieldsArray = props.fieldsArr.indexOf(filterToDec);
+               const updFilterToDec = {...filterToDec, filter_sort_index: lowerSortIdx};
+               const updFilter = {...filter, filter_sort_index: higherSortIdx};
+               const newFiltersArr = [...props.fieldsArr];
+
+               newFiltersArr[filterIdxInFieldsArray] = updFilter;
+               newFiltersArr[filterToDecIdxInFieldsArray] = updFilterToDec;
+
+               emit('update-filter-sort', newFiltersArr);
+           }
+        };
+        const sortFilterDown = (filter) => {
+            const idxInSortedArr = sortedFields.value.indexOf(filter);
+            if (idxInSortedArr < sortedFields.value.length - 1) {
+                const filterToInc = sortedFields.value[idxInSortedArr + 1];
+                const lowerSortIdx = filterToInc.filter_sort_index;
+                const higherSortIdx = filter.filter_sort_index;
+                const filterIdxInFieldsArray = props.fieldsArr.indexOf(filter);
+                const filterToIncIdxInFieldsArray = props.fieldsArr.indexOf(filterToInc);
+                const updFilterToInc = {...filterToInc, filter_sort_index: higherSortIdx};
+                const updFilter = {...filter, filter_sort_index: lowerSortIdx};
+                const newFiltersArr = [...props.fieldsArr];
+
+                newFiltersArr[filterIdxInFieldsArray] = updFilter;
+                newFiltersArr[filterToIncIdxInFieldsArray] = updFilterToInc;
+
+                emit('update-filter-sort', newFiltersArr);
+            }
+        };
+
        return {
            toggleDropDown,
            isDropDown,
            changeHandler,
+           sortedFields,
+           sortFilterUp,
+           sortFilterDown,
        }
     },
 };
