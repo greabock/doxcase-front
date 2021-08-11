@@ -21,3 +21,13 @@ export const sortByIndexDown = (item, arr) => {
     }
     return arr;
 };
+
+export const findMaxFilterIdx = (arr) => {
+    return arr.reduce((max, {filter_sort_index}) => {
+        if (filter_sort_index === null || filter_sort_index < max) {
+            return max;
+        } else {
+            return filter_sort_index
+        }
+    }, 1);
+};

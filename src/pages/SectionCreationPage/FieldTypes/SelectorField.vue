@@ -26,33 +26,26 @@
                 />
                 </label>
             </div>
-            <!-- +e.input-wrap-->
+            <!-- Вариант списка-->
             <div class="form-wrap__input-title">Вариант списка</div>
             <div class="input-group-column">
-                <div class="input-group-column__input-wrap form-group"><input class="input-group-column__input form-control" name="text" type="text" placeholder="Введите вариант"/>
+
+                <div
+                    v-for='optionString in selectOptionsArray'
+                    :key='optionString'
+                    class="input-group-column__input-wrap form-group">
+                    <input class="input-group-column__input form-control"
+                           name="text" type="text"
+                           placeholder="Введите вариант"
+                           value='optionString'
+                    />
                     <div class="btn-edit-sm btn-danger">
                         <svg class="icon icon-close ">
                             <use xlink:href="img/svg/sprite.svg#close"></use>
                         </svg>
                     </div>
                 </div>
-                <!-- +e.input-wrap-->
-                <div class="input-group-column__input-wrap form-group"><input class="input-group-column__input form-control" name="text" type="text" placeholder="Введите вариант"/>
-                    <div class="btn-edit-sm btn-danger">
-                        <svg class="icon icon-close ">
-                            <use xlink:href="img/svg/sprite.svg#close"></use>
-                        </svg>
-                    </div>
-                </div>
-                <!-- +e.input-wrap-->
-                <div class="input-group-column__input-wrap form-group"><input class="input-group-column__input form-control" name="text" type="text" placeholder="Введите вариант"/>
-                    <div class="btn-edit-sm btn-danger">
-                        <svg class="icon icon-close ">
-                            <use xlink:href="img/svg/sprite.svg#close"></use>
-                        </svg>
-                    </div>
-                </div>
-                <!-- +e.input-wrap-->
+
                 <div class="btn-add">
                     <div class="btn-add__plus">
                     </div>
@@ -112,6 +105,7 @@ export default {
                 max: fieldToChange?.max || 2000,
             }),
         });
+        const selectOptionsArray = ref(['','','']);
         const addNewField = () => {
             emit('addNewField', newField.value);
         };
@@ -119,6 +113,7 @@ export default {
         return {
             newField,
             addNewField,
+            selectOptionsArray,
         };
     },
 };

@@ -66,6 +66,8 @@
 
 <script>
 import {ref, computed} from 'vue';
+import {findMaxFilterIdx} from '@/utils/sortByIndex';
+
 export default {
     props: {
         fieldsArr: {
@@ -83,17 +85,7 @@ export default {
            return props.fieldsArr
                .filter((a) => a.filter_sort_index !== null)
                .sort((a, b) => a.filter_sort_index - b.filter_sort_index);
-       })
-
-       const findMaxFilterIdx = (arr) => {
-           return arr.reduce((max, {filter_sort_index}) => {
-               if (filter_sort_index === null || filter_sort_index < max) {
-                   return max;
-               } else {
-                   return filter_sort_index
-               }
-           }, 1);
-       };
+       });
 
        const changeHandler = (field) => {
            let newFields;
