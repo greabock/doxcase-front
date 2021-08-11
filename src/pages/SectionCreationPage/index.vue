@@ -5,26 +5,21 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-aside col-lg-auto d-flex flex-column">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="/" itemprop="item"
-                                        ><span itemprop="name">Главная</span> <meta itemprop="position" content="1"
-                                    /></a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="#" itemprop="item"
-                                        ><span itemprop="name">Разделы</span> <meta itemprop="position" content="2"
-                                    /></a>
-                                </li>
-                                <li class="breadcrumb-item active">
-                                    <a href="#" itemprop="item"
-                                        ><span itemprop="name">Создать новый проект/материал</span>
-                                        <meta itemprop="position" content="3"
-                                    /></a>
-                                </li>
-                            </ol>
-                        </nav>
+                        <VBreadcrumb
+                            :list="[
+                                {
+                                    link: '/',
+                                    name: 'Главная',
+                                },
+                                {
+                                    link: '#',
+                                    name: 'Разделы',
+                                },
+                                {
+                                    name: 'Создать новый проект/материал',
+                                },
+                            ]"
+                        />
                         <!-- start sSectionAside-->
                         <div class="sSectionAside section" id="sSectionAside">
                             <div class="pb-1">
@@ -84,6 +79,8 @@
                                     </button>
                                 </div>
                                 <!-- Фильтры для разделов -->
+                                <FilterSections />
+
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
                                     <div class="form-wrap__text small text-dark">
@@ -105,9 +102,20 @@
                                         </button>
                                         <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
                                     </div>
+                                    <div class="form-wrap__footer">
+                                        <button
+                                            @click="createSection"
+                                            :class="{disabled: section.title === ''}"
+                                            class="btn btn-primary"
+                                        >
+                                            Сохранить <span class="d-none d-lg-inline">раздел</span>
+                                        </button>
+                                        <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                         <!-- end sSectionAside-->
                     </div>
                     <div class="col col--main">
@@ -138,9 +146,7 @@
                                         </div>
                                         <div class="sSectionMain__col-content col-lg">
                                             <div class="text-dark small">Содержание</div>
-                                            <div class="sSectionMain__content">
-                                                Введите название материала
-                                            </div>
+                                            <div class="sSectionMain__content">Введите название материала</div>
                                         </div>
                                         <div class="sSectionMain__col-cut col-auto order-first order-lg-0">
                                             <div class="text-dark small d-none d-lg-block">Тип поля</div>
@@ -197,12 +203,14 @@ import {useRouter} from 'vue-router';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
+import FilterSections from './FilterSections';
+import VBreadcrumb from '@/ui/VBreadcrumb';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, FilterSections, VBreadcrumb},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -267,9 +275,9 @@ export default {
             console.log(newFields);
             section.value = {
                 ...section.value,
-                fields: newFields
-            }
-        }
+                fields: newFields,
+            };
+        };
 
         return {
             section,

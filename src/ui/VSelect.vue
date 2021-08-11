@@ -67,6 +67,7 @@ export default {
         disabled: Boolean,
         readonly: Boolean,
         size: String,
+        multiple: Boolean,
     },
     setup(props, ctx) {
         const root = ref(null);
@@ -104,7 +105,9 @@ export default {
         });
 
         const select = (item) => {
-            isActive.value = false;
+            if (!props.multiple) {
+                isActive.value = false;
+            }
             ctx.emit('update:modelValue', item);
             privateSelected.value = item.name.toString();
         };
