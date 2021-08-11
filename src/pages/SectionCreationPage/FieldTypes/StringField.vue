@@ -73,7 +73,7 @@ export default {
             required: fieldToChange?.required || false,
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             filter_sort_index: null,
-            type: ref({
+            type: ({
                 name: 'String',
                 min: 1,
                 max: 255,

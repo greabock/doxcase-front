@@ -53,7 +53,7 @@ export default {
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
             filter_sort_index: null,
-            type: ref({
+            type: ({
                 name: 'Boolean',
             }),
         });
