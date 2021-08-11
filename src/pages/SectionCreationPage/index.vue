@@ -81,6 +81,17 @@
                                 <!-- Фильтры для разделов -->
                                 <FilterSections />
 
+                                <div class="form-wrap__footer">
+                                    <button
+                                        @click="createSection"
+                                        :class="{disabled: section.title === ''}"
+                                        class="btn btn-primary"
+                                    >
+                                        Сохранить <span class="d-none d-lg-inline">раздел</span>
+                                    </button>
+                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
+                                </div>
+
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
                                     <div class="form-wrap__text small text-dark">
@@ -92,16 +103,6 @@
                                         @update-filter-sort="UpdateFilters"
                                     ></fields-to-filter>
 
-                                    <div class="form-wrap__footer">
-                                        <button
-                                            @click="createSection"
-                                            :class="{disabled: section.title === ''}"
-                                            class="btn btn-primary"
-                                        >
-                                            Сохранить <span class="d-none d-lg-inline">раздел</span>
-                                        </button>
-                                        <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
-                                    </div>
                                     <div class="form-wrap__footer">
                                         <button
                                             @click="createSection"
