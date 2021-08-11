@@ -19,7 +19,7 @@
                     <div class="row">
 
                         <label
-                            v-for='item in fieldsTypeOf'
+                            v-for='item in fieldsExtensions'
                             :key='item.name'
                             class="form-wrap__label-modal">
                             <input
@@ -93,7 +93,7 @@ export default {
             name: 'File',
             max: 200,
         });
-        const fieldsTypeOf = ref(   [
+        const fieldsExtensions = ref(   [
             { name: 'doc', checked: false },
             { name: 'xls', checked: false },
             { name: 'xlsx', checked: false },
@@ -108,7 +108,7 @@ export default {
                 ...newField.value,
                 type: {
                     ...fieldType.value,
-                    of: fieldsTypeOf.value
+                    extensions: fieldsExtensions.value
                         .filter(item => item.checked)
                         .map(item => item.name)
                 }
@@ -120,7 +120,7 @@ export default {
             newField,
             addNewField,
             fieldType,
-            fieldsTypeOf,
+            fieldsExtensions,
         };
     },
 };

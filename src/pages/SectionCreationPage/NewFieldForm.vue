@@ -28,7 +28,7 @@
                             <checkbox-field @addNewField="addNewField" v-if="fieldType === 'checkbox-field'"></checkbox-field>
                             <date-field @addNewField="addNewField" v-if="fieldType === 'date-field'"></date-field>
                             <document-upload-field @addNewField="addNewField" v-if="fieldType === 'document-upload-field'"></document-upload-field>
-                            <dictionary-field v-if="fieldType === 'dictionary-value-field'"></dictionary-field>
+                            <dictionary-field @addNewField="addNewField" v-if="fieldType === 'dictionary-value-field'"></dictionary-field>
                         </div>
                     </form>
                 </div>

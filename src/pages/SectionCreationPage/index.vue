@@ -239,7 +239,7 @@ export default {
         };
 
         const addNewField = (newField) => {
-            console.log('Hi');
+            console.log(newField);
             const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
             if (itemToUpdate) {
                 const idx = section.value.fields.indexOf(itemToUpdate);

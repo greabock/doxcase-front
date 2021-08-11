@@ -98,7 +98,7 @@ export default {
         const newField = ref({
             id: fieldToChange?.id || uuidv4(), // Если новое поле, то генерится новый Id.
             title: fieldToChange?.title || '',
-            description: fieldToChange?.description || 'Default description',
+            description: fieldToChange?.description || '',
             required: fieldToChange?.required || false,
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
@@ -121,7 +121,6 @@ export default {
         const addNewField = () => {
             const options = selectOptionsArray.value.map(({value}) => value);
             const field = {...newField.value, type: {name:'Select', of: options}};
-            console.log(field);
             emit('addNewField', field);
         };
 
