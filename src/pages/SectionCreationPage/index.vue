@@ -239,8 +239,10 @@ export default {
         };
 
         const addNewField = (newField) => {
-            const idx = section.value.fields.find((item) => item.id === newField.id);
-            if (idx) {
+            console.log('Hi');
+            const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
+            if (itemToUpdate) {
+                const idx = section.value.fields.indexOf(itemToUpdate);
                 section.value.fields = [
                     ...sortedFields.value.slice(0, idx),
                     newField,

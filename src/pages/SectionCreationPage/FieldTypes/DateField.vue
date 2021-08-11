@@ -17,11 +17,11 @@
 
             <label class="custom-input form-check"
             ><input
-                v-model="newField.is_present_in_card"
+                v-model="newField.required"
                 class="custom-input__input form-check-input"
                 name="checkbox"
                 type="checkbox"
-            /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
+            /><span class="custom-input__text form-check-label">Обязательное поле</span>
             </label>
         </div>
         <button @click.prevent="addNewField" class="btn btn-primary w-100" type="submit">Добавить</button>
@@ -48,7 +48,7 @@ export default {
         const newField = ref({
             id: fieldToChange?.id || uuidv4(), // Если новое поле, то генерится новый Id.
             title: fieldToChange?.title || '',
-            description: fieldToChange?.description || 'Описнаие чекбокса',
+            description: fieldToChange?.description || 'Default description',
             required: fieldToChange?.required || false,
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
@@ -58,7 +58,6 @@ export default {
             }),
         });
         const addNewField = () => {
-            console.log(newField.value);
             emit('addNewField', newField.value);
         };
 

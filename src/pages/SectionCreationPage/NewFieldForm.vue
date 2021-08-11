@@ -26,9 +26,9 @@
                             <string-field @addNewField="addNewField" v-if="fieldType === 'string-field'"></string-field>
                             <selector-field @addNewField="addNewField" v-if="fieldType === 'selector-field'"></selector-field>
                             <checkbox-field @addNewField="addNewField" v-if="fieldType === 'checkbox-field'"></checkbox-field>
-                            <date-field v-if="fieldType === 'date-field'"></date-field>
-                            <document-upload-field v-if="fieldType === 'document-upload-field'"></document-upload-field>
-                            <dictionary-field v-if="fieldType === 'document-upload-field'"></dictionary-field>
+                            <date-field @addNewField="addNewField" v-if="fieldType === 'date-field'"></date-field>
+                            <document-upload-field @addNewField="addNewField" v-if="fieldType === 'document-upload-field'"></document-upload-field>
+                            <dictionary-field v-if="fieldType === 'dictionary-value-field'"></dictionary-field>
                         </div>
                     </form>
                 </div>
