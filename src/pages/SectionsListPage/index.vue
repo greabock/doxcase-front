@@ -175,7 +175,7 @@ export default {
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
         const router = useRouter();
-        let initSections;
+        const initSections = ref([]);
         const sections = ref([]);
         const sortedSections = computed(() => {
             return [...sections.value].sort((a, b) => a.sort_index - b.sort_index);
@@ -187,7 +187,7 @@ export default {
         const isSectionsLoading = ref(true);
 
         const resetSections = () => {
-            sections.value = JSON.parse(JSON.stringify(initSections));
+            sections.value = JSON.parse(JSON.stringify(initSections.value));
         };
 
         const sortUpSectionItem = (item, arr) => {
@@ -202,9 +202,9 @@ export default {
             try {
                 isSectionsLoading.value = true;
                 const newSectionsArr = [...sortedSections.value].map((item, i) => ({...item, sort_index: i + 1}));
-                initSections = JSON.parse(JSON.stringify(newSectionsArr));
+                initSections.value = JSON.parse(JSON.stringify(newSectionsArr));
                 await sectionsService.updateSectionsList(newSectionsArr);
-                initSections = newSectionsArr;
+                initSections.value = newSectionsArr;
                 isSectionsLoading.value = false;
             } catch (e) {
                 isSectionsLoading.value = false;
@@ -230,7 +230,7 @@ export default {
             try {
                 await sectionsService.removeSection(id);
                 sections.value = [...sortedSections.value].filter((item) => item.id !== id);
-                initSections = JSON.parse(JSON.stringify(sortedSections.value));
+                initSections.value = JSON.parse(JSON.stringify(sortedSections.value));
                 setRemoveAlertVisible(false);
             } catch (e) {
                 setRemoveAlertVisible(false);
@@ -240,8 +240,8 @@ export default {
 
         onMounted(async () => {
             try {
-                initSections = await sectionsService.getSections();
-                sections.value = initSections;
+                initSections.value = await sectionsService.getSections();
+                sections.value = JSON.parse(JSON.stringify(initSections.value));
                 isSectionsLoading.value = false;
             } catch (e) {
                 isSectionsLoading.value = false;
