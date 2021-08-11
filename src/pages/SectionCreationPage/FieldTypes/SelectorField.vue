@@ -38,16 +38,19 @@
                            name="text" type="text"
                            placeholder="Введите вариант"
                            v-model='selectOptionsArray[i].value'
-                           :idx='i'
                     />
-                    <div class="btn-edit-sm btn-danger">
+                    <div
+                        @click='removeOption(i)'
+                        class="btn-edit-sm btn-danger">
                         <svg class="icon icon-close ">
                             <use xlink:href="img/svg/sprite.svg#close"></use>
                         </svg>
                     </div>
                 </div>
 
-                <div class="btn-add">
+                <div
+                    @click='addOption'
+                    class="btn-add">
                     <div class="btn-add__plus">
                     </div>
                     <div class="btn-add__text">Добавить вариант
@@ -76,7 +79,7 @@
 </template>
 
 <script>
-import {ref, toRefs} from 'vue';
+import {ref, toRefs, computed} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 
 export default {
@@ -101,19 +104,25 @@ export default {
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
             filter_sort_index: null,
             type: ref({
-                name: 'Text',
-                min: 1,
-                max: fieldToChange?.max || 2000,
+                name: 'Select',
+                of: selectOptions.value,
             }),
         });
-        const selectOptionsArray = ref([{value: ''}, {value: ''}]);
-        const onInput = (e) => {
-            const elem = e.target;
-            const idx = elem.getAttribute('idx');
-            console.log(idx, e.target.value);
-            selectOptionsArray.value[idx] = e.target.value;
-        };
+        const selectOptionsArray = ref([{value: ''}, {value: ''}, {value: ''}]);
+        const selectOptions = computed(() => {
+            return selectOptionsArray.value.map((item) => item.value);
+        })
+        const removeOption = (idx) => {
+            selectOptionsArray.value = [
+                ...selectOptionsArray.value.slice(0, idx),
+                ...selectOptionsArray.value.slice(idx +1)
+            ];
+        }
+        const addOption = () => {
+            selectOptionsArray.value = [...selectOptionsArray.value, {value: ''}];
+        }
         const addNewField = () => {
+            console.log(newField);
             emit('addNewField', newField.value);
         };
 
@@ -121,7 +130,8 @@ export default {
             newField,
             addNewField,
             selectOptionsArray,
-            onInput,
+            removeOption,
+            addOption,
         };
     },
 };
