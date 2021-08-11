@@ -1,8 +1,8 @@
 <template>
-    <div v-for="field in fieldsArr" :key="field.id" class="sSectionMain__item">
+    <div v-for="(field, idx) in fieldsArr" :key="field.id" class="sSectionMain__item">
         <div class="row">
             <div class="col-lg-auto col order-first">
-                <div class="sSectionMain__count">1</div>
+                <div class="sSectionMain__count">{{idx + 1}}</div>
             </div>
             <div class="sSectionMain__col-title col-lg-auto">
                 <div class="text-dark small">Заголовок</div>

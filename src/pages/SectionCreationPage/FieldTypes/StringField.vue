@@ -27,21 +27,6 @@
                 </label>
             </div>
             <!-- +e.input-wrap-->
-            <div class="col-6">
-                <div class="form-wrap__input-wrap form-group">
-                    <label
-                    ><span class="form-wrap__input-title">Максимум символов для поля</span
-                    ><input
-                        v-model="newField.type.max"
-                        class="form-wrap__input form-control"
-                        name="text"
-                        type="text"
-                        placeholder="Заполните поле"
-                    />
-                    </label>
-                </div>
-                <!-- +e.input-wrap-->
-            </div>
             <label class="custom-input form-check"
             ><input
                 v-model="newField.required"
@@ -91,7 +76,7 @@ export default {
             type: ref({
                 name: 'String',
                 min: 1,
-                max: fieldToChange?.max || 255,
+                max: 255,
             }),
         });
         const addNewField = () => {

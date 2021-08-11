@@ -89,9 +89,9 @@ export default {
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
             filter_sort_index: null,
             type: ref({
-                name: 'String',
+                name: 'Text',
                 min: 1,
-                max: fieldToChange?.max || 255,
+                max: fieldToChange?.max || 2000,
             }),
         });
         const addNewField = () => {

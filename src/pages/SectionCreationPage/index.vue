@@ -5,26 +5,21 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-aside col-lg-auto d-flex flex-column">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="/" itemprop="item"
-                                        ><span itemprop="name">Главная</span> <meta itemprop="position" content="1"
-                                    /></a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="#" itemprop="item"
-                                        ><span itemprop="name">Разделы</span> <meta itemprop="position" content="2"
-                                    /></a>
-                                </li>
-                                <li class="breadcrumb-item active">
-                                    <a href="#" itemprop="item"
-                                        ><span itemprop="name">Создать новый проект/материал</span>
-                                        <meta itemprop="position" content="3"
-                                    /></a>
-                                </li>
-                            </ol>
-                        </nav>
+                        <VBreadcrumb
+                            :list="[
+                                {
+                                    link: '/',
+                                    name: 'Главная',
+                                },
+                                {
+                                    link: '#',
+                                    name: 'Разделы',
+                                },
+                                {
+                                    name: 'Создать новый проект/материал',
+                                },
+                            ]"
+                        />
                         <!-- start sSectionAside-->
                         <div class="sSectionAside section" id="sSectionAside">
                             <div class="pb-1">
@@ -84,50 +79,30 @@
                                     </button>
                                 </div>
                                 <!-- Фильтры для разделов -->
+<!--                                <FilterSections />-->
+
+<!--                                <div class="form-wrap__footer">-->
+<!--                                    <button-->
+<!--                                        @click="createSection"-->
+<!--                                        :class="{disabled: section.title === ''}"-->
+<!--                                        class="btn btn-primary"-->
+<!--                                    >-->
+<!--                                        Сохранить <span class="d-none d-lg-inline">раздел</span>-->
+<!--                                    </button>-->
+<!--                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>-->
+<!--                                </div>-->
+
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
                                     <div class="form-wrap__text small text-dark">
                                         Выберите допустимые для фильтрации поля&nbsp;из&nbsp;добавленных
                                     </div>
-                                    <div class="form-wrap__input-wrap form-group">
-                                        <div class="form-wrap__input form-select toggle-dropdown">Выберите поле</div>
-                                        <div class="form-wrap__dropdown">
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                    >
-                                                        Контрагент</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                    >
-                                                        Локация</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                        >Обучение</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                            <div class="form-wrap__dropdown-item">
-                                                <label class="dropdown-custom-input">
-                                                    <input type="checkbox" name="" /><span
-                                                        class="dropdown-custom-input__title"
-                                                        >Файлы от менеджера</span
-                                                    ><span class="dropdown-custom-input__circle"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+
+                                    <fields-to-filter
+                                        :fieldsArr="sortedFields"
+                                        @update-filter-sort="UpdateFilters"
+                                    ></fields-to-filter>
+
                                     <div class="form-wrap__footer">
                                         <button
                                             @click="createSection"
@@ -141,6 +116,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <!-- end sSectionAside-->
                     </div>
                     <div class="col col--main">
@@ -163,7 +139,7 @@
                                 <div class="sSectionMain__item disabled">
                                     <div class="row">
                                         <div class="col-lg-auto col order-first">
-                                            <div class="sSectionMain__count">1</div>
+                                            <div class="sSectionMain__count"></div>
                                         </div>
                                         <div class="sSectionMain__col-title col-lg-auto">
                                             <div class="text-dark small">Заголовок</div>
@@ -171,10 +147,7 @@
                                         </div>
                                         <div class="sSectionMain__col-content col-lg">
                                             <div class="text-dark small">Содержание</div>
-                                            <div class="sSectionMain__content">
-                                                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Debitis nam
-                                                amet assumenda
-                                            </div>
+                                            <div class="sSectionMain__content">Введите название материала</div>
                                         </div>
                                         <div class="sSectionMain__col-cut col-auto order-first order-lg-0">
                                             <div class="text-dark small d-none d-lg-block">Тип поля</div>
@@ -228,14 +201,16 @@ import {ref, computed} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import {useRouter} from 'vue-router';
-import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
-import FieldsList from '@/pages/SectionCreationPage/FieldsList';
-import UploaderImage from '@/components/UploaderImage';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
+import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
+import VBreadcrumb from '@/ui/VBreadcrumb';
+import FieldsList from '@/pages/SectionCreationPage/FieldsList';
+import UploaderImage from '@/components/UploaderImage';
+import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 
 export default {
-    components: {NewFieldForm, FieldsList, UploaderImage},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -296,6 +271,14 @@ export default {
             section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
         };
 
+        const UpdateFilters = (newFields) => {
+            console.log(newFields);
+            section.value = {
+                ...section.value,
+                fields: newFields,
+            };
+        };
+
         return {
             section,
             fileInput,
@@ -308,6 +291,7 @@ export default {
             sortFieldUp,
             sortFieldDown,
             removeField,
+            UpdateFilters,
         };
     },
 };

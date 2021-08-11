@@ -2,10 +2,14 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li v-for="(item, i) of list" :key="i" class="breadcrumb-item" itemprop="itemListElement">
-                <a :href="item.link" itemprop="item">
+                <a v-if="item.link" :href="item.link" itemprop="item">
                     <span itemprop="name">{{ item.name }}</span>
-                    <meta itemprop="position" :content="i + 1"
-                /></a>
+                    <meta itemprop="position" :content="i + 1" />
+                </a>
+                <a v-else itemprop="item">
+                    <span itemprop="name">{{ item.name }}</span>
+                    <meta itemprop="position" :content="i + 1" />
+                </a>
             </li>
         </ol>
     </nav>

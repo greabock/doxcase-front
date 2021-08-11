@@ -10,8 +10,8 @@
                             <label
                                 ><span class="form-wrap__input-title">Выберите тип поля</span>
                                 <select class="form-wrap__input form-select" v-model="fieldType" name="select">
-                                    <option value="simple-text-field">Текстовое поле</option>
-                                    <option value="short-text-field">Короткое текстовое поле</option>
+                                    <option value="text-field">Текстовое поле</option>
+                                    <option value="string-field">Короткое текстовое поле</option>
                                     <option value="selector-field">Значения из выпадающего списка</option>
                                     <option value="checkbox-field">Чекбокс</option>
                                     <option value="date-field">Выбор даты</option>
@@ -22,13 +22,10 @@
                         </div>
                         <!-- +e.input-wrap-->
                         <div class="typed-field-forms">
-                            <simple-text-field
-                                @addNewField="addNewField"
-                                v-if="fieldType === 'simple-text-field'"
-                            ></simple-text-field>
-                            <short-text-field v-if="fieldType === 'short-text-field'"></short-text-field>
-                            <selector-field v-if="fieldType === 'selector-field'"></selector-field>
-                            <checkbox-field v-if="fieldType === 'checkbox-field'"></checkbox-field>
+                            <text-field @addNewField="addNewField" v-if="fieldType === 'text-field'"></text-field>
+                            <string-field @addNewField="addNewField" v-if="fieldType === 'string-field'"></string-field>
+                            <selector-field @addNewField="addNewField" v-if="fieldType === 'selector-field'"></selector-field>
+                            <checkbox-field @addNewField="addNewField" v-if="fieldType === 'checkbox-field'"></checkbox-field>
                             <date-field v-if="fieldType === 'date-field'"></date-field>
                             <document-upload-field v-if="fieldType === 'document-upload-field'"></document-upload-field>
                             <dictionary-field v-if="fieldType === 'document-upload-field'"></dictionary-field>
@@ -42,22 +39,23 @@
 
 <script>
 import {ref} from 'vue';
+import TextField from '@/pages/SectionCreationPage/FieldTypes/TextField';
+import StringField from '@/pages/SectionCreationPage/FieldTypes/StringField';
 import CheckboxField from '@/pages/SectionCreationPage/FieldTypes/CheckboxField';
 import DateField from '@/pages/SectionCreationPage/FieldTypes/DateField';
 import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
 import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
-import ShortTextField from '@/pages/SectionCreationPage/FieldTypes/ShortTextField';
-import SimpleTextField from '@/pages/SectionCreationPage/FieldTypes/SimpleTextField';
+
 export default {
     components: {
+        StringField,
+        TextField,
         CheckboxField,
         DateField,
         DictionaryField,
         DocumentUploadField,
         SelectorField,
-        ShortTextField,
-        SimpleTextField,
     },
     props: {
         isFieldModalVisible: {
@@ -72,7 +70,7 @@ export default {
         const addNewField = (newField) => {
             emit('addNewField', newField);
         };
-        const fieldType = ref('simple-text-field');
+        const fieldType = ref('text-field');
         return {
             setFieldModalVisible,
             fieldType,
