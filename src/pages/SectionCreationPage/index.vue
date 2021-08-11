@@ -79,18 +79,18 @@
                                     </button>
                                 </div>
                                 <!-- Фильтры для разделов -->
-                                <FilterSections />
+<!--                                <FilterSections />-->
 
-                                <div class="form-wrap__footer">
-                                    <button
-                                        @click="createSection"
-                                        :class="{disabled: section.title === ''}"
-                                        class="btn btn-primary"
-                                    >
-                                        Сохранить <span class="d-none d-lg-inline">раздел</span>
-                                    </button>
-                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
-                                </div>
+<!--                                <div class="form-wrap__footer">-->
+<!--                                    <button-->
+<!--                                        @click="createSection"-->
+<!--                                        :class="{disabled: section.title === ''}"-->
+<!--                                        class="btn btn-primary"-->
+<!--                                    >-->
+<!--                                        Сохранить <span class="d-none d-lg-inline">раздел</span>-->
+<!--                                    </button>-->
+<!--                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>-->
+<!--                                </div>-->
 
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
@@ -204,14 +204,13 @@ import {useRouter} from 'vue-router';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
-import FilterSections from './FilterSections';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, FilterSections, VBreadcrumb},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb},
     setup() {
         let initSection = {
             id: uuidv4(),

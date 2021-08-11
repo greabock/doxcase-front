@@ -31,13 +31,14 @@
             <div class="input-group-column">
 
                 <div
-                    v-for='optionString in selectOptionsArray'
+                    v-for='(optionString, i) in selectOptionsArray'
                     :key='optionString'
                     class="input-group-column__input-wrap form-group">
                     <input class="input-group-column__input form-control"
                            name="text" type="text"
                            placeholder="Введите вариант"
-                           value='optionString'
+                           v-model='selectOptionsArray[i].value'
+                           :idx='i'
                     />
                     <div class="btn-edit-sm btn-danger">
                         <svg class="icon icon-close ">
@@ -105,7 +106,13 @@ export default {
                 max: fieldToChange?.max || 2000,
             }),
         });
-        const selectOptionsArray = ref(['','','']);
+        const selectOptionsArray = ref([{value: ''}, {value: ''}]);
+        const onInput = (e) => {
+            const elem = e.target;
+            const idx = elem.getAttribute('idx');
+            console.log(idx, e.target.value);
+            selectOptionsArray.value[idx] = e.target.value;
+        };
         const addNewField = () => {
             emit('addNewField', newField.value);
         };
@@ -114,6 +121,7 @@ export default {
             newField,
             addNewField,
             selectOptionsArray,
+            onInput,
         };
     },
 };
