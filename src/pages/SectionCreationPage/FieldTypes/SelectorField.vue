@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import {ref, toRefs, computed} from 'vue';
+import {ref, toRefs} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 
 export default {
@@ -103,15 +103,12 @@ export default {
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
             filter_sort_index: null,
-            type: ref({
+            type: ({
                 name: 'Select',
-                of: selectOptions.value,
+                of: [],
             }),
         });
         const selectOptionsArray = ref([{value: ''}, {value: ''}, {value: ''}]);
-        const selectOptions = computed(() => {
-            return selectOptionsArray.value.map((item) => item.value);
-        })
         const removeOption = (idx) => {
             selectOptionsArray.value = [
                 ...selectOptionsArray.value.slice(0, idx),
@@ -122,8 +119,10 @@ export default {
             selectOptionsArray.value = [...selectOptionsArray.value, {value: ''}];
         }
         const addNewField = () => {
-            console.log(newField);
-            emit('addNewField', newField.value);
+            const options = selectOptionsArray.value.map(({value}) => value);
+            const field = {...newField.value, type: {name:'Select', of: options}};
+            console.log(field);
+            emit('addNewField', field);
         };
 
         return {
