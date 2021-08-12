@@ -13,19 +13,6 @@
                 />
                 </label>
             </div>
-            <!-- +e.input-wrap-->
-            <div class="form-wrap__input-wrap form-group">
-                <label
-                ><span class="form-wrap__input-title">Краткое описание поля</span
-                ><input
-                    v-model="newField.description"
-                    class="form-wrap__input form-control"
-                    name="text"
-                    type="text"
-                    placeholder="Краткое описание поля"
-                />
-                </label>
-            </div>
             <!-- Вариант списка-->
             <div class="form-wrap__input-title">Вариант списка</div>
             <div class="input-group-column">
@@ -38,16 +25,19 @@
                            name="text" type="text"
                            placeholder="Введите вариант"
                            v-model='selectOptionsArray[i].value'
-                           :idx='i'
                     />
-                    <div class="btn-edit-sm btn-danger">
+                    <div
+                        @click='removeOption(i)'
+                        class="btn-edit-sm btn-danger">
                         <svg class="icon icon-close ">
                             <use xlink:href="img/svg/sprite.svg#close"></use>
                         </svg>
                     </div>
                 </div>
 
-                <div class="btn-add">
+                <div
+                    @click='addOption'
+                    class="btn-add">
                     <div class="btn-add__plus">
                     </div>
                     <div class="btn-add__text">Добавить вариант
@@ -95,33 +85,38 @@ export default {
         const newField = ref({
             id: fieldToChange?.id || uuidv4(), // Если новое поле, то генерится новый Id.
             title: fieldToChange?.title || '',
-            description: fieldToChange?.description || '',
+            description: 'default description',
             required: fieldToChange?.required || false,
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             sort_index: fieldToChange?.sort_index || fieldsArrLength,
             filter_sort_index: null,
-            type: ref({
-                name: 'Text',
-                min: 1,
-                max: fieldToChange?.max || 2000,
+            type: ({
+                name: 'Select',
+                of: [],
             }),
         });
-        const selectOptionsArray = ref([{value: ''}, {value: ''}]);
-        const onInput = (e) => {
-            const elem = e.target;
-            const idx = elem.getAttribute('idx');
-            console.log(idx, e.target.value);
-            selectOptionsArray.value[idx] = e.target.value;
-        };
+        const selectOptionsArray = ref([{value: ''}, {value: ''}, {value: ''}]);
+        const removeOption = (idx) => {
+            selectOptionsArray.value = [
+                ...selectOptionsArray.value.slice(0, idx),
+                ...selectOptionsArray.value.slice(idx +1)
+            ];
+        }
+        const addOption = () => {
+            selectOptionsArray.value = [...selectOptionsArray.value, {value: ''}];
+        }
         const addNewField = () => {
-            emit('addNewField', newField.value);
+            const options = selectOptionsArray.value.map(({value}) => value);
+            const field = {...newField.value, type: {name:'Select', of: options}};
+            emit('addNewField', field);
         };
 
         return {
             newField,
             addNewField,
             selectOptionsArray,
-            onInput,
+            removeOption,
+            addOption,
         };
     },
 };

@@ -32,7 +32,6 @@
                                         ><input
                                             v-model="section.title"
                                             class="form-wrap__input form-control"
-                                            name="text"
                                             type="text"
                                             placeholder="Заполнить"
                                         />
@@ -49,9 +48,7 @@
                                         ><input
                                             v-model="section.is_dictionary"
                                             class="custom-input__input form-check-input"
-                                            name="checkbox"
                                             type="checkbox"
-                                            checked="checked"
                                         /><span class="custom-input__text form-check-label"
                                             >Использовать как справочник</span
                                         >
@@ -60,9 +57,7 @@
                                         ><input
                                             v-model="section.is_navigation"
                                             class="custom-input__input form-check-input"
-                                            name="checkbox"
                                             type="checkbox"
-                                            checked="checked"
                                         /><span class="custom-input__text form-check-label"
                                             >Отображать в навигации</span
                                         >
@@ -72,9 +67,7 @@
                                     <button
                                         class="btn btn-outline-primary w-100"
                                         type="button"
-                                        data-fancybox="data-fancybox"
-                                        data-src="#modal-filter"
-                                    >
+                                        >
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
@@ -190,6 +183,7 @@
             :isFieldModalVisible="isFieldModalVisible"
             @updateFieldModalVisible="setFieldModalVisible"
             @addNewField="addNewField"
+            :fieldsArrLength="section.fields.length"
         ></new-field-form>
 
         <!-- end sCabinet-->
@@ -239,8 +233,9 @@ export default {
         };
 
         const addNewField = (newField) => {
-            const idx = section.value.fields.find((item) => item.id === newField.id);
-            if (idx) {
+            const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
+            if (itemToUpdate) {
+                const idx = section.value.fields.indexOf(itemToUpdate);
                 section.value.fields = [
                     ...sortedFields.value.slice(0, idx),
                     newField,
@@ -272,7 +267,6 @@ export default {
         };
 
         const UpdateFilters = (newFields) => {
-            console.log(newFields);
             section.value = {
                 ...section.value,
                 fields: newFields,
@@ -297,8 +291,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .file-uploader__cont > button {
     margin-right: 5px;
 }
+.sSectionMain__col-title {
+    width: 25%;
+}
+.sSectionMain__col-content {
+    width: 40%;
+}
+.sSectionMain__col-cut {
+    width: 25%
+}
+
 </style>
