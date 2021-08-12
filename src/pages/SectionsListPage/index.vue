@@ -152,7 +152,7 @@
     <teleport to="#header-sections">
         <ul class="menu" id="header-sections">
             <li v-for="section in sectionsToHeader" :key="section?.id">
-                <router-link :to="'/enums/' + section?.id">{{ section?.title }}</router-link>
+                <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
             </li>
         </ul>
     </teleport>

@@ -13,19 +13,6 @@
                 />
                 </label>
             </div>
-            <!-- +e.input-wrap-->
-            <div class="form-wrap__input-wrap form-group">
-                <label
-                ><span class="form-wrap__input-title">Краткое описание поля</span
-                ><input
-                    v-model="newField.description"
-                    class="form-wrap__input form-control"
-                    name="text"
-                    type="text"
-                    placeholder="Краткое описание поля"
-                />
-                </label>
-            </div>
             <!-- Вариант списка-->
             <div class="form-wrap__input-title">Вариант списка</div>
             <div class="input-group-column">
@@ -98,7 +85,7 @@ export default {
         const newField = ref({
             id: fieldToChange?.id || uuidv4(), // Если новое поле, то генерится новый Id.
             title: fieldToChange?.title || '',
-            description: fieldToChange?.description || '',
+            description: 'default description',
             required: fieldToChange?.required || false,
             is_present_in_card: fieldToChange?.is_present_in_card || false,
             sort_index: fieldToChange?.sort_index || fieldsArrLength,

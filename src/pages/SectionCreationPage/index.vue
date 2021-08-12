@@ -32,7 +32,6 @@
                                         ><input
                                             v-model="section.title"
                                             class="form-wrap__input form-control"
-                                            name="text"
                                             type="text"
                                             placeholder="Заполнить"
                                         />
@@ -49,9 +48,7 @@
                                         ><input
                                             v-model="section.is_dictionary"
                                             class="custom-input__input form-check-input"
-                                            name="checkbox"
                                             type="checkbox"
-                                            checked="checked"
                                         /><span class="custom-input__text form-check-label"
                                             >Использовать как справочник</span
                                         >
@@ -60,9 +57,7 @@
                                         ><input
                                             v-model="section.is_navigation"
                                             class="custom-input__input form-check-input"
-                                            name="checkbox"
                                             type="checkbox"
-                                            checked="checked"
                                         /><span class="custom-input__text form-check-label"
                                             >Отображать в навигации</span
                                         >
@@ -72,9 +67,7 @@
                                     <button
                                         class="btn btn-outline-primary w-100"
                                         type="button"
-                                        data-fancybox="data-fancybox"
-                                        data-src="#modal-filter"
-                                    >
+                                        >
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
@@ -299,8 +292,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .file-uploader__cont > button {
     margin-right: 5px;
 }
+.sSectionMain__col-title {
+    width: 25%;
+}
+.sSectionMain__col-content {
+    width: 40%;
+}
+.sSectionMain__col-cut {
+    width: 25%
+}
+
 </style>
