@@ -9,7 +9,10 @@
                         <div class="form-wrap__input-wrap form-group">
                             <label
                                 ><span class="form-wrap__input-title">Выберите тип поля</span>
-                                <select class="form-wrap__input form-select" v-model="fieldType" name="select">
+                                <select
+                                        v-model="fieldType" name="select"
+                                        class="form-wrap__input form-select"
+                                >
                                     <option value="text-field">Текстовое поле</option>
                                     <option value="string-field">Короткое текстовое поле</option>
                                     <option value="selector-field">Значения из выпадающего списка</option>
@@ -28,7 +31,7 @@
                             <checkbox-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'checkbox-field'"></checkbox-field>
                             <date-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'date-field'"></date-field>
                             <document-upload-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'document-upload-field'"></document-upload-field>
-                            <dictionary-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'dictionary-value-field'"></dictionary-field>
+                            <enum-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'dictionary-value-field'"></enum-field>
                         </div>
                     </form>
                 </div>
@@ -43,7 +46,7 @@ import TextField from '@/pages/SectionCreationPage/FieldTypes/TextField';
 import StringField from '@/pages/SectionCreationPage/FieldTypes/StringField';
 import CheckboxField from '@/pages/SectionCreationPage/FieldTypes/CheckboxField';
 import DateField from '@/pages/SectionCreationPage/FieldTypes/DateField';
-import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
+import EnumField from '@/pages/SectionCreationPage/FieldTypes/EnumField';
 import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
 
@@ -53,11 +56,15 @@ export default {
         TextField,
         CheckboxField,
         DateField,
-        DictionaryField,
+        EnumField,
         DocumentUploadField,
         SelectorField,
     },
     props: {
+        fieldToEdit: {
+            type: Object,
+            default: null
+        },
         fieldsArrLength: {
             type: Number
         },
