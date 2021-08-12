@@ -1,17 +1,19 @@
 <template>
-    <div class="form-wrap__input-wrap form-group">
+    <div class="form-wrap__input-wrap form-group"
+         @click.stop
+    >
         <div
-            @click='toggleDropDown'
+            @click="() => $emit('update-is-open', !isFiltersOpen)"
             class="form-wrap__input form-select toggle-dropdown"
         >Выберите поле
         </div>
         <!-- Dropdown -->
         <div
-            :class='{active: isDropDown}'
+            :class='{active: isFiltersOpen}'
             class="form-wrap__dropdown"
         >
             <div
-                v-for="field in fieldsArr"
+                v-for="field in sortedFieldsArr"
                 :key='field?.id'
                 class="form-wrap__dropdown-item"
             >
@@ -65,7 +67,7 @@
 </template>
 
 <script>
-import {ref, computed} from 'vue';
+import {computed} from 'vue';
 import {findMaxFilterIdx} from '@/utils/sortByIndex';
 
 export default {
@@ -73,16 +75,28 @@ export default {
         fieldsArr: {
             type: Array,
             default: () => [],
+        },
+    isFiltersOpen: {
+            type: Boolean,
+            default: false,
         }
     },
     setup(props, {emit}) {
-       const isDropDown = ref(false);
-       const toggleDropDown = () => {
-           isDropDown.value = !isDropDown.value;
-       };
+
+        const sortedFieldsArr = computed(() => {
+            return props.fieldsArr.filter(a =>
+                a.type.name === 'Boolean' ||
+                a.type.name === 'Select' ||
+                a.type.name === 'File' ||
+                a.type.name === 'Enum' ||
+                a.type.of?.name === 'Enum' ||
+                a.type.name === 'Dictionary' ||
+                a.type.of?.name === 'Dictionary'
+            )
+        });
 
        const sortedFields = computed(() => {
-           return props.fieldsArr
+           return sortedFieldsArr.value
                .filter((a) => a.filter_sort_index !== null)
                .sort((a, b) => a.filter_sort_index - b.filter_sort_index);
        });
@@ -148,9 +162,8 @@ export default {
         };
 
        return {
-           toggleDropDown,
-           isDropDown,
            changeHandler,
+           sortedFieldsArr,
            sortedFields,
            sortFilterUp,
            sortFilterDown,

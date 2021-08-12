@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="sSections__btn-control">
-                                        <div @click="createNewSection(section)" class="btn-edit-sm btn-secondary">
+                                        <div @click="editNewSection(section)" class="btn-edit-sm btn-secondary">
                                             <svg class="icon icon-edit">
                                                 <use xlink:href="img/svg/sprite.svg#edit"></use>
                                             </svg>
@@ -147,19 +147,10 @@
             </div>
         </div>
     </main>
-
-    <!-- Section links in header -->
-    <teleport to="#header-sections">
-        <ul class="menu" id="header-sections">
-            <li v-for="section in sectionsToHeader" :key="section?.id">
-                <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
-            </li>
-        </ul>
-    </teleport>
 </template>
 
 <script>
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import sectionsService from '@/services/sections.service';
 import {sortByIndexUp, sortByIndexDown} from '@/utils/sortByIndex';
@@ -181,9 +172,9 @@ export default {
         const sortedSections = computed(() => {
             return [...sections.value].sort((a, b) => a.sort_index - b.sort_index);
         });
-        const sectionsToHeader = computed(() =>
-            [...sortedSections.value].filter((item) => item.is_navigation === true)
-        );
+        watch(sections, (newVal) => {
+            store.commit('sections/setSections', newVal);
+        })
 
         const isSectionsLoading = ref(true);
 
@@ -213,7 +204,7 @@ export default {
             }
         };
         //Create New Section_________________________________
-        const createNewSection = (section) => {
+        const editSection = (section) => {
             router.push('/sections/' + section.id);
         };
 
@@ -258,7 +249,6 @@ export default {
             sortUpSectionItem,
             sortDownSectionItem,
             sortedSections,
-            sectionsToHeader,
             router,
             user,
             updateSections,
@@ -267,7 +257,7 @@ export default {
             sectionToRemove,
             setSectionToRemove,
             removeSection,
-            createNewSection,
+            editSection,
         };
     },
 };

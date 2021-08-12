@@ -1,5 +1,8 @@
 <template>
-    <main class="main-block">
+    <main
+        class="main-block"
+        @click="setFiltersOpen(false)"
+    >
         <!-- start sCabinet-->
         <section class="sCabinet section py-0" id="sCabinet">
             <div class="container-fluid">
@@ -16,7 +19,7 @@
                                     name: 'Разделы',
                                 },
                                 {
-                                    name: 'Создать новый проект/материал',
+                                    name: 'Создать новый раздел',
                                 },
                             ]"
                         />
@@ -38,9 +41,9 @@
                                     </label>
                                 </div>
                                 <!-- +e.input-wrap-->
-                                <p class="fw-500">Изображние раздела</p>
+                                <p class="fw-500">Изображение раздела</p>
                                 <div class="small text-dark mb-1">
-                                    Только svg или png c соотношеием сторон 1:1 не более 100 кБ
+                                    Только svg или png c соотношением сторон 1:1 не более 100 кБ
                                 </div>
                                 <uploader-image v-model="fileInput"></uploader-image>
                                 <div class="mb-3">
@@ -87,12 +90,11 @@
 
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
-                                    <div class="form-wrap__text small text-dark">
-                                        Выберите допустимые для фильтрации поля&nbsp;из&nbsp;добавленных
-                                    </div>
 
-                                    <fields-to-filter
+                                    <fields-to-filter @click.stop
                                         :fieldsArr="sortedFields"
+                                        :isFiltersOpen="isFiltersOpen"
+                                        @update-is-open="setFiltersOpen"
                                         @update-filter-sort="UpdateFilters"
                                     ></fields-to-filter>
 
@@ -256,6 +258,12 @@ export default {
                 console.log(e);
             }
         };
+
+        const isFiltersOpen = ref(false);
+        const setFiltersOpen = (bool) => {
+            isFiltersOpen.value = bool;
+        }
+
         const sortFieldUp = (item) => {
             section.value.fields = sortByIndexUp(item, sortedFields.value);
         };
@@ -280,6 +288,8 @@ export default {
             createSection,
             isFieldModalVisible,
             setFieldModalVisible,
+            isFiltersOpen,
+            setFiltersOpen,
             addNewField,
             sortedFields,
             sortFieldUp,
