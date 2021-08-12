@@ -183,6 +183,7 @@
             :isFieldModalVisible="isFieldModalVisible"
             @updateFieldModalVisible="setFieldModalVisible"
             @addNewField="addNewField"
+            :fieldsArrLength="section.fields.length"
         ></new-field-form>
 
         <!-- end sCabinet-->
@@ -232,7 +233,6 @@ export default {
         };
 
         const addNewField = (newField) => {
-            console.log(newField);
             const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
             if (itemToUpdate) {
                 const idx = section.value.fields.indexOf(itemToUpdate);
@@ -267,7 +267,6 @@ export default {
         };
 
         const UpdateFilters = (newFields) => {
-            console.log(newFields);
             section.value = {
                 ...section.value,
                 fields: newFields,
