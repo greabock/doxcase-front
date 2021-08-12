@@ -9,11 +9,11 @@
 
 <script>
 import MenuAssistant from '@/components/MenuAssistant';
+import '@/css/main.css';
+
 export default {
     name: 'App',
     components: {MenuAssistant},
 };
 </script>
-<style>
-@import '../public/css/main.min.css';
-</style>
+

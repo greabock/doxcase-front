@@ -1,8 +1,11 @@
 <template>
     <div v-if="isFieldModalVisible" class="mock-modal__wrapper">
-        <div class="mock-modal__cont">
-            <b class="mock-modal__closer" @click="setFieldModalVisible(false)">x</b>
-            <div class="modal-win" id="modal-add-field">
+        <div class="mock-modal__cont fancybox__content">
+            <!-- <b class="mock-modal__closer" @click="setFieldModalVisible(false)">x</b> -->
+            <button class="carousel__button is-close" title="Close" @click="setFieldModalVisible(false)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M20 20L4 4m16 0L4 20"></path></svg>
+            </button>
+            <div class="" id="modal-add-field">
                 <div class="form-wrap">
                     <form>
                         <div class="h3 mb-4">Новое поле</div>
@@ -85,26 +88,30 @@ INPUT::placeholder {
     color: #d6d6d6;
 }
 .mock-modal__wrapper {
-    display: flex;
+    --carousel-button-svg-stroke-width: 2;
     z-index: 1000;
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
     background-color: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .mock-modal__cont {
     display: flex;
     position: relative;
     flex-direction: column;
-    width: 550px;
+    max-width: 550px;
     background-color: #fff;
     padding: 32px;
     border-radius: 5px;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+
+    margin: 1rem auto;
 }
 .mock-modal__closer {
     display: block;

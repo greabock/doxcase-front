@@ -1,6 +1,6 @@
 <template>
     <div ref="root" class="datepicker__container">
-        <VInput v-model="privateDate" @focus="isActive = true" v-maska="'##.##.####'">
+        <VInput v-model="privateDate" @focus="isActive = true" v-maska="'##.##.####'" :placeholder="placeholder">
             <template #right>
                 <div @click="isActive = !isActive">
                     <div class="date__icon">
@@ -9,15 +9,13 @@
                 </div>
             </template>
         </VInput>
-        <Datepicker @selected="selectedDate" v-model="date" v-if="isActive" class="datepicker__calendar" :inline="true">
-            <template #belowDate> {{}} </template>
-        </Datepicker>
+        <VCalendar @selected="selectedDate" v-model="date" v-if="isActive" class="datepicker__calendar" />
     </div>
 </template>
 
 <script>
 import {ref} from '@vue/reactivity';
-import Datepicker from 'vuejs3-datepicker';
+import VCalendar from './VCalendar'
 import VInput from './VInput';
 import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
 import DateIcon from './icons/date.svg.vue';
@@ -36,53 +34,62 @@ function outsideUnsub(fn) {
 
 export default {
     components: {
-        Datepicker,
         VInput,
         DateIcon,
+        VCalendar,
     },
     directives: {maska},
     props: {
-        modelValue: {
-            type: Date,
-            default: new Date(),
-        },
+        modelValue: Date,
+        placeholder: String,
     },
     setup(props, ctx) {
         const root = ref(null);
         const isActive = ref(false);
-        // console.log(props.modelValue);
         const date = ref(props.modelValue);
 
         const privateDate = computed({
             get: () => {
-                const d = new Date(date.value);
-                const day = d.getDate() > 9 ? d.getDate() : '0' + d.getDate();
-                const month = d.getMonth() + 1;
-                const monthFormat = month > 9 ? month : '0' + month;
-                const year = d.getFullYear();
+                if (date.value) {
+                    const d = new Date(date.value);
+                    const day = d.getDate() > 9 ? d.getDate() : '0' + d.getDate();
+                    const month = d.getMonth() + 1;
+                    const monthFormat = month > 9 ? month : '0' + month;
+                    const year = d.getFullYear();
 
-                return `${day}.${monthFormat}.${year}`;
+                    return `${day}.${monthFormat}.${year}`;
+                }
+
+                return '';
             },
             set: debounce((val) => {
-                const [day, month, year] = val.split('.');
-                const newDate = new Date(date.value);
-                if (day) {
-                    newDate.setDate(day);
-                }
+                console.log(!!val);
+                if (val) {
+                    const [day, month, year] = val.split('.');
+                    const newDate = new Date(date.value);
+                    if (day) {
+                        newDate.setDate(day);
+                    }
 
-                if (month) {
-                    newDate.setMonth(month - 1);
-                }
+                    if (month) {
+                        newDate.setMonth(month - 1);
+                    }
 
-                if (year) {
-                    newDate.setFullYear(year);
-                    date.value = newDate;
-                    ctx.emit('update:modelValue', newDate);
+                    if (year) {
+                        newDate.setFullYear(year);
+                        date.value = newDate;
+                        ctx.emit('update:modelValue', newDate);
+                    }
+                } else {
+                    date.value = null;
+
+                    ctx.emit('update:modelValue', null);
                 }
             }, 500),
         });
 
         const selectedDate = (e) => {
+            date.value = e;
             ctx.emit('update:modelValue', e);
         };
 
@@ -119,10 +126,11 @@ export default {
 
 .datepicker__calendar {
     position: absolute;
-    bottom: 0;
+    bottom: -10px;
     left: 0;
     transform: translateY(100%);
     z-index: 20;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
 }
 
 .date__icon {
@@ -133,17 +141,5 @@ export default {
     height: 100%;
     cursor: pointer;
     width: 3rem;
-}
-
-.datepicker__calendar >>> .vuejs3-datepicker__calendar-topbar {
-    background-color: #1d47ce;
-}
-
-.datepicker__calendar >>> .vuejs3-datepicker__calendar .cell.selected {
-    background: #1d47ce;
-}
-
-.datepicker__calendar >>> .vuejs3-datepicker__calendar .cell:not(.blank):not(.disabled).day:hover {
-    border: 1px solid #1d47ce;
 }
 </style>
