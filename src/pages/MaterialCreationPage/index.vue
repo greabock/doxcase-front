@@ -35,8 +35,17 @@
                                                 key: 1,
                                                 name: 'placeholder 1',
                                             },
+                                             {
+                                                key: 2,
+                                                name: 'placeholder 2',
+                                            },
+                                             {
+                                                key: 3,
+                                                name: 'placeholder 3',
+                                            },
                                         ]"
                                         placeholder="О Сервисе"
+                                        multiple
                                     />
                                 </div>
                                 <!-- +e.input-wrap-->

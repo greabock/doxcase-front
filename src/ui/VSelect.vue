@@ -86,6 +86,7 @@ export default {
         };
 
         const privateSelected = ref('');
+        const multipleSelect = ref([])
 
         const hide = (event) => {
             if (!root.value.contains(event.target)) {
@@ -106,11 +107,21 @@ export default {
         });
 
         const select = (item) => {
-            if (!props.multiple) {
+            if (props.multiple) {
+                const index = multipleSelect.value.findIndex(x => x.key === item.key)
+
+                if (multipleSelect.value[index]) {
+                    multipleSelect.value.splice(index, 1);
+                } else {
+                    multipleSelect.value = [...multipleSelect.value, item]
+                }
+                privateSelected.value = multipleSelect.value.map(x => x.name.toString()).join(', ');
+                ctx.emit('update:modelValue', multipleSelect);
+            } else {
                 isActive.value = false;
+                ctx.emit('update:modelValue', item);
+                privateSelected.value = item.name.toString();
             }
-            ctx.emit('update:modelValue', item);
-            privateSelected.value = item.name.toString();
         };
 
         return {isActive, root, select, privateSelected, privateOptions, search};
