@@ -91,7 +91,8 @@ export default {
 
         onMounted( async () => {
             try {
-                sectionsArr.value = await sectionsService.getSections();
+                const sections = await sectionsService.getSections();
+                sectionsArr.value = sections.filter(section => section.is_dictionary); // Сортировка разделов, которые являются словарями.
                 if (sectionsArr.value.length) {
                     let idx = 0;
                     if (props.fieldToChange.type?.of?.of) {

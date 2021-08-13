@@ -34,7 +34,11 @@
                                 <div class="col-auto">
                                     <div class="sSections__count">{{ i + 1 }}</div>
                                 </div>
-                                <div class="col fw-500 text-primary">{{ section?.title }}</div>
+                                <div
+                                    @click="() => $router.push(`/sections/${section?.id}`)"
+                                    class="col fw-500 text-primary"
+                                    style="cursor:pointer"
+                                >{{ section?.title }}</div>
                                 <div class="col-12 d-lg-none pb-3"></div>
                                 <div class="sSections__col col-lg-auto col-md">
                                     <label class="custom-input form-check"
@@ -62,7 +66,10 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="sSections__btn-control">
-                                        <div @click="editNewSection(section)" class="btn-edit-sm btn-secondary">
+                                        <div
+                                            @click="() => $router.push(`/sections/${section?.id}`)"
+                                            class="btn-edit-sm btn-secondary"
+                                        >
                                             <svg class="icon icon-edit">
                                                 <use xlink:href="img/svg/sprite.svg#edit"></use>
                                             </svg>
@@ -203,10 +210,6 @@ export default {
                 console.log(e);
             }
         };
-        //Create New Section_________________________________
-        const editSection = (section) => {
-            router.push('/sections/' + section.id);
-        };
 
         //Remove Section______________________________________
         const isRemoveAlertVisible = ref(false);
@@ -257,7 +260,6 @@ export default {
             sectionToRemove,
             setSectionToRemove,
             removeSection,
-            editSection,
         };
     },
 };

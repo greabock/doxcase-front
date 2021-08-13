@@ -68,6 +68,7 @@
                                 </div>
                                 <div class="d-lg-none">
                                     <button
+                                        @click="setFiltersOpen(true)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                         >
