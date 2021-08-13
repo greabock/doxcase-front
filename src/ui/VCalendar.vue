@@ -5,31 +5,38 @@
             <button class="cr-calendar__arrow" @click.prevent="previousMonth">&lt;</button>
             <span class="cr-calendar__month-year">
                 <slot :date="currDateCursor">
-                    {{ formatDate(currDateCursor) }}
+                    {{ dateYear }}
                 </slot>
             </span>
             <button class="cr-calendar__arrow" @click.prevent="nextMonth">&gt;</button>
             <button class="cr-calendar__arrow" @click.prevent="nextYear">&gt;&gt;</button>
         </header>
         <div class="cr-calendar__headings">
-            <span class="cr-calendar__weekday" v-for="dayLabel in dayLabels" :key="dayLabel">
-                {{ dayLabel }}
+            <span class="cr-calendar__weekday" v-for="weekDay in weekDays" :key="weekDay">
+                {{ weekDay }}
             </span>
         </div>
         <span
             v-for="(day, index) in dates"
             class="cr-calendar__day"
-            :class="dayClassObj(day)"
+            :class="[
+                {'cr-today': day.isToday},
+                {'cr-current-month': day.isCurrentMonth},
+                {'cr-selected': day.isSelected},
+                displayDaysOtherMonth && {'cr-hide': !day.isCurrentMonth},
+            ]"
             :key="index"
             @click.prevent="setSelectedDate(day)"
-            >{{ formatDateToDay(day.date) }}</span
         >
+            {{ formatDateToDay(day.date) }}
+        </span>
     </div>
 </template>
 
 <script>
 import {
     setMonth,
+    setDay,
     addMonths,
     getMonth,
     isSameMonth,
@@ -40,9 +47,10 @@ import {
     lastDayOfMonth,
     startOfMonth,
     eachDayOfInterval,
-    format,
     addYears,
 } from 'date-fns';
+import { formatWithOptions } from 'date-fns/fp'
+import { ru } from 'date-fns/locale'
 
 const DAYS_OF_WEEK = 7;
 
@@ -55,16 +63,48 @@ export default {
     },
     props: {
         modelValue: Date,
+        displayDaysOtherMonth: {
+            type: Boolean,
+            default: true,
+        },
+        locale: {
+            type: Object,
+            default: ru,
+        },
         firstDayWeek: {
             type: Number,
             default: 0,
+            validator: (i) => typeof i === 'number' && Number.isInteger(i) && i >= 0 && i <= 6,
         },
-        dayLabels: {
-            type: Array,
-            default: () => ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'],
+        weekdayFormat: {
+            type: String,
+            default: 'EEEEEE',
+        },
+        yearLabelFormat: {
+            type: String,
+            default: 'LLLL yyyy',
+        },
+        dayFormat: {
+             type: String,
+            default: 'd',
         },
     },
     computed: {
+        dateYear() {
+            return formatWithOptions({locale: this.locale}, this.yearLabelFormat, this.currDateCursor)
+        },
+        weekDays() {
+            const initial = this.firstDayWeek;
+            const dayFormat = formatWithOptions({locale: this.locale}, this.weekdayFormat)
+            return Array.from(Array(DAYS_OF_WEEK))
+                .map((_, i) => (initial + i) % DAYS_OF_WEEK)
+                .map((v) =>
+                    setDay(new Date(), v, {
+                        weekStartsOn: this.firstDayWeek,
+                    })
+                )
+                .map(dayFormat);
+        },   
         currentMonth() {
             return this.currDateCursor.getMonth();
         },
@@ -89,25 +129,21 @@ export default {
         },
     },
     methods: {
-        dayClassObj(day) {
-            return {
-                today: day.isToday,
-                current: day.isCurrentMonth,
-                hide: !day.isCurrentMonth,
-                selected: day.isSelected,
-            };
-        },
         nextMonth() {
             this.currDateCursor = addMonths(this.currDateCursor, 1);
+            this.$emit('nextMonth', this.currDateCursor);
         },
         previousMonth() {
             this.currDateCursor = addMonths(this.currDateCursor, -1);
+            this.$emit('prevMonth', this.currDateCursor);
         },
         nextYear() {
             this.currDateCursor = addYears(this.currDateCursor, 1);
+            this.$emit('nextYear', this.currDateCursor);
         },
         previousYear() {
             this.currDateCursor = addYears(this.currDateCursor, -1);
+            this.$emit('prevYear', this.currDateCursor);
         },
         setSelectedDate(day) {
             // change calendar to correct month if they select previous or next month's days
@@ -120,16 +156,12 @@ export default {
             this.$emit('update:modelValue', day.date);
         },
         formatDateToDay(val) {
-            return format(val, 'd');
-        },
-        formatDate(val) {
-            return format(val, 'MMM yyyy');
+            return formatWithOptions({locale: this.locale}, this.dayFormat, val);
         },
     },
     watch: {
         modelValue(date) {
-                this.currDateCursor = date;
-
+            this.currDateCursor = date;
         }
     }
 };
@@ -137,20 +169,17 @@ export default {
 
 <style lang="scss" scoped>
 .cr-calendar {
-    --white: #fff;
-    --light-gray: #f0f0f0;
+    --bg-color: #fff;
+    --light-color: #f0f0f0;
     --main-color: #6e6e6e;
     --additional-color: #1d47ce;
-    --main-gray: gray;
-    background-color: var(--white);
+    --day-color: #000000;
+    background-color: var(--bg-color);
     border-radius: 3px;
     display: flex;
-    width: calc(100% - 0.25rem);
     flex-flow: row wrap;
-    // padding: 0.5rem 0.25rem;
     padding: 1.5rem;
     box-sizing: border-box;
-    // padding: 1rem;
     background: #fff;
 }
 .cr-calendar__header {
@@ -167,10 +196,10 @@ export default {
     border: none;
     padding: 0.25rem 0.5rem;
     background: #fff;
-    color: var(--main-gray);
+    color: var(--main-color);
     transition: color 0.2s;
     height: 100%;
-    flex: 0 0 15%;
+    flex: 0 0 10%;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -181,10 +210,10 @@ export default {
     justify-content: center;
     flex-flow: row wrap;
     flex: 1 1 auto;
+    text-transform: capitalize;
 }
 .cr-calendar__arrow:hover {
-    background: var(--light-gray);
-    // color: #000;
+    background: var(--light-color);
 }
 .cr-calendar__headings {
     display: flex;
@@ -195,6 +224,7 @@ export default {
     font-weight: 400;
     font-size: 1rem;
     color: var(--main-color);
+    text-transform: capitalize;
 }
 .cr-calendar__weekday:nth-child(-n + 5) {
     color: var(--gray);
@@ -212,19 +242,23 @@ export default {
     text-align: center;
     padding: 0;
     font-weight: lighter;
-    color: var(--main-gray);
+    color: var(--main-color);
     transition: background 0.2s;
     font-size: 1rem;
     cursor: pointer;
-    //   border-top: 1px solid var(--light-gray);
 }
-.cr-calendar__day.current {
-    color: #000;
+.cr-calendar__day.cr-current-month {
+    color: var(--day-color);
 }
+
+.cr-calendar__day.cr-today {
+    color: var(--additional-color);
+}
+
 .cr-calendar__day:hover {
-    background: var(--light-gray);
+    background: var(--light-color);
 }
-.cr-calendar__day.selected {
+.cr-calendar__day.cr-selected {
     background: var(--additional-color);
     color: #fff;
 }
@@ -234,11 +268,11 @@ export default {
     max-width: 4rem;
     font-size: inherit;
     text-align: center;
-    // border-bottom: 1px solid var(--light-gray);
+    // border-bottom: 1px solid var(--light-color);
     color: var(--main-color);
 }
 
-.hide {
+.cr-hide {
     visibility: hidden;
 }
 </style>
