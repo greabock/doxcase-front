@@ -74,7 +74,8 @@ export default {
         const isActive = ref(false);
 
         const privateOptions = ref(props.options);
-        const search = (value) => {
+        const search = (e) => {
+            const value = e.target.value;
             if (value) {
                 privateOptions.value = props.options.filter((str) => {
                     return str.name.toString().includes(value);

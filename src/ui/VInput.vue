@@ -4,13 +4,12 @@
             v-if="$slots.left"
             class="input__left-icon"
             :style="{
-                width: offset,
+                width: offsetLeft || offset,
             }"
         >
             <slot name="left"></slot>
         </div>
-        <input
-            :class="[
+        <input :class="[
                 'form-control input__element',
                 size ? `form-control-${size}` : '',
                 {'input__left-offset': $slots.left},
@@ -20,8 +19,8 @@
                 classInput,
             ]"
             :style="{
-                'padding-left': $slots.left ? offset : '',
-                'padding-right': $slots.right ? offset : '',
+                'padding-left': $slots.left ? offsetLeft || offset : '',
+                'padding-right': $slots.right ? offsetRight || offset : '',
             }"
             :placeholder="placeholder"
             :disabled="disabled"
@@ -34,7 +33,7 @@
             v-if="$slots.right"
             class="input__right-icon"
             :style="{
-                width: offset,
+                width: offsetRight || offset,
             }"
         >
             <slot name="right"></slot>
@@ -57,13 +56,14 @@ export default {
         readonly: Boolean,
         size: String,
         offset: String,
+        offsetRight: String,
+        offsetLeft: String,
     },
     setup(props, ctx) {
-        console.log(props);
         const inputListeners = computed(() => ({
             ...ctx.attrs,
             onInput: (e) => {
-                ctx.emit('input', e.target.value);
+                ctx.emit('input', e);
                 ctx.emit('update:modelValue', e.target.value);
             },
         }));
@@ -116,5 +116,12 @@ export default {
 
 .input__right-offset {
     padding-right: 3rem;
+}
+
+.form-control-md {
+    min-height: calc(1em + 1rem + 2px);
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    border-radius: .3rem; 
 }
 </style>

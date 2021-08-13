@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-win" id="modal-add-field-not-required">
+    <div id="modal-add-field-not-required">
         <div class="form-wrap">
             <div class="form-wrap__input-wrap form-group">
                 <label
