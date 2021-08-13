@@ -15,7 +15,7 @@
                                     name: 'Главная',
                                 },
                                 {
-                                    link: '#',
+                                    link: '/sections',
                                     name: 'Разделы',
                                 },
                                 {

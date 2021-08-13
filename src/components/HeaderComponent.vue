@@ -2,7 +2,7 @@
     <div class="topLine section" id="topLine">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-auto">
+                <div class="col-auto" v-if="$route.path !== '/'">
                     <router-link to="/" class="topLine__link-back">
                         <svg class="icon icon-arrow-left">
                             <use xlink:href="img/svg/sprite.svg#arrow-left"></use>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-auto">
                     <router-link
-                        to="/section-creation"
+                        to="/material-creation"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>

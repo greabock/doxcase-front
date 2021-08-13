@@ -7,7 +7,6 @@
         <router-link to="/material-creation">Material creation</router-link>
         <router-link to="/sections">Sections</router-link>
         <router-link to="/section-creation">Section creation</router-link>
-        <router-link to="/sections/section-id">Section Id</router-link>
         <router-link to="/material/someId">Material id=someId</router-link>
     </div>
 </template>
