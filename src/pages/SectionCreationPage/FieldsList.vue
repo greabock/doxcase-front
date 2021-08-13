@@ -10,13 +10,15 @@
             @sort-field-down="sortFieldDown"
             @sort-field-up="sortFieldUp"
             @remove-field="removeField"
+            @change-field="changeField"
         >
         </fields-list-item>
     </div>
 </template>
 
 <script>
-import FieldsListItem from './FieldsListItem';
+import FieldsListItem from '@/pages/SectionCreationPage/FieldsListItem';
+
 export default {
     components: {FieldsListItem},
     props: {
@@ -25,8 +27,12 @@ export default {
             default: () => [],
         },
     },
+    emits: ['change-field', 'sort-field-up', 'sort-field-down', 'remove-field'],
     setup(props, {emit}) {
 
+        const changeField = (item) => {
+            emit('change-field', item);
+        }
         const sortFieldUp = (item) => {
             emit('sort-field-up', item);
         };
@@ -41,6 +47,7 @@ export default {
             sortFieldUp,
             sortFieldDown,
             removeField,
+            changeField,
         };
     },
 };

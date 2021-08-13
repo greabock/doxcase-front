@@ -15,15 +15,15 @@
             </div>
             <!-- +e.input-wrap-->
             <div class="form-wrap__input-wrap form-group">
-                <label><span class="form-wrap__input-title">Выберите готовый список</span>
+                <label><span class="form-wrap__input-title">Выберите раздел</span>
                     <select
-                        v-model='selectedEnumId'
+                        v-model='selectedSectionId'
                         class="form-wrap__input form-select"
                     >
                         <option
-                            v-for="enumItem in enumsArr"
-                            :key='enumItem?.id'
-                            :value="enumItem?.id">{{ enumItem?.title }}</option>
+                            v-for="sectionItem in sectionsArr"
+                            :key='sectionItem?.id'
+                            :value="sectionItem?.id">{{ sectionItem?.title }}</option>
                     </select>
                 </label>
             </div>
@@ -60,7 +60,7 @@
 <script>
 import {ref, onMounted} from 'vue';
 import {v4 as uuidv4} from 'uuid';
-import enumService from '@/services/enums.service';
+import sectionsService from '@/services/sections.service';
 
 export default {
     props: {
@@ -85,25 +85,25 @@ export default {
 
         const newField = ref({...initField, ...props.fieldToChange});
 
-        const multiSelect = ref(!!props.fieldToChange.type?.of?.of);
-        const enumsArr = ref([]);
-        const selectedEnumId = ref({});
+        const multiSelect = ref(!!props.fieldToChange?.type?.of?.of);
+        const sectionsArr = ref([]);
+        const selectedSectionId = ref({});
 
         onMounted( async () => {
-           try {
-               enumsArr.value = await enumService.getEnums();
-               if (enumsArr.value.length) {
-                   let idx = 0;
-                   if (props.fieldToChange.type?.of?.of) {
-                       idx = enumsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of?.of);
-                   } else if (props.fieldToChange.type?.of) {
-                       idx = enumsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of);
-                   }
-                   selectedEnumId.value = enumsArr.value[idx].id;
-               }
-           } catch(e) {
+            try {
+                sectionsArr.value = await sectionsService.getSections();
+                if (sectionsArr.value.length) {
+                    let idx = 0;
+                    if (props.fieldToChange.type?.of?.of) {
+                        idx = sectionsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of?.of);
+                    } else if (props.fieldToChange.type?.of) {
+                        idx = sectionsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of);
+                    }
+                    selectedSectionId.value = sectionsArr.value[idx].id;
+                }
+            } catch(e) {
                 console.log(e);
-           }
+            }
         });
 
         const addNewField = () => {
@@ -112,14 +112,14 @@ export default {
                 typeOfField = {
                     name: 'List',
                     of: {
-                        name: 'Enum',
-                        of: selectedEnumId.value
+                        name: 'Dictionary',
+                        of: selectedSectionId.value
                     }
                 }
             } else {
                 typeOfField = {
-                    name: 'Enum',
-                    of: selectedEnumId.value
+                    name: 'Dictionary',
+                    of: selectedSectionId.value
                 }
             }
             const field = {
@@ -133,8 +133,8 @@ export default {
             newField,
             addNewField,
             multiSelect,
-            enumsArr,
-            selectedEnumId,
+            sectionsArr,
+            selectedSectionId,
         };
     },
 };

@@ -52,6 +52,7 @@ function outsideUnsub(fn) {
 }
 
 export default {
+    emits:['update'],
     setup(props, {emit}) {
         const options = ref(['Контрагент', 'Локация', 'Обучение', 'Файлы от менеджера']);
         const modelOptions = ref(

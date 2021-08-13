@@ -81,6 +81,7 @@ export default {
             default: false,
         }
     },
+    emits: ['update-filter-sort', 'update-is-open', 'click'],
     setup(props, {emit}) {
 
         const sortedFieldsArr = computed(() => {

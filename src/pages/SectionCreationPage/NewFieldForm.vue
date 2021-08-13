@@ -10,28 +10,30 @@
                             <label
                                 ><span class="form-wrap__input-title">Выберите тип поля</span>
                                 <select
-                                        v-model="fieldType" name="select"
+                                        v-model="fieldType"
                                         class="form-wrap__input form-select"
                                 >
-                                    <option value="text-field">Текстовое поле</option>
-                                    <option value="string-field">Короткое текстовое поле</option>
-                                    <option value="selector-field">Значения из выпадающего списка</option>
-                                    <option value="checkbox-field">Чекбокс</option>
-                                    <option value="date-field">Выбор даты</option>
-                                    <option value="document-upload-field">Загрузка документа</option>
-                                    <option value="dictionary-value-field">Значения из базы знаний</option>
+                                    <option value="Text">Текстовое поле</option>
+                                    <option value="String">Короткое текстовое поле</option>
+                                    <option value="Select">Значения из выпадающего списка</option>
+                                    <option value="Boolean">Чекбокс</option>
+                                    <option value="Date">Выбор даты</option>
+                                    <option value="File">Загрузка документа</option>
+                                    <option value="Enum">Значения из справочников</option>
+                                    <option value="Dictionary">Значения из разделов</option>
                                 </select>
                             </label>
                         </div>
                         <!-- +e.input-wrap-->
                         <div class="typed-field-forms">
-                            <text-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'text-field'"></text-field>
-                            <string-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'string-field'"></string-field>
-                            <selector-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'selector-field'"></selector-field>
-                            <checkbox-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'checkbox-field'"></checkbox-field>
-                            <date-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'date-field'"></date-field>
-                            <document-upload-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'document-upload-field'"></document-upload-field>
-                            <enum-field :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'dictionary-value-field'"></enum-field>
+                            <text-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Text'"></text-field>
+                            <string-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'String'"></string-field>
+                            <selector-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Select'"></selector-field>
+                            <checkbox-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Boolean'"></checkbox-field>
+                            <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Date'"></date-field>
+                            <document-upload-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'File'"></document-upload-field>
+                            <enum-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Enum'"></enum-field>
+                            <dictionary-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Dictionary'"></dictionary-field>
                         </div>
                     </form>
                 </div>
@@ -41,7 +43,7 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 import TextField from '@/pages/SectionCreationPage/FieldTypes/TextField';
 import StringField from '@/pages/SectionCreationPage/FieldTypes/StringField';
 import CheckboxField from '@/pages/SectionCreationPage/FieldTypes/CheckboxField';
@@ -49,6 +51,7 @@ import DateField from '@/pages/SectionCreationPage/FieldTypes/DateField';
 import EnumField from '@/pages/SectionCreationPage/FieldTypes/EnumField';
 import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
+import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
 
 export default {
     components: {
@@ -59,11 +62,11 @@ export default {
         EnumField,
         DocumentUploadField,
         SelectorField,
+        DictionaryField,
     },
     props: {
-        fieldToEdit: {
+        fieldToChange: {
             type: Object,
-            default: null
         },
         fieldsArrLength: {
             type: Number
@@ -73,14 +76,26 @@ export default {
             default: true,
         },
     },
+    emits: ['updateFieldModalVisible', 'addNewField'],
     setup(props, {emit}) {
+
+        const defineInitType = (field) => {
+            if (!field.type) return 'Text';
+            if (field.type?.name === 'List') return field.type?.of?.name; // Название типа у списка.
+            return field.type?.name;
+        }
+
+        const fieldType = ref('Text');
+        watch(() => props.fieldToChange, () => {
+            fieldType.value = defineInitType(props.fieldToChange)
+        });
+
         const setFieldModalVisible = (bool) => {
             emit('updateFieldModalVisible', bool);
         };
         const addNewField = (newField) => {
             emit('addNewField', newField);
         };
-        const fieldType = ref('text-field');
         return {
             setFieldModalVisible,
             fieldType,
@@ -99,9 +114,9 @@ INPUT::placeholder {
     z-index: 1000;
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
+    right:0;
+    bottom:0;
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.2);

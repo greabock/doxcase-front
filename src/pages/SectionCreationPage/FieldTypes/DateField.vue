@@ -24,12 +24,18 @@
             /><span class="custom-input__text form-check-label">Обязательное поле</span>
             </label>
         </div>
-        <button @click.prevent="addNewField" class="btn btn-primary w-100" type="submit">Добавить</button>
+        <button
+            @click.prevent="addNewField"
+            class="btn btn-primary w-100"
+            type="submit"
+        >
+            {{!!fieldToChange?.type ? 'Сохранить' : 'Добавить'}}
+        </button>
     </div>
 </template>
 
 <script>
-import {ref, toRefs} from 'vue';
+import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 
 export default {
@@ -39,24 +45,23 @@ export default {
             default: 0,
         },
         fieldToChange: {
-            type: Object,
-            default: null,
+            type: Object
         },
     },
     setup(props, {emit}) {
-        const {fieldToChange, fieldsArrLength} = toRefs(props);
-        const newField = ref({
-            id: fieldToChange?.id || uuidv4(), // Если новое поле, то генерится новый Id.
-            title: fieldToChange?.title || '',
-            description: fieldToChange?.description || 'Default description',
-            required: fieldToChange?.required || false,
-            is_present_in_card: fieldToChange?.is_present_in_card || false,
-            sort_index: fieldToChange?.sort_index || fieldsArrLength,
+        const initField = {
+            id: uuidv4(),
+            title: '',
+            description: '',
+            required: false,
+            is_present_in_card: false,
+            sort_index: props.fieldsArrLength,
             filter_sort_index: null,
-            type: ({
+            type: {
                 name: 'Date',
-            }),
-        });
+            },
+        };
+        const newField = ref({...initField, ...props.fieldToChange});
         const addNewField = () => {
             emit('addNewField', newField.value);
         };

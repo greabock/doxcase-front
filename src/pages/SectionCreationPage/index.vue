@@ -112,25 +112,25 @@
                             </div>
                         </div>
 
-                        <!-- end sSectionAside-->
                     </div>
                     <div class="col col--main">
-                        <!-- start sSectionMain-->
                         <section class="sSectionMain section" id="sSectionMain">
                             <div class="row">
                                 <div class="col">
                                     <h3>Конструктор полей для добавления материалов</h3>
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
-                                    <div class="btn-add" @click="setFieldModalVisible(true)">
+                                    <div class="btn-add"
+                                         @click="setFieldToChange(null), setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Material title Field -->
+
                             <div class="sSectionMain__body">
-                                <!-- - Untouchable -->
+
+                                <!-- Поле Название раздела -->
                                 <div class="sSectionMain__item disabled">
                                     <div class="row">
                                         <div class="col-lg-auto col order-first">
@@ -154,7 +154,9 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <fields-list
+                                    @change-field="setFieldToChange"
                                     @sort-field-down="sortFieldDown"
                                     @sort-field-up="sortFieldUp"
                                     @remove-field="removeField"
@@ -166,7 +168,10 @@
                                 <div class="mb-3">
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
-                                        <div class="btn-add__text" @click="setFieldModalVisible(true)">Добавить</div>
+                                        <div
+                                             @click="setFieldModalVisible(true)"
+                                             class="btn-add__text"
+                                        >Добавить</div>
                                     </div>
                                 </div>
                                 <div class="sSectionAside__footer">
@@ -186,6 +191,7 @@
             @updateFieldModalVisible="setFieldModalVisible"
             @addNewField="addNewField"
             :fieldsArrLength="section.fields.length"
+            :fieldToChange="fieldToChange"
         ></new-field-form>
 
         <!-- end sCabinet-->
@@ -223,16 +229,25 @@ export default {
             return [...section.value.fields].sort((a, b) => a.sort_index - b.sort_index);
         });
 
-        // Input File_________
+        // Input File_____________________
         const fileInput = ref(null);
         const resetForm = () => {
             section.value = {...initSection};
             fileInput.value = null;
         };
+
         const isFieldModalVisible = ref(false);
         const setFieldModalVisible = (bool) => {
             isFieldModalVisible.value = bool;
         };
+
+        const fieldToChange = ref(null);
+        const setFieldToChange = (field) => {
+            fieldToChange.value = {...field};
+            if (fieldToChange.value) {
+                setFieldModalVisible(true);
+            }
+        }
 
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
@@ -250,10 +265,8 @@ export default {
         };
         const createSection = async () => {
             try {
-                const newSection = await sectionsService.createSection(section.value);
-                // if (newSection?.id) {
-                router.push(`/sections/${newSection.id}`);
-                // }
+                await sectionsService.createSection(section.value);
+                router.push(`/sections`);
             } catch (e) {
                 console.log(e);
             }
@@ -273,7 +286,6 @@ export default {
         const removeField = (item) => {
             section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
         };
-
         const UpdateFilters = (newFields) => {
             section.value = {
                 ...section.value,
@@ -296,6 +308,8 @@ export default {
             sortFieldDown,
             removeField,
             UpdateFilters,
+            setFieldToChange,
+            fieldToChange,
         };
     },
 };
