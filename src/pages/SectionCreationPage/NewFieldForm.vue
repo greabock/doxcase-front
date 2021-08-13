@@ -15,6 +15,7 @@
                                 >
                                     <option value="Text">Текстовое поле</option>
                                     <option value="String">Короткое текстовое поле</option>
+                                    <option value="Wiki">Wiki редактор</option>
                                     <option value="Select">Значения из выпадающего списка</option>
                                     <option value="Boolean">Чекбокс</option>
                                     <option value="Date">Выбор даты</option>
@@ -28,6 +29,7 @@
                         <div class="typed-field-forms">
                             <text-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Text'"></text-field>
                             <string-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'String'"></string-field>
+                            <wiki-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Wiki'"></wiki-field>
                             <selector-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Select'"></selector-field>
                             <checkbox-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Boolean'"></checkbox-field>
                             <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Date'"></date-field>
@@ -52,6 +54,7 @@ import EnumField from '@/pages/SectionCreationPage/FieldTypes/EnumField';
 import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
 import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
+import WikiField from '@/pages/SectionCreationPage/FieldTypes/WikiField';
 
 export default {
     components: {
@@ -63,6 +66,7 @@ export default {
         DocumentUploadField,
         SelectorField,
         DictionaryField,
+        WikiField,
     },
     props: {
         fieldToChange: {

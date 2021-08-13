@@ -160,7 +160,7 @@
                                     @change-field="setFieldToChange"
                                     @sort-field-down="sortFieldDown"
                                     @sort-field-up="sortFieldUp"
-                                    @remove-field="removeField"
+                                    @remove-field="setFieldToRemove"
                                     :fieldsArr="sortedFields"
                                 ></fields-list>
                             </div>
@@ -195,7 +195,22 @@
             :fieldToChange="fieldToChange"
         ></new-field-form>
 
-        <!-- end sCabinet-->
+        <!-- Remove Field alert -->
+        <div class="mock-modal__wrapper" v-show="isFieldAlertVisible">
+            <div class="mock-modal__cont">
+                <b class="mock-modal__closer" @click="setFieldAlertVisible(false)">x</b>
+                <div class="mock-modal__header">
+                    <h3>Удаление поля</h3>
+                </div>
+                <span
+                >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
+            </span>
+                <div class="mock-modal__buttons">
+                    <v-button class="w-100" @click="removeField(fieldToRemove), setFieldAlertVisible(false)">Удалить</v-button>
+                    <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
+                </div>
+            </div>
+        </div>
     </main>
 </template>
 
@@ -211,9 +226,10 @@ import VBreadcrumb from '@/ui/VBreadcrumb';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
+import VButton from '@/ui/VButton';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -284,16 +300,24 @@ export default {
         const sortFieldDown = (item) => {
             section.value.fields = sortByIndexDown(item, sortedFields.value);
         };
-        const removeField = (item) => {
-            section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
-        };
         const UpdateFilters = (newFields) => {
             section.value = {
                 ...section.value,
                 fields: newFields,
             };
         };
-
+            const fieldToRemove = ref(null);
+            const setFieldToRemove = (field) => {
+                fieldToRemove.value = field;
+                setFieldAlertVisible(true);
+            }
+            const removeField = (item) => {
+                section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
+            };
+            const isFieldAlertVisible = ref(false);
+            const setFieldAlertVisible = (bool) => {
+                isFieldAlertVisible.value = bool;
+            }
         return {
             section,
             fileInput,
@@ -307,10 +331,14 @@ export default {
             sortedFields,
             sortFieldUp,
             sortFieldDown,
-            removeField,
             UpdateFilters,
             setFieldToChange,
             fieldToChange,
+            fieldToRemove,
+            setFieldToRemove,
+            isFieldAlertVisible,
+            setFieldAlertVisible,
+            removeField,
         };
     },
 };
@@ -328,6 +356,51 @@ export default {
 }
 .sSectionMain__col-cut {
     width: 25%
+}
+.mock-modal__wrapper {
+    display: flex;
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+.mock-modal__cont {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 400px;
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+}
+.mock-modal__header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.mock-modal__closer {
+    display: block;
+    position: absolute;
+    font-size: 26px;
+    line-height: 26px;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+}
+.mock-modal__buttons {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+.mock-modal__buttons button:first-child {
+    margin-right: 5px;
 }
 
 </style>

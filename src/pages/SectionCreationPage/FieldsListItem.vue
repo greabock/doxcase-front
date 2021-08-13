@@ -101,6 +101,14 @@ export default {
                         content_title: "Краткое описание поля",
                         type_view:  "Текстовое поле",
                     };
+                case "Wiki":
+                    return {
+                        field,
+                        title,
+                        description,
+                        content_title: "",
+                        type_view:  "Wiki разметка",
+                    };
                 case "Boolean":
                     return {
                         field,
