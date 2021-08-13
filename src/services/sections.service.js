@@ -22,7 +22,7 @@ class sectionService {
         } else throw new Error('Error updating sections');
     };
     updateSection = async (section) => {
-        const res = await axiosInstance.patch('/sections', section);
+        const res = await axiosInstance.patch(`/sections/${section.id}`, section);
         if (res.data.data) {
             return res.data.data;
         } else throw new Error('Error updating sections');

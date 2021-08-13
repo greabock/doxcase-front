@@ -60,11 +60,15 @@
 </template>
 
 <script>
-import {ref, onMounted, watch} from 'vue'
-import enumService from '@/services/enums.service';
-import sectionsService from '@/services/sections.service';
+import {ref, watch} from 'vue'
 export default {
     props: {
+        allEnums: {
+            type: Array
+        },
+        allSections: {
+            type: Array
+        },
         field: {
             type: Object,
             default: () => {},
@@ -75,7 +79,6 @@ export default {
     },
     emits: ['change-field', 'sort-field-up', 'sort-field-down', 'remove-field'],
     setup(props, {emit}) {
-
         watch(() => props.field, (newVal) => {
                 fieldsViewModel.value = defineView(newVal);
         },
@@ -105,7 +108,7 @@ export default {
                     return {
                         field,
                         title,
-                        description,
+                        description: "",
                         content_title: "",
                         type_view:  "Wiki разметка",
                     };
@@ -145,15 +148,15 @@ export default {
                     return {
                         field,
                         title,
-                        description: '',
+                        description: props.allEnums.find((item) => item.id === props.field.type.of).title,
                         content_title: "Содержание",
-                        type_view:  "Значения из списка",
+                        type_view:  "Значения из справочника",
                     };
                 case "Dictionary":
                     return {
                         field,
                         title,
-                        description: '',
+                        description: props.allSections.find((item) => item.id === props.field.type.of).title,
                         content_title: "Содержание",
                         type_view:  "Значения из списка",
                     };
@@ -164,15 +167,15 @@ export default {
                             return {
                                 field,
                                 title,
-                                description: '',
+                                description: props.allEnums.find((item) => item.id === props.field.type.of.of).title,
                                 content_title: "Содержание",
-                                type_view:  "Значения из списка",
+                                type_view:  "Значения из справочника",
                         };
                         case 'Dictionary':
                             return {
                                 field,
                                 title,
-                                description: '',
+                                description: props.allSections.find((item) => item.id === props.field.type.of.of).title,
                                 content_title: "Содержание",
                                 type_view:  "Значения из списка",
                         };
@@ -194,44 +197,6 @@ export default {
         const changeField = (item) => {
             emit('change-field', item);
         }
-
-        onMounted( async () => {
-            switch (props.field.type.name) {
-
-                case 'Enum': try {
-                    const myEnum = await enumService.getEnumsObject(props.field.type.of);
-                    fieldsViewModel.value.description = myEnum.title;
-                } catch (e) {
-                    console.log(e);
-                } break;
-
-                case 'Dictionary': try {
-                    const myEnum = await sectionsService.getSectionObject(props.field.type.of);
-                    fieldsViewModel.value.description = myEnum.title;
-                } catch (e) {
-                    console.log(e);
-                } break;
-
-                case 'List':
-                    switch (props.field.type.of.name) {
-
-                        case 'Enum':
-                            try {
-                                const myEnum = await enumService.getEnumsObject(props.field.type.of.of);
-                                fieldsViewModel.value.description = myEnum.title
-                            } catch (e) {
-                                console.log(e);
-                            } break;
-
-                        case 'Dictionary': try {
-                            const myEnum = await sectionsService.getSectionObject(props.field.type.of.of);
-                            fieldsViewModel.value.description = myEnum.title
-                        } catch (e) {
-                            console.log(e);
-                        } break;
-                    }
-                }
-            })
 
         return {
             fieldsViewModel,

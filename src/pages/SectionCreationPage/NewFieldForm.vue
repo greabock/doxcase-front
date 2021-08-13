@@ -34,8 +34,8 @@
                             <checkbox-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Boolean'"></checkbox-field>
                             <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Date'"></date-field>
                             <document-upload-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'File'"></document-upload-field>
-                            <enum-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Enum'"></enum-field>
-                            <dictionary-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Dictionary'"></dictionary-field>
+                            <enum-field :allEnums="allEnums"  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Enum'"></enum-field>
+                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Dictionary'"></dictionary-field>
                         </div>
                     </form>
                 </div>
@@ -69,8 +69,14 @@ export default {
         WikiField,
     },
     props: {
+        allEnums: {
+            type: Array
+        },
+        allSections: {
+          type: Array
+        },
         fieldToChange: {
-            type: Object,
+            type: Object
         },
         fieldsArrLength: {
             type: Number

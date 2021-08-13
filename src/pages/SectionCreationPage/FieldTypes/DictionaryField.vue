@@ -21,7 +21,7 @@
                         class="form-wrap__input form-select"
                     >
                         <option
-                            v-for="sectionItem in sectionsArr"
+                            v-for="sectionItem in filteredSections"
                             :key='sectionItem?.id'
                             :value="sectionItem?.id">{{ sectionItem?.title }}</option>
                     </select>
@@ -58,12 +58,14 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue';
+import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
-import sectionsService from '@/services/sections.service';
 
 export default {
     props: {
+        allSections: {
+            type: Array
+        },
         fieldsArrLength: {
             type: Number,
             default: 0,
@@ -83,29 +85,11 @@ export default {
             filter_sort_index: null,
         };
 
+        const filteredSections = ref(props.allSections.filter(section => section.is_dictionary));
         const newField = ref({...initField, ...props.fieldToChange});
 
         const multiSelect = ref(!!props.fieldToChange?.type?.of?.of);
-        const sectionsArr = ref([]);
-        const selectedSectionId = ref({});
-
-        onMounted( async () => {
-            try {
-                const sections = await sectionsService.getSections();
-                sectionsArr.value = sections.filter(section => section.is_dictionary); // Сортировка разделов, которые являются словарями.
-                if (sectionsArr.value.length) {
-                    let idx = 0;
-                    if (props.fieldToChange.type?.of?.of) {
-                        idx = sectionsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of?.of);
-                    } else if (props.fieldToChange.type?.of) {
-                        idx = sectionsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of);
-                    }
-                    selectedSectionId.value = sectionsArr.value[idx].id;
-                }
-            } catch(e) {
-                console.log(e);
-            }
-        });
+        const selectedSectionId = ref(props.fieldToChange?.type?.of?.of || props.fieldToChange?.type?.of || (filteredSections.value)[0]);
 
         const addNewField = () => {
             let typeOfField;
@@ -131,10 +115,10 @@ export default {
         };
 
         return {
+            filteredSections,
             newField,
             addNewField,
             multiSelect,
-            sectionsArr,
             selectedSectionId,
         };
     },

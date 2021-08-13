@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange(null), setFieldModalVisible(true)">
+                                         @click="setFieldToChange(null); setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
@@ -162,6 +162,8 @@
                                     @sort-field-up="sortFieldUp"
                                     @remove-field="setFieldToRemove"
                                     :fieldsArr="sortedFields"
+                                    :allSections="allSections"
+                                    :allEnums="allEnums"
                                 ></fields-list>
                             </div>
 
@@ -193,6 +195,8 @@
             @addNewField="addNewField"
             :fieldsArrLength="section.fields.length"
             :fieldToChange="fieldToChange"
+            :allEnums="allEnums"
+            :allSections="allSections"
         ></new-field-form>
 
         <!-- Remove Field alert -->
@@ -206,7 +210,7 @@
                 >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
             </span>
                 <div class="mock-modal__buttons">
-                    <v-button class="w-100" @click="removeField(fieldToRemove), setFieldAlertVisible(false)">Удалить</v-button>
+                    <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
                     <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
                 </div>
             </div>
@@ -215,9 +219,10 @@
 </template>
 
 <script>
-import {ref, computed} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
+import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
@@ -227,6 +232,7 @@ import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
+
 
 export default {
     components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
@@ -240,6 +246,8 @@ export default {
             sort_index: 0,
             fields: [],
         };
+        const allSections = ref([]);
+        const allEnums = ref([]);
         const router = useRouter();
         const section = ref({...initSection});
         const sortedFields = computed(() => {
@@ -318,7 +326,19 @@ export default {
             const setFieldAlertVisible = (bool) => {
                 isFieldAlertVisible.value = bool;
             }
+
+            onMounted(async () => {
+                try{
+                    allEnums.value = await enumService.getEnums();
+                    allSections.value = await sectionsService.getSections();
+                } catch(e) {
+                    console.log(e)
+                }
+            });
+
         return {
+            allEnums,
+            allSections,
             section,
             fileInput,
             resetForm,

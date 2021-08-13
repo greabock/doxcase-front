@@ -21,9 +21,10 @@
                         class="form-wrap__input form-select"
                     >
                         <option
-                            v-for="enumItem in enumsArr"
+                            v-for="enumItem in allEnums"
                             :key='enumItem?.id'
-                            :value="enumItem?.id">{{ enumItem?.title }}</option>
+                            :value="enumItem?.id">{{ enumItem?.title }}
+                        </option>
                     </select>
                 </label>
             </div>
@@ -58,12 +59,14 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue';
+import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
-import enumService from '@/services/enums.service';
 
 export default {
     props: {
+        allEnums: {
+            type: Array
+        },
         fieldsArrLength: {
             type: Number,
             default: 0,
@@ -84,29 +87,12 @@ export default {
         };
 
         const newField = ref({...initField, ...props.fieldToChange});
-
         const multiSelect = ref(!!props.fieldToChange.type?.of?.of);
-        const enumsArr = ref([]);
-        const selectedEnumId = ref({});
-
-        onMounted( async () => {
-           try {
-               enumsArr.value = await enumService.getEnums();
-               if (enumsArr.value.length) {
-                   let idx = 0;
-                   if (props.fieldToChange.type?.of?.of) {
-                       idx = enumsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of?.of);
-                   } else if (props.fieldToChange.type?.of) {
-                       idx = enumsArr.value.findIndex(item => item.id === props.fieldToChange.type?.of);
-                   }
-                   selectedEnumId.value = enumsArr.value[idx].id;
-               }
-           } catch(e) {
-                console.log(e);
-           }
-        });
+        console.log(props.fieldToChange.type?.to);
+        const selectedEnumId = ref(props.fieldToChange.type?.of?.of || props.fieldToChange.type?.of || props.allEnums[0].id);
 
         const addNewField = () => {
+            console.log(selectedEnumId.value);
             let typeOfField;
             if (multiSelect.value) {
                 typeOfField = {
@@ -133,11 +119,9 @@ export default {
             newField,
             addNewField,
             multiSelect,
-            enumsArr,
             selectedEnumId,
         };
     },
 };
 </script>
 
-<style scoped></style>

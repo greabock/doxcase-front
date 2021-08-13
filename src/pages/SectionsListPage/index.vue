@@ -108,7 +108,9 @@
                     <!-- Footer -->
                     <div class="sSections__footer">
                         <div class="d-sm-none mb-3 mt-1 w-100">
-                            <div class="btn-add">
+                            <div
+                                @click="router.push('/section-creation')"
+                                class="btn-add">
                                 <div class="btn-add__plus"></div>
                                 <div class="btn-add__text">Добавить раздел</div>
                             </div>

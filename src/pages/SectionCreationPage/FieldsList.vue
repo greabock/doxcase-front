@@ -11,6 +11,8 @@
             @sort-field-up="sortFieldUp"
             @remove-field="removeField"
             @change-field="changeField"
+            :allEnums="allEnums"
+            :allSections="allSections"
         >
         </fields-list-item>
     </div>
@@ -22,6 +24,12 @@ import FieldsListItem from '@/pages/SectionCreationPage/FieldsListItem';
 export default {
     components: {FieldsListItem},
     props: {
+        allEnums: {
+          type: Array,
+        },
+        allSections: {
+            type: Array,
+        },
         fieldsArr: {
             type: Array,
             default: () => [],
