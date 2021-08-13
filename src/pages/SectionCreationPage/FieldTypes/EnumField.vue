@@ -15,15 +15,16 @@
             </div>
             <!-- +e.input-wrap-->
             <div class="form-wrap__input-wrap form-group">
-                <label><span class="form-wrap__input-title">Выберите раздел</span>
+                <label><span class="form-wrap__input-title">Выберите готовый список</span>
                     <select
-                        v-model='selectedSectionId'
+                        v-model='selectedEnumId'
                         class="form-wrap__input form-select"
                     >
                         <option
-                            v-for="sectionItem in filteredSections"
-                            :key='sectionItem?.id'
-                            :value="sectionItem?.id">{{ sectionItem?.title }}</option>
+                            v-for="enumItem in allEnums"
+                            :key='enumItem?.id'
+                            :value="enumItem?.id">{{ enumItem?.title }}
+                        </option>
                     </select>
                 </label>
             </div>
@@ -63,7 +64,7 @@ import {v4 as uuidv4} from 'uuid';
 
 export default {
     props: {
-        allSections: {
+        allEnums: {
             type: Array
         },
         fieldsArrLength: {
@@ -85,26 +86,26 @@ export default {
             filter_sort_index: null,
         };
 
-        const filteredSections = ref(props.allSections.filter(section => section.is_dictionary));
         const newField = ref({...initField, ...props.fieldToChange});
-
-        const multiSelect = ref(!!props.fieldToChange?.type?.of?.of);
-        const selectedSectionId = ref(props.fieldToChange?.type?.of?.of || props.fieldToChange?.type?.of || (filteredSections.value)[0]);
+        const multiSelect = ref(!!props.fieldToChange.type?.of?.of);
+        console.log(props.fieldToChange.type?.to);
+        const selectedEnumId = ref(props.fieldToChange.type?.of?.of || props.fieldToChange.type?.of || props.allEnums[0].id);
 
         const addNewField = () => {
+            console.log(selectedEnumId.value);
             let typeOfField;
             if (multiSelect.value) {
                 typeOfField = {
                     name: 'List',
                     of: {
-                        name: 'Dictionary',
-                        of: selectedSectionId.value
+                        name: 'Enum',
+                        of: selectedEnumId.value
                     }
                 }
             } else {
                 typeOfField = {
-                    name: 'Dictionary',
-                    of: selectedSectionId.value
+                    name: 'Enum',
+                    of: selectedEnumId.value
                 }
             }
             const field = {
@@ -115,14 +116,12 @@ export default {
         };
 
         return {
-            filteredSections,
             newField,
             addNewField,
             multiSelect,
-            selectedSectionId,
+            selectedEnumId,
         };
     },
 };
 </script>
 
-<style scoped></style>

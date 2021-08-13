@@ -59,12 +59,18 @@
                 <span class="custom-input__text form-check-label">Обязательное поле</span>
             </label>
         </div>
-        <button @click.prevent="addNewField" class="btn btn-primary w-100" type="submit">Добавить</button>
+        <button
+            @click.prevent="addNewField"
+            class="btn btn-primary w-100"
+            type="submit"
+        >
+            {{!!fieldToChange?.type ? 'Сохранить' : 'Добавить'}}
+        </button>
     </div>
 </template>
 
 <script>
-import {ref, toRefs} from 'vue';
+import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 
 export default {
@@ -74,26 +80,25 @@ export default {
             default: 0,
         },
         fieldToChange: {
-            type: Object,
-            default: null,
+            type: Object
         },
     },
     setup(props, {emit}) {
-        const {fieldToChange, fieldsArrLength} = toRefs(props);
-        const newField = ref({
-            id: fieldToChange?.id || uuidv4(), // Если новое поле, то генерится новый Id.
-            title: fieldToChange?.title || '',
-            description: fieldToChange?.description || 'Default description',
-            required: fieldToChange?.required || false,
-            is_present_in_card: fieldToChange?.is_present_in_card || false,
-            sort_index: fieldToChange?.sort_index || fieldsArrLength,
+        const initField = {
+            id: uuidv4(),
+            title: '',
+            description: 'default',
+            required: false,
+            is_present_in_card: false,
+            sort_index: props.fieldsArrLength,
             filter_sort_index: null,
-        });
+        };
+        const newField = ref({...initField, ...props.fieldToChange});
         const fieldType = ref({
             name: 'File',
-            max: 200,
+            max: props.fieldToChange.type?.max || 200,
         });
-        const fieldsExtensions = ref(   [
+        const defaultExtensions =  [
             { name: 'doc', checked: false },
             { name: 'xls', checked: false },
             { name: 'xlsx', checked: false },
@@ -101,7 +106,21 @@ export default {
             { name: 'pdf', checked: false },
             { name: 'fig', checked: false },
             { name: 'pptx', checked: false},
-        ]);
+        ];
+
+        const checkExtension = (item, extArr) => {
+            if (extArr.findIndex((extArrItem) => extArrItem === item.name) >= 0) {
+                return {...item, checked: true}
+            }
+            return item;
+        };
+
+        // Поиск выбранных расширений у файлов, если поле уже создано.
+        const fieldsExtensions = ref(   props.fieldToChange.type?.extensions ?
+                defaultExtensions.map(item => checkExtension(item, props.fieldToChange.type?.extensions)) :
+                defaultExtensions
+           );
+
 
         const addNewField = () => {
             const field = {

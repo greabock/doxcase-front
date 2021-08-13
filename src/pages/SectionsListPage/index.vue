@@ -34,7 +34,11 @@
                                 <div class="col-auto">
                                     <div class="sSections__count">{{ i + 1 }}</div>
                                 </div>
-                                <div class="col fw-500 text-primary">{{ section?.title }}</div>
+                                <div
+                                    @click="() => $router.push(`/sections/${section?.id}`)"
+                                    class="col fw-500 text-primary"
+                                    style="cursor:pointer"
+                                >{{ section?.title }}</div>
                                 <div class="col-12 d-lg-none pb-3"></div>
                                 <div class="sSections__col col-lg-auto col-md">
                                     <label class="custom-input form-check"
@@ -62,7 +66,10 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="sSections__btn-control">
-                                        <div @click="createNewSection(section)" class="btn-edit-sm btn-secondary">
+                                        <div
+                                            @click="() => $router.push(`/sections/${section?.id}`)"
+                                            class="btn-edit-sm btn-secondary"
+                                        >
                                             <svg class="icon icon-edit">
                                                 <use xlink:href="img/svg/sprite.svg#edit"></use>
                                             </svg>
@@ -101,7 +108,9 @@
                     <!-- Footer -->
                     <div class="sSections__footer">
                         <div class="d-sm-none mb-3 mt-1 w-100">
-                            <div class="btn-add">
+                            <div
+                                @click="router.push('/section-creation')"
+                                class="btn-add">
                                 <div class="btn-add__plus"></div>
                                 <div class="btn-add__text">Добавить раздел</div>
                             </div>
@@ -147,19 +156,10 @@
             </div>
         </div>
     </main>
-
-    <!-- Section links in header -->
-    <teleport to="#header-sections">
-        <ul class="menu" id="header-sections">
-            <li v-for="section in sectionsToHeader" :key="section?.id">
-                <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
-            </li>
-        </ul>
-    </teleport>
 </template>
 
 <script>
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import sectionsService from '@/services/sections.service';
 import {sortByIndexUp, sortByIndexDown} from '@/utils/sortByIndex';
@@ -181,9 +181,9 @@ export default {
         const sortedSections = computed(() => {
             return [...sections.value].sort((a, b) => a.sort_index - b.sort_index);
         });
-        const sectionsToHeader = computed(() =>
-            [...sortedSections.value].filter((item) => item.is_navigation === true)
-        );
+        watch(sections, (newVal) => {
+            store.commit('sections/setSections', newVal);
+        })
 
         const isSectionsLoading = ref(true);
 
@@ -211,10 +211,6 @@ export default {
                 isSectionsLoading.value = false;
                 console.log(e);
             }
-        };
-        //Create New Section_________________________________
-        const createNewSection = (section) => {
-            router.push('/sections/' + section.id);
         };
 
         //Remove Section______________________________________
@@ -258,7 +254,6 @@ export default {
             sortUpSectionItem,
             sortDownSectionItem,
             sortedSections,
-            sectionsToHeader,
             router,
             user,
             updateSections,
@@ -267,7 +262,6 @@ export default {
             sectionToRemove,
             setSectionToRemove,
             removeSection,
-            createNewSection,
         };
     },
 };

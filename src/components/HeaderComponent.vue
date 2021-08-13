@@ -2,7 +2,7 @@
     <div class="topLine section" id="topLine">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-auto">
+                <div class="col-auto" v-if="$route.path !== '/'">
                     <router-link to="/" class="topLine__link-back">
                         <svg class="icon icon-arrow-left">
                             <use xlink:href="img/svg/sprite.svg#arrow-left"></use>
@@ -38,14 +38,19 @@
                                 </div>
                             </div>
                             <div class="col-lg">
-                                <div id="header-sections"></div>
+<!-- Section links in header -->
+                                <ul v-if='sectionsInHeader?.length' class="menu" id="header-sections">
+                                    <li v-for="section in sectionsInHeader" :key="section?.id">
+                                        <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-auto">
                     <router-link
-                        to="/section-creation"
+                        to="/material-creation"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>
@@ -75,15 +80,24 @@ export default {
     setup() {
         const store = useStore();
 
-        onMounted(async () => {
-            if (store.state.user.user === null) {
-                await store.dispatch('user/fetchUserData');
+        const sectionsInHeader = computed(() => {
+            const sections = store.getters['sections/getSections'];
+            if (sections?.length) {
+                return sections.filter(item => item.is_navigation)
+                    .sort((a, b) => a.sort_index - b.sort_index)
             }
+            return []
+        });
+
+        onMounted(async () => {
+             await store.dispatch('user/fetchUserData');
+             await store.dispatch('sections/fetchSections');
         });
 
         return {
             user: computed(() => store.getters['user/getUser']),
             userAvatar: computed(() => store.getters['user/getUserAvatar']),
+            sectionsInHeader,
         };
     },
 };

@@ -9,9 +9,20 @@ class sectionService {
             return res.data.data;
         } else throw new Error('Error fetching sections');
     };
-
+    getSectionObject = async (id) => {
+        const res = await axiosInstance.get(`/sections/${id}`);
+        if (res.data.data) {
+            return res.data.data;
+        } else throw new Error('Error fetching section');
+    }
     updateSectionsList = async (sections) => {
         const res = await axiosInstance.patch('/sections', sections);
+        if (res.data.data) {
+            return res.data.data;
+        } else throw new Error('Error updating sections');
+    };
+    updateSection = async (section) => {
+        const res = await axiosInstance.patch(`/sections/${section.id}`, section);
         if (res.data.data) {
             return res.data.data;
         } else throw new Error('Error updating sections');

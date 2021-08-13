@@ -5,7 +5,12 @@
         </div>
         <div class="sSectionMain__col-title col-lg-auto">
             <div class="text-dark small">Заголовок</div>
-            <div class="fw-500 text-primary">{{ fieldsViewModel?.title }}</div>
+            <div class="fw-500 text-primary">
+                <span
+                    @click="changeField(field)"
+                    style="cursor:pointer"
+                >{{ fieldsViewModel?.title }}</span>
+            </div>
         </div>
         <div class="sSectionMain__col-content col-lg">
             <div class="text-dark small">{{ fieldsViewModel?.content_title }}</div>
@@ -18,22 +23,33 @@
         <div class="col-12 d-lg-none pb-3"></div>
         <div class="col-lg-auto">
             <div class="sSectionMain__btn-control">
-                <div class="btn-edit-sm btn-secondary">
+                <div
+                    @click="changeField(field)"
+                    class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
                         <use xlink:href="img/svg/sprite.svg#edit"></use>
                     </svg>
                 </div>
-                <div @click="removeField(fieldsViewModel?.field)" class="btn-edit-sm btn-danger">
+                <div
+                    @click="removeField(fieldsViewModel?.field)"
+                     class="btn-edit-sm btn-danger"
+                >
                     <svg class="icon icon-basket">
                         <use xlink:href="img/svg/sprite.svg#basket"></use>
                     </svg>
                 </div>
-                <div @click="sortFieldUp(fieldsViewModel?.field)" class="btn-edit-sm btn-secondary">
-                    <svg class="icon icon-chevron-up text-primary">
+                <div
+                    @click="sortFieldUp(fieldsViewModel?.field)"
+                     class="btn-edit-sm btn-secondary">
+                    <svg class="icon icon-chevron-up text-primary"
+                    >
                         <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
                     </svg>
                 </div>
-                <div @click="sortFieldDown(fieldsViewModel?.field)" class="btn-edit-sm btn-secondary">
+                <div
+                    @click="sortFieldDown(fieldsViewModel?.field)"
+                    class="btn-edit-sm btn-secondary"
+                >
                     <svg class="icon icon-chevron-down text-primary">
                         <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
                     </svg>
@@ -44,10 +60,15 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue'
-import enumService from '@/services/enums.service';
+import {ref, watch} from 'vue'
 export default {
     props: {
+        allEnums: {
+            type: Array
+        },
+        allSections: {
+            type: Array
+        },
         field: {
             type: Object,
             default: () => {},
@@ -56,16 +77,22 @@ export default {
             type: Number,
         }
     },
+    emits: ['change-field', 'sort-field-up', 'sort-field-down', 'remove-field'],
     setup(props, {emit}) {
+        watch(() => props.field, (newVal) => {
+                fieldsViewModel.value = defineView(newVal);
+        },
+            {deep: true}
+        );
 
         const defineView = (field) => {
-            const {title, description, type,} = field
+            const {title, description, type} = field;
             switch (type.name) {
                 case "String":
                     return {
                         field,
-                        title,
-                        description,
+                        title: title,
+                        description: description,
                         content_title: "Краткое описание поля",
                         type_view:  "Короткое текстовое поле",
                     };
@@ -76,6 +103,14 @@ export default {
                         description,
                         content_title: "Краткое описание поля",
                         type_view:  "Текстовое поле",
+                    };
+                case "Wiki":
+                    return {
+                        field,
+                        title,
+                        description: "",
+                        content_title: "",
+                        type_view:  "Wiki разметка",
                     };
                 case "Boolean":
                     return {
@@ -113,7 +148,15 @@ export default {
                     return {
                         field,
                         title,
-                        description: '',
+                        description: props.allEnums.find((item) => item.id === props.field.type.of).title,
+                        content_title: "Содержание",
+                        type_view:  "Значения из справочника",
+                    };
+                case "Dictionary":
+                    return {
+                        field,
+                        title,
+                        description: props.allSections.find((item) => item.id === props.field.type.of).title,
                         content_title: "Содержание",
                         type_view:  "Значения из списка",
                     };
@@ -124,7 +167,15 @@ export default {
                             return {
                                 field,
                                 title,
-                                description: '',
+                                description: props.allEnums.find((item) => item.id === props.field.type.of.of).title,
+                                content_title: "Содержание",
+                                type_view:  "Значения из справочника",
+                        };
+                        case 'Dictionary':
+                            return {
+                                field,
+                                title,
+                                description: props.allSections.find((item) => item.id === props.field.type.of.of).title,
                                 content_title: "Содержание",
                                 type_view:  "Значения из списка",
                         };
@@ -143,24 +194,9 @@ export default {
         const removeField = (item) => {
             emit('remove-field', item);
         };
-
-        onMounted( async () => {
-            if (props.field.type.name === 'Enum') {
-                try {
-                    const myEnum = await enumService.getEnumsObject(props.field.type.of);
-                    fieldsViewModel.value.description = myEnum.title
-                } catch (e) {
-                    console.log(e);
-                }
-            } else if ((props.field.type.name === 'List')) {
-                try {
-                    const myEnum = await enumService.getEnumsObject(props.field.type.of.of);
-                    fieldsViewModel.value.description = myEnum.title
-                } catch (e) {
-                    console.log(e);
-                }
-            }
-        })
+        const changeField = (item) => {
+            emit('change-field', item);
+        }
 
         return {
             fieldsViewModel,
@@ -168,6 +204,7 @@ export default {
             sortFieldDown,
             removeField,
             defineView,
+            changeField,
         };
     },
 };

@@ -1,5 +1,8 @@
 <template>
-    <main class="main-block">
+    <main
+        class="main-block"
+        @click="setFiltersOpen(false)"
+    >
         <!-- start sCabinet-->
         <section class="sCabinet section py-0" id="sCabinet">
             <div class="container-fluid">
@@ -12,11 +15,11 @@
                                     name: 'Главная',
                                 },
                                 {
-                                    link: '#',
+                                    link: '/sections',
                                     name: 'Разделы',
                                 },
                                 {
-                                    name: 'Создать новый проект/материал',
+                                    name: 'Создать новый раздел',
                                 },
                             ]"
                         />
@@ -38,9 +41,9 @@
                                     </label>
                                 </div>
                                 <!-- +e.input-wrap-->
-                                <p class="fw-500">Изображние раздела</p>
+                                <p class="fw-500">Изображение раздела</p>
                                 <div class="small text-dark mb-1">
-                                    Только svg или png c соотношеием сторон 1:1 не более 100 кБ
+                                    Только svg или png c соотношением сторон 1:1 не более 100 кБ
                                 </div>
                                 <uploader-image v-model="fileInput"></uploader-image>
                                 <div class="mb-3">
@@ -65,6 +68,7 @@
                                 </div>
                                 <div class="d-lg-none">
                                     <button
+                                        @click="setFiltersOpen(true)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                         >
@@ -87,12 +91,11 @@
 
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
-                                    <div class="form-wrap__text small text-dark">
-                                        Выберите допустимые для фильтрации поля&nbsp;из&nbsp;добавленных
-                                    </div>
 
-                                    <fields-to-filter
+                                    <fields-to-filter @click.stop
                                         :fieldsArr="sortedFields"
+                                        :isFiltersOpen="isFiltersOpen"
+                                        @update-is-open="setFiltersOpen"
                                         @update-filter-sort="UpdateFilters"
                                     ></fields-to-filter>
 
@@ -110,25 +113,25 @@
                             </div>
                         </div>
 
-                        <!-- end sSectionAside-->
                     </div>
                     <div class="col col--main">
-                        <!-- start sSectionMain-->
                         <section class="sSectionMain section" id="sSectionMain">
                             <div class="row">
                                 <div class="col">
                                     <h3>Конструктор полей для добавления материалов</h3>
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
-                                    <div class="btn-add" @click="setFieldModalVisible(true)">
+                                    <div class="btn-add"
+                                         @click="setFieldToChange(null); setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Material title Field -->
+
                             <div class="sSectionMain__body">
-                                <!-- - Untouchable -->
+
+                                <!-- Поле Название раздела -->
                                 <div class="sSectionMain__item disabled">
                                     <div class="row">
                                         <div class="col-lg-auto col order-first">
@@ -152,11 +155,15 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <fields-list
+                                    @change-field="setFieldToChange"
                                     @sort-field-down="sortFieldDown"
                                     @sort-field-up="sortFieldUp"
-                                    @remove-field="removeField"
+                                    @remove-field="setFieldToRemove"
                                     :fieldsArr="sortedFields"
+                                    :allSections="allSections"
+                                    :allEnums="allEnums"
                                 ></fields-list>
                             </div>
 
@@ -164,7 +171,10 @@
                                 <div class="mb-3">
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
-                                        <div class="btn-add__text" @click="setFieldModalVisible(true)">Добавить</div>
+                                        <div
+                                             @click="setFieldModalVisible(true)"
+                                             class="btn-add__text"
+                                        >Добавить</div>
                                     </div>
                                 </div>
                                 <div class="sSectionAside__footer">
@@ -184,16 +194,35 @@
             @updateFieldModalVisible="setFieldModalVisible"
             @addNewField="addNewField"
             :fieldsArrLength="section.fields.length"
+            :fieldToChange="fieldToChange"
+            :allEnums="allEnums"
+            :allSections="allSections"
         ></new-field-form>
 
-        <!-- end sCabinet-->
+        <!-- Remove Field alert -->
+        <div class="mock-modal__wrapper" v-show="isFieldAlertVisible">
+            <div class="mock-modal__cont">
+                <b class="mock-modal__closer" @click="setFieldAlertVisible(false)">x</b>
+                <div class="mock-modal__header">
+                    <h3>Удаление поля</h3>
+                </div>
+                <span
+                >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
+            </span>
+                <div class="mock-modal__buttons">
+                    <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
+                    <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
+                </div>
+            </div>
+        </div>
     </main>
 </template>
 
 <script>
-import {ref, computed} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
+import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
@@ -202,9 +231,11 @@ import VBreadcrumb from '@/ui/VBreadcrumb';
 import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
+import VButton from '@/ui/VButton';
+
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -215,22 +246,33 @@ export default {
             sort_index: 0,
             fields: [],
         };
+        const allSections = ref([]);
+        const allEnums = ref([]);
         const router = useRouter();
         const section = ref({...initSection});
         const sortedFields = computed(() => {
             return [...section.value.fields].sort((a, b) => a.sort_index - b.sort_index);
         });
 
-        // Input File_________
+        // Input File_____________________
         const fileInput = ref(null);
         const resetForm = () => {
             section.value = {...initSection};
             fileInput.value = null;
         };
+
         const isFieldModalVisible = ref(false);
         const setFieldModalVisible = (bool) => {
             isFieldModalVisible.value = bool;
         };
+
+        const fieldToChange = ref(null);
+        const setFieldToChange = (field) => {
+            fieldToChange.value = {...field};
+            if (fieldToChange.value) {
+                setFieldModalVisible(true);
+            }
+        }
 
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
@@ -248,44 +290,75 @@ export default {
         };
         const createSection = async () => {
             try {
-                const newSection = await sectionsService.createSection(section.value);
-                // if (newSection?.id) {
-                router.push(`/sections/${newSection.id}`);
-                // }
+                await sectionsService.createSection(section.value);
+                router.push(`/sections`);
             } catch (e) {
                 console.log(e);
             }
         };
+
+        const isFiltersOpen = ref(false);
+        const setFiltersOpen = (bool) => {
+            isFiltersOpen.value = bool;
+        }
+
         const sortFieldUp = (item) => {
             section.value.fields = sortByIndexUp(item, sortedFields.value);
         };
         const sortFieldDown = (item) => {
             section.value.fields = sortByIndexDown(item, sortedFields.value);
         };
-        const removeField = (item) => {
-            section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
-        };
-
         const UpdateFilters = (newFields) => {
             section.value = {
                 ...section.value,
                 fields: newFields,
             };
         };
+            const fieldToRemove = ref(null);
+            const setFieldToRemove = (field) => {
+                fieldToRemove.value = field;
+                setFieldAlertVisible(true);
+            }
+            const removeField = (item) => {
+                section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
+            };
+            const isFieldAlertVisible = ref(false);
+            const setFieldAlertVisible = (bool) => {
+                isFieldAlertVisible.value = bool;
+            }
+
+            onMounted(async () => {
+                try{
+                    allEnums.value = await enumService.getEnums();
+                    allSections.value = await sectionsService.getSections();
+                } catch(e) {
+                    console.log(e)
+                }
+            });
 
         return {
+            allEnums,
+            allSections,
             section,
             fileInput,
             resetForm,
             createSection,
             isFieldModalVisible,
             setFieldModalVisible,
+            isFiltersOpen,
+            setFiltersOpen,
             addNewField,
             sortedFields,
             sortFieldUp,
             sortFieldDown,
-            removeField,
             UpdateFilters,
+            setFieldToChange,
+            fieldToChange,
+            fieldToRemove,
+            setFieldToRemove,
+            isFieldAlertVisible,
+            setFieldAlertVisible,
+            removeField,
         };
     },
 };
@@ -303,6 +376,51 @@ export default {
 }
 .sSectionMain__col-cut {
     width: 25%
+}
+.mock-modal__wrapper {
+    display: flex;
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+.mock-modal__cont {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 400px;
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+}
+.mock-modal__header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.mock-modal__closer {
+    display: block;
+    position: absolute;
+    font-size: 26px;
+    line-height: 26px;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+}
+.mock-modal__buttons {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+.mock-modal__buttons button:first-child {
+    margin-right: 5px;
 }
 
 </style>

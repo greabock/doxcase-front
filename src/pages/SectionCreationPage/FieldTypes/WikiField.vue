@@ -58,7 +58,7 @@ export default {
             sort_index: props.fieldsArrLength,
             filter_sort_index: null,
             type: {
-                name: 'Date',
+                name: 'Wiki',
             },
         };
         const newField = ref({...initField, ...props.fieldToChange});
