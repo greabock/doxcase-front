@@ -133,8 +133,8 @@
                 </div>
 
                 <!-- Sections loader -->
-                <div v-if="isSectionsLoading" class="sections-loader__wrapper">
-                    <div class="sections-loader__cont">Loading...</div>
+                <div v-if="isSectionsLoading" class="content-loader__wrapper">
+                    <div class="content-loader__cont">Loading...</div>
                 </div>
             </div>
         </div>
@@ -150,8 +150,8 @@
                     необратимо!
                 </p>
                 <div class="mock-modal__buttons">
-                    <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
                     <v-button class="w-100" @click="removeSection(sectionToRemove?.id)">Удалить</v-button>
+                    <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
                 </div>
             </div>
         </div>
@@ -268,7 +268,7 @@ export default {
 </script>
 
 <style scoped>
-.sections-loader__wrapper {
+.content-loader__wrapper {
     position: fixed;
     z-index: 100;
     display: flex;
@@ -280,7 +280,7 @@ export default {
     right: 0;
     background-color: rgba(255, 255, 255, 0.5);
 }
-.sections-loader__cont {
+.content-loader__cont {
     font-size: 26px;
     color: #1d47ce;
 }
