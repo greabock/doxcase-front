@@ -75,19 +75,6 @@
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
-                                <!-- Фильтры для разделов -->
-<!--                                <FilterSections />-->
-
-<!--                                <div class="form-wrap__footer">-->
-<!--                                    <button-->
-<!--                                        @click="createSection"-->
-<!--                                        :class="{disabled: section.title === ''}"-->
-<!--                                        class="btn btn-primary"-->
-<!--                                    >-->
-<!--                                        Сохранить <span class="d-none d-lg-inline">раздел</span>-->
-<!--                                    </button>-->
-<!--                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>-->
-<!--                                </div>-->
 
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
@@ -248,6 +235,7 @@ export default {
         };
         const allSections = ref([]);
         const allEnums = ref([]);
+
         const router = useRouter();
         const section = ref({...initSection});
         const sortedFields = computed(() => {
@@ -288,6 +276,7 @@ export default {
             }
             setFieldModalVisible(false);
         };
+
         const createSection = async () => {
             try {
                 await sectionsService.createSection(section.value);
@@ -297,11 +286,11 @@ export default {
             }
         };
 
+        // Section Filters_____________
         const isFiltersOpen = ref(false);
         const setFiltersOpen = (bool) => {
             isFiltersOpen.value = bool;
         }
-
         const sortFieldUp = (item) => {
             section.value.fields = sortByIndexUp(item, sortedFields.value);
         };
@@ -314,27 +303,29 @@ export default {
                 fields: newFields,
             };
         };
-            const fieldToRemove = ref(null);
-            const setFieldToRemove = (field) => {
-                fieldToRemove.value = field;
-                setFieldAlertVisible(true);
-            }
-            const removeField = (item) => {
-                section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
-            };
-            const isFieldAlertVisible = ref(false);
-            const setFieldAlertVisible = (bool) => {
-                isFieldAlertVisible.value = bool;
-            }
 
-            onMounted(async () => {
-                try{
-                    allEnums.value = await enumService.getEnums();
-                    allSections.value = await sectionsService.getSections();
-                } catch(e) {
-                    console.log(e)
-                }
-            });
+        // Remove field_________________
+        const isFieldAlertVisible = ref(false);
+        const setFieldAlertVisible = (bool) => {
+            isFieldAlertVisible.value = bool;
+        }
+        const fieldToRemove = ref(null);
+        const setFieldToRemove = (field) => {
+            fieldToRemove.value = field;
+            setFieldAlertVisible(true);
+        }
+        const removeField = (item) => {
+            section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
+        };
+
+        onMounted(async () => {
+            try{
+                allEnums.value = await enumService.getEnums();
+                allSections.value = await sectionsService.getSections();
+            } catch(e) {
+                console.log(e)
+            }
+        });
 
         return {
             allEnums,

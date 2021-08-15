@@ -243,7 +243,7 @@ export default {
         // Input File_____________________
         const fileInput = ref(null);
         const resetForm = () => {
-            section.value = {...initSection};
+            section.value = JSON.parse(JSON.stringify(initSection));
             fileInput.value = null;
         };
 
@@ -368,51 +368,6 @@ export default {
 }
 .sSectionMain__col-cut {
     width: 25%
-}
-.mock-modal__wrapper {
-    display: flex;
-    z-index: 10;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-.mock-modal__cont {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 400px;
-    background-color: #fff;
-    padding: 32px;
-    border-radius: 5px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
-}
-.mock-modal__header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-.mock-modal__closer {
-    display: block;
-    position: absolute;
-    font-size: 26px;
-    line-height: 26px;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-}
-.mock-modal__buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-}
-.mock-modal__buttons button:first-child {
-    margin-right: 5px;
 }
 .content-loader__wrapper {
     position: fixed;
