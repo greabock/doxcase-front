@@ -11,6 +11,7 @@ import SectionsListPage from '@/pages/SectionsListPage';
 import SectionCreationPage from '@/pages/SectionCreationPage';
 import SectionPage from '@/pages/SectionPage';
 import MaterialPage from '@/pages/MaterialPage';
+import {adminGuard} from '@/guards/admin.guard';
 
 const routes = [
     {
@@ -41,16 +42,19 @@ const routes = [
         path: '/sections',
         name: 'SectionListPageRoute',
         components: {default: SectionsListPage, header: HeaderComponent, footer: FooterComponent},
+        beforeEnter: adminGuard,
     },
     {
         path: '/section-creation',
         name: 'SectionCreationPageRoute',
         components: {default: SectionCreationPage, header: HeaderComponent, footer: FooterComponent},
+        beforeEnter: adminGuard,
     },
     {
         path: '/sections/:id',
         name: 'SectionPageRoute',
-        components: {default: SectionPage, header: HeaderComponent, footer: FooterComponent},
+        components: {default: SectionPage, header: HeaderComponent, footer: FooterComponent,},
+        beforeEnter: adminGuard,
     },
     {
         path: '/material-creation',

@@ -104,8 +104,8 @@
                 }}"?
             </span>
             <div class="mock-modal__buttons">
-                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
                 <v-button class="w-100" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</v-button>
+                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
             </div>
         </div>
     </div>
