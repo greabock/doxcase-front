@@ -1,15 +1,23 @@
 <template>
     <div class="cr-calendar">
         <header class="cr-calendar__header">
-            <button class="cr-calendar__arrow" @click.prevent="previousYear">&lt;&lt;</button>
-            <button class="cr-calendar__arrow" @click.prevent="previousMonth">&lt;</button>
+            <slot name="prevYear">
+                <button class="cr-calendar__arrow" @click.prevent="previousYear">&lt;&lt;</button>
+            </slot>
+            <slot name="prevMonth">
+                <button class="cr-calendar__arrow" @click.prevent="previousMonth">&lt;</button>
+            </slot>
             <span class="cr-calendar__month-year">
                 <slot :date="currDateCursor">
                     {{ dateYear }}
                 </slot>
             </span>
-            <button class="cr-calendar__arrow" @click.prevent="nextMonth">&gt;</button>
-            <button class="cr-calendar__arrow" @click.prevent="nextYear">&gt;&gt;</button>
+            <slot name="nextMonth">
+                <button class="cr-calendar__arrow" @click.prevent="nextMonth">&gt;</button>
+            </slot>
+            <slot name="nextYear">
+                <button class="cr-calendar__arrow" @click.prevent="nextYear">&gt;&gt;</button>
+            </slot>
         </header>
         <div class="cr-calendar__headings">
             <span class="cr-calendar__weekday" v-for="weekDay in weekDays" :key="weekDay">
@@ -23,7 +31,7 @@
                 {'cr-today': day.isToday},
                 {'cr-current-month': day.isCurrentMonth},
                 {'cr-selected': day.isSelected},
-                displayDaysOtherMonth && {'cr-hide': !day.isCurrentMonth},
+                !displayDaysOtherMonth && {'cr-hide': !day.isCurrentMonth},
             ]"
             :key="index"
             @click.prevent="setSelectedDate(day)"
@@ -40,17 +48,17 @@ import {
     addMonths,
     getMonth,
     isSameMonth,
-    getDay,
     isSameDay,
     isToday,
-    addDays,
     lastDayOfMonth,
     startOfMonth,
     eachDayOfInterval,
     addYears,
+    startOfWeek,
+    endOfWeek,
 } from 'date-fns';
-import { formatWithOptions } from 'date-fns/fp'
-import { ru } from 'date-fns/locale'
+import {formatWithOptions} from 'date-fns/fp';
+import {ru} from 'date-fns/locale';
 
 const DAYS_OF_WEEK = 7;
 
@@ -65,7 +73,7 @@ export default {
         modelValue: Date,
         displayDaysOtherMonth: {
             type: Boolean,
-            default: true,
+            default: false,
         },
         locale: {
             type: Object,
@@ -73,7 +81,7 @@ export default {
         },
         firstDayWeek: {
             type: Number,
-            default: 0,
+            default: 1,
             validator: (i) => typeof i === 'number' && Number.isInteger(i) && i >= 0 && i <= 6,
         },
         weekdayFormat: {
@@ -85,18 +93,18 @@ export default {
             default: 'LLLL yyyy',
         },
         dayFormat: {
-             type: String,
+            type: String,
             default: 'd',
         },
     },
     computed: {
         dateYear() {
-            return formatWithOptions({locale: this.locale}, this.yearLabelFormat, this.currDateCursor)
+            return formatWithOptions({locale: this.locale}, this.yearLabelFormat, this.currDateCursor);
         },
         weekDays() {
             const initial = this.firstDayWeek;
-            const dayFormat = formatWithOptions({locale: this.locale}, this.weekdayFormat)
-            return Array.from(Array(DAYS_OF_WEEK))
+            const dayFormat = formatWithOptions({locale: this.locale}, this.weekdayFormat);
+            return [...Array(DAYS_OF_WEEK)]
                 .map((_, i) => (initial + i) % DAYS_OF_WEEK)
                 .map((v) =>
                     setDay(new Date(), v, {
@@ -104,7 +112,7 @@ export default {
                     })
                 )
                 .map(dayFormat);
-        },   
+        },
         currentMonth() {
             return this.currDateCursor.getMonth();
         },
@@ -112,13 +120,14 @@ export default {
             const cursorDate = this.currDateCursor;
             const startDateOfMonth = startOfMonth(cursorDate);
             const endDateOfMonth = lastDayOfMonth(cursorDate);
-            const daysPrevMonth = getDay(startDateOfMonth - 1) + DAYS_OF_WEEK;
-            const daysNeededForLastMonth = daysPrevMonth >= DAYS_OF_WEEK ? daysPrevMonth - DAYS_OF_WEEK : daysPrevMonth;
-            const daysNextMonth = DAYS_OF_WEEK - getDay(endDateOfMonth);
 
-            const daysNeededForNextMonth = daysNextMonth >= DAYS_OF_WEEK ? 0 : daysNextMonth;
-            const startDate = addDays(startDateOfMonth, -daysNeededForLastMonth);
-            const endDate = addDays(endDateOfMonth, daysNeededForNextMonth);
+            const startDate = startOfWeek(startDateOfMonth, {
+                weekStartsOn: this.firstDayWeek,
+            });
+
+            const endDate = endOfWeek(endDateOfMonth, {
+                weekStartsOn: this.firstDayWeek,
+            });
 
             return eachDayOfInterval({start: startDate, end: endDate}).map((date) => ({
                 date,
@@ -162,8 +171,8 @@ export default {
     watch: {
         modelValue(date) {
             this.currDateCursor = date;
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -241,7 +250,6 @@ export default {
     justify-content: space-around;
     text-align: center;
     padding: 0;
-    font-weight: lighter;
     color: var(--main-color);
     transition: background 0.2s;
     font-size: 1rem;
@@ -250,11 +258,12 @@ export default {
 .cr-calendar__day.cr-current-month {
     color: var(--day-color);
 }
-
 .cr-calendar__day.cr-today {
     color: var(--additional-color);
 }
-
+.cr-calendar__day.cr-hide {
+    visibility: hidden;
+}
 .cr-calendar__day:hover {
     background: var(--light-color);
 }
@@ -268,11 +277,6 @@ export default {
     max-width: 4rem;
     font-size: inherit;
     text-align: center;
-    // border-bottom: 1px solid var(--light-color);
     color: var(--main-color);
-}
-
-.cr-hide {
-    visibility: hidden;
 }
 </style>
