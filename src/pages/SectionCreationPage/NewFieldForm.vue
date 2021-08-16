@@ -9,36 +9,22 @@
                 <div class="form-wrap">
                     <form>
                         <div class="h3 mb-4">Новое поле</div>
-                        <div class="form-wrap__input-wrap form-group">
-                            <label
-                                ><span class="form-wrap__input-title">Выберите тип поля</span>
-                                <select
-                                        v-model="fieldType"
-                                        class="form-wrap__input form-select"
-                                >
-                                    <option value="Text">Текстовое поле</option>
-                                    <option value="String">Короткое текстовое поле</option>
-                                    <option value="Wiki">Wiki редактор</option>
-                                    <option value="Select">Значения из выпадающего списка</option>
-                                    <option value="Boolean">Чекбокс</option>
-                                    <option value="Date">Выбор даты</option>
-                                    <option value="File">Загрузка документа</option>
-                                    <option value="Enum">Значения из справочников</option>
-                                    <option value="Dictionary">Значения из разделов</option>
-                                </select>
-                            </label>
-                        </div>
+
+                        <v-select
+                            v-model="fieldType"
+                            :options="options"
+                        ></v-select>
                         <!-- +e.input-wrap-->
                         <div class="typed-field-forms">
-                            <text-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Text'"></text-field>
-                            <string-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'String'"></string-field>
-                            <wiki-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Wiki'"></wiki-field>
-                            <selector-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Select'"></selector-field>
-                            <checkbox-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Boolean'"></checkbox-field>
-                            <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Date'"></date-field>
-                            <document-upload-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'File'"></document-upload-field>
-                            <enum-field :allEnums="allEnums"  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Enum'"></enum-field>
-                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType === 'Dictionary'"></dictionary-field>
+                            <text-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Text'"></text-field>
+                            <string-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'String'"></string-field>
+                            <wiki-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Wiki'"></wiki-field>
+                            <selector-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Select'"></selector-field>
+                            <checkbox-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Boolean'"></checkbox-field>
+                            <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Date'"></date-field>
+                            <document-upload-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'File'"></document-upload-field>
+                            <enum-field :allEnums="allEnums"  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Enum'"></enum-field>
+                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Dictionary'"></dictionary-field>
                         </div>
                     </form>
                 </div>
@@ -58,6 +44,7 @@ import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/Document
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
 import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
 import WikiField from '@/pages/SectionCreationPage/FieldTypes/WikiField';
+import VSelect from '@/ui/VSelect';
 
 export default {
     components: {
@@ -70,6 +57,7 @@ export default {
         SelectorField,
         DictionaryField,
         WikiField,
+        VSelect,
     },
     props: {
         allEnums: {
@@ -79,7 +67,8 @@ export default {
           type: Array
         },
         fieldToChange: {
-            type: Object
+            type: Object,
+            default: () => {}
         },
         fieldsArrLength: {
             type: Number
@@ -92,13 +81,28 @@ export default {
     emits: ['updateFieldModalVisible', 'addNewField'],
     setup(props, {emit}) {
 
+        const options = [
+            {key: "Text", name: "Текстовое поле"},
+            {key: "String", name: "Короткое текстовое поле"},
+            {key: "Wiki", name: "Wiki редактор"},
+            {key: "Select", name: "Значения из выпадающего списка"},
+            {key: "Boolean", name: "Чекбокс"},
+            {key: "Date", name: "Выбор даты"},
+            {key: "File", name: "Загрузка документа"},
+            {key: "Enum", name: "Значения из справочников"},
+            {key: "Dictionary", name: "Значения из разделов"},
+        ]
         const defineInitType = (field) => {
-            if (!field.type) return 'Text';
-            if (field.type?.name === 'List') return field.type?.of?.name; // Название типа у списка.
-            return field.type?.name;
+            if (!field.type) {
+                return {key: "Text", name: "Текстовое поле"};
+            }
+            if (field.type?.name === 'List') {
+                return options.find( item => item.key === field.type.of.name);
+            }
+            return options.find( item => item.key === field.type.name);
         }
 
-        const fieldType = ref('Text');
+        const fieldType = ref("Text");
         watch(() => props.fieldToChange, () => {
             fieldType.value = defineInitType(props.fieldToChange)
         });
@@ -113,6 +117,7 @@ export default {
             setFieldModalVisible,
             fieldType,
             addNewField,
+            options,
         };
     },
 };

@@ -90,7 +90,7 @@ export default {
             filter_sort_index: null,
         };
 
-        const filteredSections = ref(props.allSections.filter(section => section.is_dictionary));
+        const filteredSections = ref(props.allSections.filter(section => section.is_dictionary))
         const newField = ref({...initField, ...props.fieldToChange});
 
         const schema = yup.object({
