@@ -6,7 +6,7 @@
                     <template #left>
                         <div class="d-flex justify-content-center align-items-center w-100">
                             <svg class="icon fs-4">
-                                <use xlink:href="img/svg/sprite.svg#doc"></use>
+                                <use xlink:href="/img/svg/sprite.svg#doc"></use>
                             </svg>
                         </div>
                     </template>
@@ -14,12 +14,12 @@
                         <div class="sAddDocs__btns align-items-center justify-content-center w-100" @click="saveFile">
                             <div class="btn-edit-sm btn-success">
                                 <svg class="icon icon-check">
-                                    <use xlink:href="img/svg/sprite.svg#check"></use>
+                                    <use xlink:href="/img/svg/sprite.svg#check"></use>
                                 </svg>
                             </div>
                             <div class="btn-edit-sm btn-danger" @click="$emit('close')">
                                 <svg class="icon icon-close">
-                                    <use xlink:href="img/svg/sprite.svg#close"></use>
+                                    <use xlink:href="/img/svg/sprite.svg#close"></use>
                                 </svg>
                             </div>
                         </div>

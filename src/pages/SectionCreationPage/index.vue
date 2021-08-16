@@ -66,30 +66,20 @@
                                         >
                                     </label>
                                 </div>
-                                <div class="d-lg-none">
+                                <div class="d-lg-none mb-3">
                                     <button
-                                        @click="setFiltersOpen(true)"
+                                        @click="setMobFiltersShow(!isMobFiltersShow)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                         >
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
-                                <!-- Фильтры для разделов -->
-<!--                                <FilterSections />-->
 
-<!--                                <div class="form-wrap__footer">-->
-<!--                                    <button-->
-<!--                                        @click="createSection"-->
-<!--                                        :class="{disabled: section.title === ''}"-->
-<!--                                        class="btn btn-primary"-->
-<!--                                    >-->
-<!--                                        Сохранить <span class="d-none d-lg-inline">раздел</span>-->
-<!--                                    </button>-->
-<!--                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>-->
-<!--                                </div>-->
-
-                                <div class="form-wrap__modal-win" id="modal-filter">
+                                <div
+                                    class="form-wrap__modal-win"
+                                    :class="{'mobile-filters-show': isMobFiltersShow}"
+                                >
                                     <p class="fw-500">Фильтры для раздела</p>
 
                                     <fields-to-filter @click.stop
@@ -248,6 +238,7 @@ export default {
         };
         const allSections = ref([]);
         const allEnums = ref([]);
+
         const router = useRouter();
         const section = ref({...initSection});
         const sortedFields = computed(() => {
@@ -288,6 +279,7 @@ export default {
             }
             setFieldModalVisible(false);
         };
+
         const createSection = async () => {
             try {
                 await sectionsService.createSection(section.value);
@@ -297,11 +289,11 @@ export default {
             }
         };
 
+        // Section Filters_____________
         const isFiltersOpen = ref(false);
         const setFiltersOpen = (bool) => {
             isFiltersOpen.value = bool;
         }
-
         const sortFieldUp = (item) => {
             section.value.fields = sortByIndexUp(item, sortedFields.value);
         };
@@ -314,27 +306,34 @@ export default {
                 fields: newFields,
             };
         };
-            const fieldToRemove = ref(null);
-            const setFieldToRemove = (field) => {
-                fieldToRemove.value = field;
-                setFieldAlertVisible(true);
-            }
-            const removeField = (item) => {
-                section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
-            };
-            const isFieldAlertVisible = ref(false);
-            const setFieldAlertVisible = (bool) => {
-                isFieldAlertVisible.value = bool;
-            }
 
-            onMounted(async () => {
-                try{
-                    allEnums.value = await enumService.getEnums();
-                    allSections.value = await sectionsService.getSections();
-                } catch(e) {
-                    console.log(e)
-                }
-            });
+        // Remove field_________________
+        const isFieldAlertVisible = ref(false);
+        const setFieldAlertVisible = (bool) => {
+            isFieldAlertVisible.value = bool;
+        }
+        const fieldToRemove = ref(null);
+        const setFieldToRemove = (field) => {
+            fieldToRemove.value = field;
+            setFieldAlertVisible(true);
+        }
+        const removeField = (item) => {
+            section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
+        };
+
+        const isMobFiltersShow = ref(false);
+        const setMobFiltersShow = (bool) => {
+            isMobFiltersShow.value = bool;
+        }
+
+        onMounted(async () => {
+            try{
+                allEnums.value = await enumService.getEnums();
+                allSections.value = await sectionsService.getSections();
+            } catch(e) {
+                console.log(e)
+            }
+        });
 
         return {
             allEnums,
@@ -359,6 +358,8 @@ export default {
             isFieldAlertVisible,
             setFieldAlertVisible,
             removeField,
+            isMobFiltersShow,
+            setMobFiltersShow,
         };
     },
 };
@@ -367,15 +368,6 @@ export default {
 <style>
 .file-uploader__cont > button {
     margin-right: 5px;
-}
-.sSectionMain__col-title {
-    width: 25%;
-}
-.sSectionMain__col-content {
-    width: 40%;
-}
-.sSectionMain__col-cut {
-    width: 25%
 }
 .mock-modal__wrapper {
     display: flex;
@@ -422,5 +414,7 @@ export default {
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
 }
-
+.mobile-filters-show {
+    display:block !important;
+}
 </style>

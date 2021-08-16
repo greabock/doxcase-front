@@ -22,12 +22,12 @@
                 <div class="lines__btns">
                     <div class="btn-edit-sm btn-white" @click="swap(model, 'up')">
                         <svg class="icon icon-chevron-up">
-                            <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
+                            <use xlink:href="/img/svg/sprite.svg#chevron-up"></use>
                         </svg>
                     </div>
                     <div class="btn-edit-sm btn-white" @click="swap(model, 'down')">
                         <svg class="icon icon-chevron-down">
-                            <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
+                            <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
                         </svg>
                     </div>
                     <div class="btn-edit-sm btn-edit-sm--minus btn-danger" @click="deleteEl(model)"></div>

@@ -45,7 +45,7 @@
                     @click="sortFilterUp(field)"
                     class="btn-edit-sm btn-white">
                     <svg class="icon icon-chevron-up ">
-                        <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
+                        <use xlink:href="/img/svg/sprite.svg#chevron-up"></use>
                     </svg>
                 </div>
                 <div
@@ -53,7 +53,7 @@
                     class="btn-edit-sm btn-white"
                 >
                     <svg class="icon icon-chevron-down ">
-                        <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
+                        <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
                     </svg>
                 </div>
                 <div

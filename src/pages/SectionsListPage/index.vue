@@ -71,7 +71,7 @@
                                             class="btn-edit-sm btn-secondary"
                                         >
                                             <svg class="icon icon-edit">
-                                                <use xlink:href="img/svg/sprite.svg#edit"></use>
+                                                <use xlink:href="/img/svg/sprite.svg#edit"></use>
                                             </svg>
                                         </div>
                                         <div
@@ -80,7 +80,7 @@
                                             class="btn-edit-sm btn-danger"
                                         >
                                             <svg class="icon icon-basket">
-                                                <use xlink:href="img/svg/sprite.svg#basket"></use>
+                                                <use xlink:href="/img/svg/sprite.svg#basket"></use>
                                             </svg>
                                         </div>
                                         <div
@@ -88,7 +88,7 @@
                                             class="btn-edit-sm btn-secondary"
                                         >
                                             <svg class="icon icon-chevron-up text-primary">
-                                                <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
+                                                <use xlink:href="/img/svg/sprite.svg#chevron-up"></use>
                                             </svg>
                                         </div>
                                         <div
@@ -96,7 +96,7 @@
                                             class="btn-edit-sm btn-secondary"
                                         >
                                             <svg class="icon icon-chevron-down text-primary">
-                                                <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
+                                                <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
                                             </svg>
                                         </div>
                                     </div>
@@ -133,28 +133,26 @@
                 </div>
 
                 <!-- Sections loader -->
-                <div v-if="isSectionsLoading" class="sections-loader__wrapper">
-                    <div class="sections-loader__cont">Loading...</div>
+                <div v-if="isSectionsLoading" class="content-loader__wrapper">
+                    <div class="content-loader__cont">Loading...</div>
                 </div>
             </div>
         </div>
 
-        <div class="mock-modal__wrapper" v-show="isRemoveAlertVisible">
-            <div class="mock-modal__cont">
-                <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
-                <div class="mock-modal__header">
-                    <h3>Удаление</h3>
-                </div>
-                <p>
-                    Вы действительно хотите удалить раздел "{{ sectionToRemove?.title }}" <br />Данное действие
-                    необратимо!
-                </p>
-                <div class="mock-modal__buttons">
-                    <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
-                    <v-button class="w-100" @click="removeSection(sectionToRemove?.id)">Удалить</v-button>
-                </div>
+        <modal-window v-model="isRemoveAlertVisible">
+            <div class="modal-window__header">
+                <h3>Удаление</h3>
             </div>
-        </div>
+            <p>
+                Вы действительно хотите удалить раздел "{{ sectionToRemove?.title }}" <br />Данное действие
+                необратимо!
+            </p>
+            <div class="modal-window__buttons">
+                <v-button class="w-100" @click="removeSection(sectionToRemove?.id)">Удалить</v-button>
+                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+            </div>
+        </modal-window>
+
     </main>
 </template>
 
@@ -166,11 +164,13 @@ import {sortByIndexUp, sortByIndexDown} from '@/utils/sortByIndex';
 import {useStore} from 'vuex';
 import VButton from '@/ui/VButton';
 import VBreadcrumb from '@/ui/VBreadcrumb';
+import ModalWindow from '@/components/ModalWindow';
 
 export default {
     components: {
         VButton,
         VBreadcrumb,
+        ModalWindow,
     },
     setup() {
         const store = useStore();
@@ -268,7 +268,7 @@ export default {
 </script>
 
 <style scoped>
-.sections-loader__wrapper {
+.content-loader__wrapper {
     position: fixed;
     z-index: 100;
     display: flex;
@@ -280,55 +280,8 @@ export default {
     right: 0;
     background-color: rgba(255, 255, 255, 0.5);
 }
-.sections-loader__cont {
+.content-loader__cont {
     font-size: 26px;
     color: #1d47ce;
-}
-
-/* Modal Alert window */
-.mock-modal__wrapper {
-    display: flex;
-    z-index: 10;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-.mock-modal__cont {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 400px;
-    background-color: #fff;
-    padding: 32px;
-    border-radius: 5px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
-}
-.mock-modal__header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-.mock-modal__closer {
-    display: block;
-    position: absolute;
-    font-size: 26px;
-    line-height: 26px;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-}
-.mock-modal__buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-}
-.mock-modal__buttons button:first-child {
-    margin-right: 5px;
 }
 </style>

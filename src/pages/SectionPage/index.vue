@@ -3,8 +3,11 @@
         class="main-block"
         @click="setFiltersOpen(false)"
     >
+        <div v-if="isSectionLoading" class="content-loader__wrapper">
+            <div class="content-loader__cont">Loading...</div>
+        </div>
         <!-- start sCabinet-->
-        <section class="sCabinet section py-0" id="sCabinet">
+        <section v-else class="sCabinet section py-0" id="sCabinet">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-aside col-lg-auto d-flex flex-column">
@@ -23,6 +26,7 @@
                                 },
                             ]"
                         />
+
                         <!-- start sSectionAside-->
                         <div class="sSectionAside section" id="sSectionAside">
                             <div class="pb-1">
@@ -75,19 +79,6 @@
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
-                                <!-- Фильтры для разделов -->
-                                <!--                                <FilterSections />-->
-
-                                <!--                                <div class="form-wrap__footer">-->
-                                <!--                                    <button-->
-                                <!--                                        @click="createSection"-->
-                                <!--                                        :class="{disabled: section.title === ''}"-->
-                                <!--                                        class="btn btn-primary"-->
-                                <!--                                    >-->
-                                <!--                                        Сохранить <span class="d-none d-lg-inline">раздел</span>-->
-                                <!--                                    </button>-->
-                                <!--                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>-->
-                                <!--                                </div>-->
 
                                 <div class="form-wrap__modal-win" id="modal-filter">
                                     <p class="fw-500">Фильтры для раздела</p>
@@ -187,17 +178,18 @@
                     </div>
                 </div>
             </div>
-        </section>
 
-        <new-field-form
-            :isFieldModalVisible="isFieldModalVisible"
-            @updateFieldModalVisible="setFieldModalVisible"
-            @addNewField="addNewField"
-            :fieldsArrLength="section.fields.length"
-            :fieldToChange="fieldToChange"
-            :allEnums="allEnums"
-            :allSections="allSections"
-        ></new-field-form>
+            <new-field-form
+                :isFieldModalVisible="isFieldModalVisible"
+                @updateFieldModalVisible="setFieldModalVisible"
+                @addNewField="addNewField"
+                :fieldsArrLength="section.fields.length"
+                :fieldToChange="fieldToChange"
+                :allEnums="allEnums"
+                :allSections="allSections"
+            ></new-field-form>
+
+        </section>
 
         <!-- Remove Field alert -->
         <div class="mock-modal__wrapper" v-show="isFieldAlertVisible">
@@ -220,7 +212,6 @@
 
 <script>
 import {ref, computed, onMounted} from 'vue';
-import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
 import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
@@ -237,27 +228,22 @@ import VButton from '@/ui/VButton';
 export default {
     components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
     setup() {
-        let initSection = {
-            id: uuidv4(),
-            title: '',
-            is_dictionary: true,
-            is_navigation: true,
-            image: 'https://dev.cdi.msharks.ru/img/avatar-2.png',
-            sort_index: 0,
-            fields: [],
-        };
+        const isSectionLoading = ref(true);
+        let initSection = null;
         const allSections = ref([]);
         const allEnums = ref([]);
         const router = useRouter();
-        const section = ref({...initSection});
+        const section = ref({});
         const sortedFields = computed(() => {
-            return [...section.value.fields].sort((a, b) => a.sort_index - b.sort_index);
+            if (section.value.fields) {
+                return [...section.value.fields].sort((a, b) => a.sort_index - b.sort_index);
+            } return []
         });
 
         // Input File_____________________
         const fileInput = ref(null);
         const resetForm = () => {
-            section.value = {...initSection};
+            section.value = JSON.parse(JSON.stringify(initSection));
             fileInput.value = null;
         };
 
@@ -275,7 +261,7 @@ export default {
         }
 
         const addNewField = (newField) => {
-            const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
+            const itemToUpdate = section.value.fields?.find((item) => item.id === newField.id);
             if (itemToUpdate) {
                 const idx = section.value.fields.indexOf(itemToUpdate);
                 section.value.fields = [
@@ -329,12 +315,15 @@ export default {
 
         onMounted(async () => {
             try{
-                console.log(router.currentRoute.value.params.id);
-                section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
+                isSectionLoading.value = true;
+                initSection = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
+                section.value = initSection;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
+                isSectionLoading.value = false;
             } catch(e) {
                 console.log(e)
+                isSectionLoading.value = false;
             }
         });
 
@@ -361,6 +350,7 @@ export default {
             isFieldAlertVisible,
             setFieldAlertVisible,
             removeField,
+            isSectionLoading,
         };
     },
 };
@@ -379,50 +369,20 @@ export default {
 .sSectionMain__col-cut {
     width: 25%
 }
-.mock-modal__wrapper {
-    display: flex;
-    z-index: 10;
+.content-loader__wrapper {
     position: fixed;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.5);
 }
-.mock-modal__cont {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 400px;
-    background-color: #fff;
-    padding: 32px;
-    border-radius: 5px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
-}
-.mock-modal__header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-.mock-modal__closer {
-    display: block;
-    position: absolute;
+.content-loader__cont {
     font-size: 26px;
-    line-height: 26px;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
+    color: #1d47ce;
 }
-.mock-modal__buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-}
-.mock-modal__buttons button:first-child {
-    margin-right: 5px;
-}
-
 </style>
