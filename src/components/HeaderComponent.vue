@@ -5,7 +5,7 @@
                 <div class="col-auto" v-if="$route.path !== '/'">
                     <router-link to="/" class="topLine__link-back">
                         <svg class="icon icon-arrow-left">
-                            <use xlink:href="img/svg/sprite.svg#arrow-left"></use>
+                            <use xlink:href="/img/svg/sprite.svg#arrow-left"></use>
                         </svg>
                     </router-link>
                 </div>
@@ -31,7 +31,7 @@
                                 <div class="menu-mobile__btn-wrap">
                                     <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
-                                            <use xlink:href="img/svg/sprite.svg#setting"></use>
+                                            <use xlink:href="/img/svg/sprite.svg#setting"></use>
                                         </svg>
                                         <span class="topLine__btn-text d-lg-none">Настроить разделы</span>
                                     </router-link>

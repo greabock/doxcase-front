@@ -14,7 +14,7 @@
             <!-- +e.input-wrap-->
             <button class="search-block__btn" @click.stop.prevent type="submit">
                 <svg class="icon icon-search">
-                    <use xlink:href="img/svg/sprite.svg#search"></use>
+                    <use xlink:href="/img/svg/sprite.svg#search"></use>
                 </svg>
             </button>
         </form>
@@ -31,7 +31,7 @@
                 <div class="block-position__btns">
                     <button class="btn-edit-sm btn-success">
                         <svg class="icon icon-check">
-                            <use xlink:href="img/svg/sprite.svg#check"></use>
+                            <use xlink:href="/img/svg/sprite.svg#check"></use>
                         </svg>
                     </button>
                     <div
@@ -40,7 +40,7 @@
                         @click.prevent.stop="setShownEnumItemForm(false)"
                     >
                         <svg class="icon icon-close">
-                            <use xlink:href="img/svg/sprite.svg#close"></use>
+                            <use xlink:href="/img/svg/sprite.svg#close"></use>
                         </svg>
                     </div>
                 </div>
@@ -53,12 +53,12 @@
             <div class="block-position__btns">
                 <div @click="setItemToChange(item)" class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
-                        <use xlink:href="img/svg/sprite.svg#edit"></use>
+                        <use xlink:href="/img/svg/sprite.svg#edit"></use>
                     </svg>
                 </div>
                 <div @click="setEnumItemToRemove(item)" class="btn-edit-sm btn-danger">
                     <svg class="icon icon-basket">
-                        <use xlink:href="img/svg/sprite.svg#basket"></use>
+                        <use xlink:href="/img/svg/sprite.svg#basket"></use>
                     </svg>
                 </div>
             </div>
@@ -73,7 +73,7 @@
                     <div class="block-position__btns">
                         <button class="btn-edit-sm btn-success">
                             <svg class="icon icon-check">
-                                <use xlink:href="img/svg/sprite.svg#check"></use>
+                                <use xlink:href="/img/svg/sprite.svg#check"></use>
                             </svg>
                         </button>
                         <div
@@ -82,7 +82,7 @@
                             @click.prevent.stop="setShownEnumItemForm(false)"
                         >
                             <svg @click="setItemToChange(null)" class="icon icon-close">
-                                <use xlink:href="img/svg/sprite.svg#close"></use>
+                                <use xlink:href="/img/svg/sprite.svg#close"></use>
                             </svg>
                         </div>
                     </div>

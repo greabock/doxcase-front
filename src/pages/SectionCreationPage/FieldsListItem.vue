@@ -27,7 +27,7 @@
                     @click="changeField(field)"
                     class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
-                        <use xlink:href="img/svg/sprite.svg#edit"></use>
+                        <use xlink:href="/img/svg/sprite.svg#edit"></use>
                     </svg>
                 </div>
                 <div
@@ -35,7 +35,7 @@
                      class="btn-edit-sm btn-danger"
                 >
                     <svg class="icon icon-basket">
-                        <use xlink:href="img/svg/sprite.svg#basket"></use>
+                        <use xlink:href="/img/svg/sprite.svg#basket"></use>
                     </svg>
                 </div>
                 <div
@@ -43,7 +43,7 @@
                      class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-chevron-up text-primary"
                     >
-                        <use xlink:href="img/svg/sprite.svg#chevron-up"></use>
+                        <use xlink:href="/img/svg/sprite.svg#chevron-up"></use>
                     </svg>
                 </div>
                 <div
@@ -51,7 +51,7 @@
                     class="btn-edit-sm btn-secondary"
                 >
                     <svg class="icon icon-chevron-down text-primary">
-                        <use xlink:href="img/svg/sprite.svg#chevron-down"></use>
+                        <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
                     </svg>
                 </div>
             </div>
@@ -210,4 +210,17 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+@media (min-width: 991px) {
+    .sSectionMain__col-title {
+        width: 25%;
+    }
+    .sSectionMain__col-content {
+        width: 40%;
+    }
+    .sSectionMain__col-cut {
+        width: 25%
+    }
+}
+
+</style>

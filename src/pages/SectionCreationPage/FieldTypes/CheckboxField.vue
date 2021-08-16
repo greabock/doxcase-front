@@ -2,35 +2,35 @@
     <div id="modal-add-field-not-required">
         <div class="form-wrap">
             <form @submit="submitHandle">
-            <div class="form-wrap__input-wrap form-group">
-                <label
-                ><span class="form-wrap__input-title">Заголовок</span
-                ><input
-                    v-model="chbTitle"
-                    name="chbTitle"
-                    class="form-wrap__input form-control"
-                    :class="{'is-invalid': errorMessage && metachbTitle.dirty, 'is-valid': !errorMessage && metachbTitle.dirty }"
-                    type="text"
-                    placeholder="Заголовок поля"
-                />
-                </label>
-            </div>
+                <div class="form-wrap__input-wrap form-group">
+                    <label
+                    ><span class="form-wrap__input-title">Заголовок</span
+                    ><input
+                        v-model="titleValue"
+                        class="form-wrap__input form-control"
+                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
+                        name="titleValue"
+                        type="text"
+                        placeholder="Заголовок поля"
+                    />
+                    </label>
+                </div>
             <!-- +e.input-wrap-->
 
-            <label class="custom-input form-check"
-            ><input
-                v-model="chbIsPresentInCard"
-                class="custom-input__input form-check-input"
-                name="chbIsPresentInCard"
-                type="checkbox"
-            /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
-            </label>
+                <label class="custom-input form-check"
+                ><input
+                    v-model="is_present_in_cardValue"
+                    class="custom-input__input form-check-input"
+                    name="checkbox"
+                    type="checkbox"
+                /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
+                </label>
                 <div
                     v-if="!formMeta.valid && formMeta.dirty"
                     class="text-center text-danger mb-3">Заполните все поля чтобы создать поле
                 </div>
                 <button
-                    v-if="!formMeta.valid"
+                    :disabled="!formMeta.valid"
                     type="submit"
                     class="btn btn-primary w-100"
                 >
@@ -76,27 +76,27 @@ export default {
         const newField = ref({...initField, ...props.fieldToChange});
 
         const schema = yup.object({
-            chbTitle: yup.string().required(),
-            chbIsPresentInCard: yup.boolean()
+            title: yup.string().required(),
+            is_present_in_card: yup.boolean()
         });
 
         const {handleSubmit, meta: formMeta, setValues} = useForm({validationSchema: schema});
 
-        const {value: chbTitle, errorMessage, meta: metachbTitle} = useField('chbTitle');
-        const {value: chbIsPresentInCard} = useField('chbIsPresentInCard');
+        const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
+        const {value: is_present_in_cardValue} = useField('is_present_in_card', undefined, {initialValue: false});
 
         if (props.fieldToChange.type) {
             setValues({
-                chbTitle: props.fieldToChange.title,
-                chbIsPresentInCard: !!props.fieldToChange.is_present_in_card
+                title: props.fieldToChange.title,
+                is_present_in_card: !!props.fieldToChange.is_present_in_card
             });
         }
 
-        const addNewField = ({chbTitle, chbIsPresentInCard}) => {
+        const addNewField = ({title, is_present_in_card}) => {
             emit('addNewField', {
                     ...newField.value,
-                    title: chbTitle,
-                    is_present_in_card: chbIsPresentInCard,
+                    title,
+                    is_present_in_card: !!is_present_in_card
                 }
             );
         };
@@ -106,14 +106,14 @@ export default {
         });
 
         return {
-            chbTitle,
-            chbIsPresentInCard,
+            titleValue,
+            titleError,
+            titleMeta,
+            is_present_in_cardValue,
             formMeta,
             submitHandle,
             newField,
             addNewField,
-            errorMessage,
-            metachbTitle,
         };
     },
 };

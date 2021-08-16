@@ -8,6 +8,7 @@
                     ><input
                         v-model="titleValue"
                         class="form-wrap__input form-control"
+                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                         name="title"
                         type="text"
                         placeholder="Заголовок поля"
@@ -20,6 +21,7 @@
                         <select
                             v-model='selectedIdValue'
                             class="form-wrap__input form-select"
+                            :class="{'is-invalid': selectedIdError && selectedIdMeta.dirty, 'is-valid': !selectedIdError && selectedIdMeta.dirty }"
                             name="selectedId"
                         >
                             <option
@@ -110,14 +112,14 @@ export default {
         } = useForm({validationSchema: schema});
 
         const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
-        const {value: selectedIdValue} = useField('selectedId');
+        const {value: selectedIdValue, errorMessage: selectedIdError, meta: selectedIdMeta} = useField('selectedId');
         const {value: requiredValue} = useField('required');
         const {value: multiSelectValue} = useField('multiSelect');
 
         if (props.fieldToChange.type) {
             setValues({
                 title: props.fieldToChange.title,
-                selectedId: props.fieldToChange?.type?.of?.of || props.fieldToChange?.type?.of || (filteredSections.value)[0],
+                selectedId: props.fieldToChange?.type?.of?.of || props.fieldToChange?.type?.of,
                 required: !!props.fieldToChange.required,
                 multiSelect: !!props.fieldToChange?.type?.of?.of
 
@@ -147,7 +149,7 @@ export default {
             const field = {
                 ...newField.value,
                 title,
-                required,
+                required: !!required,
                 type: typeOfField
             }
             emit('addNewField', field);
@@ -162,6 +164,8 @@ export default {
             titleError,
             titleMeta,
             selectedIdValue,
+            selectedIdError,
+            selectedIdMeta,
             requiredValue,
             multiSelectValue,
             submitHandle,

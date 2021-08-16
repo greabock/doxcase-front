@@ -94,7 +94,7 @@ export default {
             emit('addNewField', {
                 ...newField.value,
                 title: title,
-                required: required,
+                required: !!required,
             });
         };
 

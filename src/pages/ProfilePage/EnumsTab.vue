@@ -10,7 +10,7 @@
         >
             {{ item?.title }}
             <svg @click.stop="setEnumToRemove(item)" class="icon icon-close">
-                <use xlink:href="img/svg/sprite.svg#close"></use>
+                <use xlink:href="/img/svg/sprite.svg#close"></use>
             </svg>
         </button>
     </div>

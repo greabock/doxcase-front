@@ -66,9 +66,9 @@
                                         >
                                     </label>
                                 </div>
-                                <div class="d-lg-none">
+                                <div class="d-lg-none mb-3">
                                     <button
-                                        @click="setFiltersOpen(true)"
+                                        @click="setMobFiltersShow(!isMobFiltersShow)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                         >
@@ -76,7 +76,10 @@
                                     </button>
                                 </div>
 
-                                <div class="form-wrap__modal-win" id="modal-filter">
+                                <div
+                                    class="form-wrap__modal-win"
+                                    :class="{'mobile-filters-show': isMobFiltersShow}"
+                                >
                                     <p class="fw-500">Фильтры для раздела</p>
 
                                     <fields-to-filter @click.stop
@@ -318,6 +321,11 @@ export default {
             section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
         };
 
+        const isMobFiltersShow = ref(false);
+        const setMobFiltersShow = (bool) => {
+            isMobFiltersShow.value = bool;
+        }
+
         onMounted(async () => {
             try{
                 allEnums.value = await enumService.getEnums();
@@ -350,6 +358,8 @@ export default {
             isFieldAlertVisible,
             setFieldAlertVisible,
             removeField,
+            isMobFiltersShow,
+            setMobFiltersShow,
         };
     },
 };
@@ -358,15 +368,6 @@ export default {
 <style>
 .file-uploader__cont > button {
     margin-right: 5px;
-}
-.sSectionMain__col-title {
-    width: 25%;
-}
-.sSectionMain__col-content {
-    width: 40%;
-}
-.sSectionMain__col-cut {
-    width: 25%
 }
 .mock-modal__wrapper {
     display: flex;
@@ -413,5 +414,7 @@ export default {
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
 }
-
+.mobile-filters-show {
+    display:block !important;
+}
 </style>
