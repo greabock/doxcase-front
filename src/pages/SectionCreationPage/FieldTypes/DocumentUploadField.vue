@@ -39,8 +39,10 @@
                                 class="form-wrap__input form-control input-max-size"
                                 name="maxFileSize"
                                 type="text"
-                                placeholder="mb"
+                                placeholder=""
                             />
+                            <span class="mb-placeholder"
+                            >mb</span>
                         </label>
                     </div>
                     <!-- +e.input-wrap-->
@@ -168,4 +170,16 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.mb-placeholder {
+    display: block;
+    position: relative;
+    left: 135px;
+    top: -39px;
+    color: #d6d6d6;
+    height: 0;
+}
+.input-max-size {
+    text-align:left;
+}
+</style>

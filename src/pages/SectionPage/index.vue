@@ -197,21 +197,22 @@
         </section>
 
         <!-- Remove Field alert -->
-        <div class="mock-modal__wrapper" v-show="isFieldAlertVisible">
-            <div class="mock-modal__cont">
-                <b class="mock-modal__closer" @click="setFieldAlertVisible(false)">x</b>
-                <div class="mock-modal__header">
-                    <h3>Удаление поля</h3>
-                </div>
-                <span
-                >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
-            </span>
-                <div class="mock-modal__buttons">
-                    <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
-                    <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
-                </div>
+        <modal-window
+            @click="setFieldAlertVisible(false)"
+            v-model="isFieldAlertVisible"
+            maxWidth="400px"
+        >
+            <div class="modal-window__header">
+                <h3>Удаление поля</h3>
             </div>
-        </div>
+            <span
+            >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
+            </span>
+            <div class="modal-window__buttons">
+                <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
+                <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
+            </div>
+        </modal-window>
     </main>
 </template>
 
@@ -228,10 +229,10 @@ import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
-
+import ModalWindow from '@/components/ModalWindow';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow},
     setup() {
         const isSectionLoading = ref(true);
         let initSection = null;

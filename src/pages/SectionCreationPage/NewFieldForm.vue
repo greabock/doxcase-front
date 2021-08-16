@@ -153,16 +153,6 @@ INPUT::placeholder {
 
     margin: 1rem auto;
 }
-.mock-modal__closer {
-    display: block;
-    position: absolute;
-    font-size: 26px;
-    line-height: 26px;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-}
-
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
 }

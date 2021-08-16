@@ -49,7 +49,7 @@
                                 <div class="header-sections-wrapper">
                                     <ul v-if='sectionsInHeader?.length' class="menu header-sections">
                                         <li v-for="section in sectionsInHeader" :key="section?.id">
-                                            <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
+                                            <router-link :to="'/search/' + section?.id">{{ section?.title }}</router-link>
                                         </li>
                                     </ul>
                                 </div>
