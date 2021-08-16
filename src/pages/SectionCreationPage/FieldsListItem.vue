@@ -179,6 +179,14 @@ export default {
                                 content_title: "Содержание",
                                 type_view:  "Значения из списка",
                         };
+                        case 'Select':
+                            return {
+                                field,
+                                title,
+                                description: type.of.of.map((item, i) => `${i + 1}. ${item}`).join(' '),
+                                content_title: "Содержание",
+                                type_view:  "Значения из выпадающего списка",
+                            };
                     }
                 }
             }
@@ -222,5 +230,4 @@ export default {
         width: 25%
     }
 }
-
 </style>

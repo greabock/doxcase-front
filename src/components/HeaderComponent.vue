@@ -39,11 +39,13 @@
                             </div>
                             <div class="col-lg">
 <!-- Section links in header -->
-                                <ul v-if='sectionsInHeader?.length' class="menu" id="header-sections">
-                                    <li v-for="section in sectionsInHeader" :key="section?.id">
-                                        <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
-                                    </li>
-                                </ul>
+                                <div class="header-sections-wrapper">
+                                    <ul v-if='sectionsInHeader?.length' class="menu header-sections">
+                                        <li v-for="section in sectionsInHeader" :key="section?.id">
+                                            <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -103,9 +105,20 @@ export default {
 };
 </script>
 <style scoped>
-#header-sections {
+.header-sections-wrapper {
+    overflow: hidden;
+}
+.topLine .row {
+    flex-wrap: nowrap;
+}
+.header-sections {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    overflow:hidden;
 }
+.header-sections A {
+    white-space: nowrap;
+}
+
 </style>

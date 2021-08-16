@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-win" id="modal-add-field-not-required">
+    <div id="modal-add-field-not-required">
         <div class="form-wrap">
             <form @submit="submitHandle">
             <div class="form-wrap__input-wrap form-group">
@@ -8,7 +8,6 @@
                 ><input
                     v-model="titleValue"
                     class="form-wrap__input form-control"
-                    :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                     name="title"
                     type="text"
                     placeholder="Заголовок поля"
@@ -25,10 +24,6 @@
                 type="checkbox"
             /><span class="custom-input__text form-check-label">Обязательное поле</span>
             </label>
-                <div
-                    v-if="!formMeta.valid && formMeta.dirty"
-                    class="text-center text-danger mb-3">Заполните все поля чтобы создать поле
-                </div>
             <button
                 :disabled="!formMeta.valid"
                 class="btn btn-primary w-100"
@@ -80,7 +75,7 @@ export default {
         const {handleSubmit, setValues, meta: formMeta} = useForm({
             validationSchema: schema
         });
-        const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
+        const {value: titleValue} = useField('title');
         const {value: requiredValue} = useField('required');
 
         if (props.fieldToChange.type) {
@@ -108,8 +103,6 @@ export default {
             addNewField,
             formMeta,
             titleValue,
-            titleError,
-            titleMeta,
             requiredValue,
             submitHandle,
         };

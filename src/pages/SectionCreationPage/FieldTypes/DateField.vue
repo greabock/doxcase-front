@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-win" id="modal-add-field-not-required">
+    <div id="modal-add-field-not-required">
         <div class="form-wrap">
             <form @submit="submitHandle">
                 <div class="form-wrap__input-wrap form-group">
@@ -8,7 +8,6 @@
                     ><input
                         v-model="titleValue"
                         class="form-wrap__input form-control"
-                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                         name="titleValue"
                         type="text"
                         placeholder="Заголовок поля"
@@ -25,10 +24,14 @@
                     type="checkbox"
                 /><span class="custom-input__text form-check-label">Обязательное поле</span>
                 </label>
-                <div
-                    v-if="!formMeta.valid && formMeta.dirty"
-                    class="text-center text-danger mb-3">Заполните все поля чтобы создать поле
-                </div>
+                <label class="custom-input form-check"
+                ><input
+                    v-model="is_present_in_cardValue"
+                    class="custom-input__input form-check-input"
+                    name="checkbox"
+                    type="checkbox"
+                /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
+                </label>
                 <button
                     :disabled="!formMeta.valid"
                     class="btn btn-primary w-100"
@@ -74,27 +77,31 @@ export default {
 
         const schema = yup.object({
             title: yup.string().required(),
-            required: yup.boolean()
+            required: yup.boolean(),
+            is_present_in_card: yup.boolean(),
         })
         const {handleSubmit, setValues, meta: formMeta} = useForm({
             validationSchema: schema
         });
-        const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
+        const {value: titleValue} = useField('title');
         const {value: requiredValue} = useField('required');
+        const {value: is_present_in_cardValue} = useField('is_present_in_card');
 
         if (props.fieldToChange.type) {
             setValues({
                 title: props.fieldToChange.title,
-                required: !!props.fieldToChange.required
+                required: !!props.fieldToChange.required,
+                is_present_in_card: props.fieldToChange.is_present_in_card,
             });
         }
 
-        const addNewField = ({title, required}) => {
-            console.log({title, required});
+        const addNewField = ({title, required, is_present_in_card}) => {
+            console.log({title, required, is_present_in_card});
             emit('addNewField', {
                 ...newField.value,
                 title: title,
                 required: !!required,
+                is_present_in_card: !!is_present_in_card,
             });
         };
 
@@ -107,10 +114,9 @@ export default {
             addNewField,
             formMeta,
             titleValue,
-            titleError,
-            titleMeta,
             requiredValue,
             submitHandle,
+            is_present_in_cardValue,
         };
     },
 };

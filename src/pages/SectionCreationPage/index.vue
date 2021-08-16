@@ -112,7 +112,8 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange(null); setFieldModalVisible(true)">
+                                         @click="setFieldToChange({}); setFieldModalVisible(true)"
+                                    >
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
@@ -162,7 +163,7 @@
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
                                         <div
-                                             @click="setFieldModalVisible(true)"
+                                             @click="setFieldToChange({}); setFieldModalVisible(true)"
                                              class="btn-add__text"
                                         >Добавить</div>
                                     </div>
@@ -257,7 +258,7 @@ export default {
             isFieldModalVisible.value = bool;
         };
 
-        const fieldToChange = ref(null);
+        const fieldToChange = ref({});
         const setFieldToChange = (field) => {
             fieldToChange.value = {...field};
             if (fieldToChange.value) {

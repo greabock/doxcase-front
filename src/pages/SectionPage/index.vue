@@ -70,9 +70,9 @@
                                     >
                                     </label>
                                 </div>
-                                <div class="d-lg-none">
+                                <div class="d-lg-none mb-3">
                                     <button
-                                        @click="setFiltersOpen(true)"
+                                        @click="setMobFiltersShow(!isMobFiltersShow)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                     >
@@ -80,7 +80,10 @@
                                     </button>
                                 </div>
 
-                                <div class="form-wrap__modal-win" id="modal-filter">
+                                <div
+                                    class="form-wrap__modal-win"
+                                    :class="{'mobile-filters-show': isMobFiltersShow}"
+                                >
                                     <p class="fw-500">Фильтры для раздела</p>
 
                                     <fields-to-filter @click.stop
@@ -113,9 +116,11 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange(null); setFieldModalVisible(true)">
+                                         @click="setFieldToChange({}); setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
-                                        <div class="btn-add__text">Добавить</div>
+                                        <div
+                                            class="btn-add__text"
+                                        >Добавить</div>
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +168,7 @@
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
                                         <div
-                                            @click="setFieldModalVisible(true)"
+                                            @click="setFieldToChange({}); setFieldModalVisible(true)"
                                             class="btn-add__text"
                                         >Добавить</div>
                                     </div>
@@ -313,6 +318,11 @@ export default {
             isFieldAlertVisible.value = bool;
         }
 
+        const isMobFiltersShow = ref(false);
+        const setMobFiltersShow = (bool) => {
+            isMobFiltersShow.value = bool;
+        }
+
         onMounted(async () => {
             try{
                 isSectionLoading.value = true;
@@ -351,6 +361,8 @@ export default {
             setFieldAlertVisible,
             removeField,
             isSectionLoading,
+            isMobFiltersShow,
+            setMobFiltersShow,
         };
     },
 };
@@ -359,15 +371,6 @@ export default {
 <style>
 .file-uploader__cont > button {
     margin-right: 5px;
-}
-.sSectionMain__col-title {
-    width: 25%;
-}
-.sSectionMain__col-content {
-    width: 40%;
-}
-.sSectionMain__col-cut {
-    width: 25%
 }
 .content-loader__wrapper {
     position: fixed;

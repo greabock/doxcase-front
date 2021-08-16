@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-win" id="modal-add-field-not-required">
+    <div id="modal-add-field-not-required">
         <div class="form-wrap">
             <form @submit="submitHandle">
                 <div class="form-wrap__input-wrap form-group">
@@ -8,7 +8,6 @@
                     ><input
                         v-model="titleValue"
                         class="form-wrap__input form-control"
-                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                         name="title"
                         type="text"
                         placeholder="Заголовок поля"
@@ -21,7 +20,6 @@
                         <select
                             v-model='selectedIdValue'
                             class="form-wrap__input form-select"
-                            :class="{'is-invalid': selectedIdError && selectedIdMeta.dirty, 'is-valid': !selectedIdError && selectedIdMeta.dirty }"
                             name="selectedId"
                         >
                             <option
@@ -50,11 +48,6 @@
                     />
                     <span class="custom-input__text form-check-label">Множественный выбор</span>
                 </label>
-                <div
-                    v-if="!formMeta.valid && formMeta.dirty"
-                    class="text-center text-danger mb-3">
-                    Заполните все поля чтобы создать поле
-                </div>
                 <button
                     :disabled="!formMeta.valid"
                     class="btn btn-primary w-100"
@@ -112,7 +105,7 @@ export default {
         } = useForm({validationSchema: schema});
 
         const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
-        const {value: selectedIdValue, errorMessage: selectedIdError, meta: selectedIdMeta} = useField('selectedId');
+        const {value: selectedIdValue} = useField('selectedId');
         const {value: requiredValue} = useField('required');
         const {value: multiSelectValue} = useField('multiSelect');
 
@@ -164,8 +157,6 @@ export default {
             titleError,
             titleMeta,
             selectedIdValue,
-            selectedIdError,
-            selectedIdMeta,
             requiredValue,
             multiSelectValue,
             submitHandle,

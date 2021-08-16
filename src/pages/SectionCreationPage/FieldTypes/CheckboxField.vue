@@ -8,7 +8,6 @@
                     ><input
                         v-model="titleValue"
                         class="form-wrap__input form-control"
-                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                         name="titleValue"
                         type="text"
                         placeholder="Заголовок поля"
@@ -25,10 +24,10 @@
                     type="checkbox"
                 /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
                 </label>
-                <div
-                    v-if="!formMeta.valid && formMeta.dirty"
-                    class="text-center text-danger mb-3">Заполните все поля чтобы создать поле
-                </div>
+<!--                <div-->
+<!--                    v-if="!formMeta.valid && formMeta.dirty"-->
+<!--                    class="text-center text-danger mb-3">Заполните все поля чтобы создать поле-->
+<!--                </div>-->
                 <button
                     :disabled="!formMeta.valid"
                     type="submit"
@@ -84,6 +83,7 @@ export default {
 
         const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
         const {value: is_present_in_cardValue} = useField('is_present_in_card', undefined, {initialValue: false});
+        //:class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }" класс для валидации
 
         if (props.fieldToChange.type) {
             setValues({
