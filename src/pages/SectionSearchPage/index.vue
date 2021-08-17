@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                         </div>
-<!--                        {{urlSearchString}}-->
+                        {{urlSearchString}}
                         <div class="d-lg-none">
                             <div class="filter-info">
                                 <div class="filter-info__left">Фильтры<span class="text-danger ms-2">4</span>
@@ -240,7 +240,12 @@
                             <div class="sSearchResult__aside-body">
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
-                                    <div class="sSearchResult__filter-item">
+
+                                    <!-- Сортировка по дате -->
+                                    <div
+                                        v-if="sortByAddDate === 'asc'"
+                                        @click="toggleSortByAddDate"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
                                                 <svg class="icon icon-arrow-up ">
@@ -256,14 +261,37 @@
                                         <div class="sSearchResult__filter-result-text">сначала новые
                                         </div>
                                     </div>
-                                    <div class="sSearchResult__filter-item">
+                                    <div
+                                        v-else
+                                        @click="toggleSortByAddDate"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
+                                            <div class="sSearchResult__filter-btn active">
+                                                <svg class="icon icon-arrow-down ">
+                                                    <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
+                                                </svg>
+                                            </div>
                                             <div class="sSearchResult__filter-btn">
+                                                <svg class="icon icon-arrow-up ">
+                                                    <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="sSearchResult__filter-result-text">сначала старые
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        v-if="sortByAbc === 'asc'"
+                                        @click="toggleSortByAbc"
+                                        class="sSearchResult__filter-item">
+                                        <div class="sSearchResult__filter-btns">
+                                            <div class="sSearchResult__filter-btn active">
                                                 <svg class="icon icon-a ">
                                                     <use xlink:href="/img/svg/sprite.svg#a"></use>
                                                 </svg>
                                             </div>
-                                            <div class="sSearchResult__filter-btn active">
+                                            <div class="sSearchResult__filter-btn">
                                                 <svg class="icon icon-Ya ">
                                                     <use xlink:href="/img/svg/sprite.svg#Ya"></use>
                                                 </svg>
@@ -272,6 +300,26 @@
                                         <div class="sSearchResult__filter-result-text">от А до Я
                                         </div>
                                     </div>
+                                    <div
+                                        v-else
+                                        @click="toggleSortByAbc"
+                                        class="sSearchResult__filter-item">
+                                        <div class="sSearchResult__filter-btns">
+                                            <div class="sSearchResult__filter-btn active">
+                                                <svg class="icon icon-Ya ">
+                                                    <use xlink:href="/img/svg/sprite.svg#Ya"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="sSearchResult__filter-btn">
+                                                <svg class="icon icon-a ">
+                                                    <use xlink:href="/img/svg/sprite.svg#a"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="sSearchResult__filter-result-text">от Я до А
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Формат</div>
@@ -335,11 +383,24 @@ export default {
         const materials = ref([]);
         const files = ref([]);
         const searchQuery = ref('');
+        const sortByAddDate = ref('asc');
+        const sortByAbc = ref('asc');
 
-        // watch(searchQuery, (newVal) => {
-        //     urlSearchString.value = urlSearchString.value.set('search', newVal);
-        //     console.log(urlSearchString.value)
-        // });
+        const toggleSortByAbc = () => {
+            if (sortByAbc.value === 'asc') {
+                sortByAbc.value = 'desc'
+            } else {
+                sortByAbc.value = 'asc'
+            }
+        }
+
+        const toggleSortByAddDate = () => {
+            if (sortByAddDate.value === 'asc') {
+                sortByAddDate.value = 'desc';
+            } else {
+                sortByAddDate.value = 'asc';
+            }
+        }
 
         const urlSearchString = computed(() => {
            const url = new URL(`${API_URL}/search/${router.currentRoute.value.params.id}`);
@@ -347,6 +408,7 @@ export default {
 
            return url
         });
+
 
         onMounted(async () => {
             try {
@@ -366,10 +428,20 @@ export default {
             isLoading,
             searchQuery,
             urlSearchString,
+            sortByAddDate,
+            toggleSortByAddDate,
+            toggleSortByAbc,
+            sortByAbc,
         }
     },
 }
 </script>
 
 <style scoped>
+.sSearchResult__filter-btn {
+    color: #bbb;
+}
+.sSearchResult__filter-btn.active {
+    color: #1d47ce;
+}
 </style>
