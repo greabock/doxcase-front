@@ -25,7 +25,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="searchQuery"
+                                                v-model="queryObject.search"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -48,7 +48,6 @@
                                 </div>
                             </div>
                         </div>
-                        {{urlSearchString}}
                         <div class="d-lg-none">
                             <div class="filter-info">
                                 <div class="filter-info__left">Фильтры<span class="text-danger ms-2">4</span>
@@ -62,38 +61,11 @@
                         </div>
                         <div class="d-lg-block d-none">
                             <div class="mb-3">
-                                <div class="customs-select">
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            <div class="customs-select__input-wrap form-group">
-                                                <label><span class="customs-select__input-title">Контрагент</span>
-                                                    <select class="customs-select__input form-select custom-select" name="select">
-                                                        <option value="Выберите">Выберите</option>
-                                                        <option value=" placeholder 1">placeholder 1</option>
-                                                        <option value=" placeholder 2">placeholder 2</option>
-                                                        <option value=" placeholder 3">placeholder 3</option>
-                                                        <option value=" placeholder 4">placeholder 4</option>
-                                                    </select>
-                                                </label>
-                                            </div>
-                                            <!-- +e.input-wrap-->
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="customs-select__input-wrap form-group">
-                                                <label><span class="customs-select__input-title">Локация</span>
-                                                    <select class="customs-select__input form-select custom-select" name="select">
-                                                        <option value="Выберите">Выберите</option>
-                                                        <option value=" placeholder 1">placeholder 1</option>
-                                                        <option value=" placeholder 2">placeholder 2</option>
-                                                        <option value=" placeholder 3">placeholder 3</option>
-                                                        <option value=" placeholder 4">placeholder 4</option>
-                                                    </select>
-                                                </label>
-                                            </div>
-                                            <!-- +e.input-wrap-->
-                                        </div>
-                                    </div>
-                                </div>
+ <!-- Селекторы -->
+                                <section-search-selectors
+                                    :fieldsArray="fieldsToSelectors"
+                                    @updateFilter="updateFilterHandler"
+                                ></section-search-selectors>
                             </div>
                             <div class="mb-3">
                                 <div class="sSearchResult__btn-text">
@@ -243,8 +215,8 @@
 
                                     <!-- Сортировка по дате -->
                                     <div
-                                        v-if="sortByAddDate === 'asc'"
-                                        @click="toggleSortByAddDate"
+                                        v-if="queryObject.sort.created_at === 'asc'"
+                                        @click="toggleSortByCreatedAt"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -263,7 +235,7 @@
                                     </div>
                                     <div
                                         v-else
-                                        @click="toggleSortByAddDate"
+                                        @click="toggleSortByCreatedAt"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -282,8 +254,8 @@
                                     </div>
 
                                     <div
-                                        v-if="sortByAbc === 'asc'"
-                                        @click="toggleSortByAbc"
+                                        v-if="queryObject.sort.name === 'asc'"
+                                        @click="toggleSortByName"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -302,7 +274,7 @@
                                     </div>
                                     <div
                                         v-else
-                                        @click="toggleSortByAbc"
+                                        @click="toggleSortByName"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -322,36 +294,29 @@
 
                                 </div>
                                 <div class="sSearchResult__aside-group">
+
                                     <div class="fw-500 pb-3">Формат</div>
                                     <div class="row mb-3">
                                         <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">doc</span>
+                                            <label class="custom-input form-check">
+                                                <input
+                                                    v-model='queryObject.extensions'
+                                                    value='doc'
+                                                    class="custom-input__input form-check-input" name="checkbox" type="checkbox"
+                                                />
+                                                <span class="custom-input__text form-check-label">doc</span>
                                             </label>
                                         </div>
-                                        <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">pdf</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">txt</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">xls</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">ppt</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">страница</span>
-                                            </label>
-                                        </div>
-                                    </div><a class="small fw-500">Показать все</a>
+
+                                    </div>
+                                    <a class="small fw-500">Показать все</a>
                                 </div>
+
                                 <div class="sSearchResult__aside-group">
-                                    <label class="custom-input form-check"><input class="custom-input__input form-check-input" name="checkbox" type="checkbox"/><span class="custom-input__text form-check-label">Материал обучения</span>
+                                    <label class="custom-input form-check">
+                                        <input
+                                            class="custom-input__input form-check-input" name="checkbox" type="checkbox"/>
+                                        <span class="custom-input__text form-check-label">Материал обучения</span>
                                     </label>
                                 </div>
                             </div>
@@ -371,49 +336,94 @@ import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
 import {useRouter} from 'vue-router';
-import {API_URL} from '@/globals';
+import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
+// import {API_URL} from '@/globals';
 
 export default {
-    components: { Loader, VBreadcrumb },
+    components: { Loader, VBreadcrumb,  SectionSearchSelectors},
     setup() {
 
         const router = useRouter();
         const isLoading = ref(false);
         const section = ref({})
+
+        // Выдача поиска_______________
         const materials = ref([]);
         const files = ref([]);
-        const searchQuery = ref('');
-        const sortByAddDate = ref('asc');
-        const sortByAbc = ref('asc');
 
-        const toggleSortByAbc = () => {
-            if (sortByAbc.value === 'asc') {
-                sortByAbc.value = 'desc'
+        const fieldsToSelectors = computed(() => {
+            if (section.value.fields?.length) {
+                return [...section.value.fields].sort( field => !!field.filter_sort_index)
             } else {
-                sortByAbc.value = 'asc'
+                return [];
             }
-        }
 
-        const toggleSortByAddDate = () => {
-            if (sortByAddDate.value === 'asc') {
-                sortByAddDate.value = 'desc';
-            } else {
-                sortByAddDate.value = 'asc';
+        })
+
+        const queryObject = ref({
+            search: '',
+            sort: {
+                name: 'asc',
+                created_at: 'asc'
+            },
+            extensions: [],
+            filter: {
             }
-        }
-
-        const urlSearchString = computed(() => {
-           const url = new URL(`${API_URL}/search/${router.currentRoute.value.params.id}`);
-           url.searchParams.set('search', searchQuery.value);
-
-           return url
         });
 
+        const toggleSortByName = () => {
+            if (queryObject.value.sort.name === 'asc') {
+                queryObject.value = {
+                    ...queryObject.value,
+                    sort: {
+                        ...queryObject.value.sort,
+                        name: 'desc'
+                    }
+                }
+            } else {
+                queryObject.value = {
+                    ...queryObject.value,
+                    sort: {
+                        ...queryObject.value.sort,
+                        name: 'asc'
+                    }
+                }
+            }
+        }
+        const toggleSortByCreatedAt = () => {
+            if (queryObject.value.sort.created_at === 'asc') {
+                queryObject.value = {
+                    ...queryObject.value,
+                    sort: {
+                        ...queryObject.value.sort,
+                        created_at: 'desc'
+                    }
+                }
+            } else {
+                queryObject.value = {
+                    ...queryObject.value,
+                    sort: {
+                        ...queryObject.value.sort,
+                        created_at: 'asc'
+                    }
+                }
+            }
+        }
+        const updateFilterHandler = (option) => {
+                queryObject.value = {
+                    ...queryObject.value,
+                    filter: {
+                           ...queryObject.value.filter,
+                        [option.name]: option.value
+                }
+            }
+        }
 
         onMounted(async () => {
             try {
                 isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
+                console.log(section.value);
                 const materialsAndFiles = await searchService.searchSection(router.currentRoute.value.params.id);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
@@ -424,14 +434,35 @@ export default {
             }
         });
 
+        const serialize = (obj, prefix) => {
+            const str = [];
+            for (const p in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, p)) {
+                    const k = prefix ? prefix + "[" + p + "]" : p,
+                        v = obj[p];
+                    str.push((v !== null && typeof v === "object") ?
+                        serialize(v, k) :
+                        encodeURIComponent(k) + "=" + encodeURIComponent(v));
+                }
+            }
+            return str.join("&");
+        }
+
+        console.log(serialize({
+            foo: "hi there",
+            bar: {
+                blah: 123,
+                quux: [1, 2, 3]
+            }
+        }));
+
         return {
             isLoading,
-            searchQuery,
-            urlSearchString,
-            sortByAddDate,
-            toggleSortByAddDate,
-            toggleSortByAbc,
-            sortByAbc,
+            queryObject,
+            toggleSortByCreatedAt,
+            toggleSortByName,
+            fieldsToSelectors,
+            updateFilterHandler,
         }
     },
 }

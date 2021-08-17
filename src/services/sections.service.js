@@ -15,6 +15,12 @@ class sectionsService {
             return res.data.data;
         } else throw new Error('Error fetching section');
     }
+    getSectionMaterials = async (id) => {
+        const res = await axiosInstance.get(`/sections/${id}/materials`);
+        if (res.data) {
+            return res.data;
+        } else throw new Error('Error fetching sections');
+    };
     updateSectionsList = async (sections) => {
         const res = await axiosInstance.patch('/sections', sections);
         if (res.data.data) {
