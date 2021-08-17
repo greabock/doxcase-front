@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-win" id="modal-add-field-not-required">
+    <div id="modal-add-field-not-required">
         <div class="form-wrap">
             <form @submit="submitHandle">
                 <div class="form-wrap__input-wrap form-group">
@@ -8,7 +8,6 @@
                     ><input
                         v-model="titleValue"
                         class="form-wrap__input form-control"
-                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                         name="title"
                         type="text"
                         placeholder="Заголовок поля"
@@ -38,11 +37,12 @@
                             <input
                                 v-model='maxFileSizeValue'
                                 class="form-wrap__input form-control input-max-size"
-                                :class="{'is-invalid': maxFileSizeError && maxFileSizeMeta.dirty, 'is-valid': !maxFileSizeError && maxFileSizeMeta.dirty }"
                                 name="maxFileSize"
                                 type="text"
-                                placeholder="mb"
+                                placeholder=""
                             />
+                            <span class="mb-placeholder"
+                            >mb</span>
                         </label>
                     </div>
                     <!-- +e.input-wrap-->
@@ -56,11 +56,6 @@
                      />
                     <span class="custom-input__text form-check-label">Обязательное поле</span>
                 </label>
-                <div
-                    v-if="!formMeta.valid && formMeta.dirty"
-                    class="text-center text-danger mb-3">
-                    Заполните все поля чтобы создать поле
-                </div>
                 <button
                     :disabled="!formMeta.valid"
                     class="btn btn-primary w-100"
@@ -128,7 +123,7 @@ export default {
             undefined,
             {initialValue: []}
         );
-        const {value: maxFileSizeValue, errorMessage: maxFileSizeError, meta: maxFileSizeMeta} = useField('maxFileSize');
+        const {value: maxFileSizeValue} = useField('maxFileSize');
         const {value: requiredValue} = useField('required');
 
         if (props.fieldToChange.type) {
@@ -167,8 +162,6 @@ export default {
             fileExtensionsError,
             fileExtensionsMeta,
             maxFileSizeValue,
-            maxFileSizeError,
-            maxFileSizeMeta,
             requiredValue,
             submitHandle,
             formMeta,
@@ -177,4 +170,16 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.mb-placeholder {
+    display: block;
+    position: relative;
+    left: 135px;
+    top: -39px;
+    color: #d6d6d6;
+    height: 0;
+}
+.input-max-size {
+    text-align:left;
+}
+</style>

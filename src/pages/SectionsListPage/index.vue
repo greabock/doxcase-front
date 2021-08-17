@@ -5,10 +5,10 @@
                 :list="[
                     {
                         link: '/',
-                        name: 'Главная',
+                        name: 'Главная'
                     },
                     {
-                        name: 'Разделы',
+                        name: 'Разделы'
                     },
                 ]"
             />
@@ -123,11 +123,9 @@
                 <!-- No Sections block -->
                 <div v-if="sections?.length === 0 && !isSectionsLoading" class="sSections section" id="sSections">
                     <div class="sSections__center-empty">
-                        <div class="sSections__title-empty h1">Добавьте новый раздел</div>
+                        <div class="sSections__title-empty h1">Пусто</div>
                         <p>
-                            Вы&nbsp;еще не&nbsp;добавили ниодного раздела, чтобы добавить нажмите на&nbsp;кнопку
-                            &laquo;добавить раздел&raquo; в&nbsp;правом <br />
-                            верхнем углу!
+                            Для добавления раздела воспользуйтесь кнопкой в правом верхнем углу.
                         </p>
                     </div>
                 </div>

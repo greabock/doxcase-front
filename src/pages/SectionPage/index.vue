@@ -70,9 +70,9 @@
                                     >
                                     </label>
                                 </div>
-                                <div class="d-lg-none">
+                                <div class="d-lg-none mb-3">
                                     <button
-                                        @click="setFiltersOpen(true)"
+                                        @click="setMobFiltersShow(!isMobFiltersShow)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                     >
@@ -80,7 +80,10 @@
                                     </button>
                                 </div>
 
-                                <div class="form-wrap__modal-win" id="modal-filter">
+                                <div
+                                    class="form-wrap__modal-win"
+                                    :class="{'mobile-filters-show': isMobFiltersShow}"
+                                >
                                     <p class="fw-500">Фильтры для раздела</p>
 
                                     <fields-to-filter @click.stop
@@ -113,9 +116,11 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange(null); setFieldModalVisible(true)">
+                                         @click="setFieldToChange({}); setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
-                                        <div class="btn-add__text">Добавить</div>
+                                        <div
+                                            class="btn-add__text"
+                                        >Добавить</div>
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +168,7 @@
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
                                         <div
-                                            @click="setFieldModalVisible(true)"
+                                            @click="setFieldToChange({}); setFieldModalVisible(true)"
                                             class="btn-add__text"
                                         >Добавить</div>
                                     </div>
@@ -192,21 +197,22 @@
         </section>
 
         <!-- Remove Field alert -->
-        <div class="mock-modal__wrapper" v-show="isFieldAlertVisible">
-            <div class="mock-modal__cont">
-                <b class="mock-modal__closer" @click="setFieldAlertVisible(false)">x</b>
-                <div class="mock-modal__header">
-                    <h3>Удаление поля</h3>
-                </div>
-                <span
-                >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
-            </span>
-                <div class="mock-modal__buttons">
-                    <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
-                    <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
-                </div>
+        <modal-window
+            @click="setFieldAlertVisible(false)"
+            v-model="isFieldAlertVisible"
+            maxWidth="400px"
+        >
+            <div class="modal-window__header">
+                <h3>Удаление поля</h3>
             </div>
-        </div>
+            <span
+            >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
+            </span>
+            <div class="modal-window__buttons">
+                <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
+                <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
+            </div>
+        </modal-window>
     </main>
 </template>
 
@@ -223,10 +229,10 @@ import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
-
+import ModalWindow from '@/components/ModalWindow';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow},
     setup() {
         const isSectionLoading = ref(true);
         let initSection = null;
@@ -313,6 +319,11 @@ export default {
             isFieldAlertVisible.value = bool;
         }
 
+        const isMobFiltersShow = ref(false);
+        const setMobFiltersShow = (bool) => {
+            isMobFiltersShow.value = bool;
+        }
+
         onMounted(async () => {
             try{
                 isSectionLoading.value = true;
@@ -351,6 +362,8 @@ export default {
             setFieldAlertVisible,
             removeField,
             isSectionLoading,
+            isMobFiltersShow,
+            setMobFiltersShow,
         };
     },
 };
@@ -359,15 +372,6 @@ export default {
 <style>
 .file-uploader__cont > button {
     margin-right: 5px;
-}
-.sSectionMain__col-title {
-    width: 25%;
-}
-.sSectionMain__col-content {
-    width: 40%;
-}
-.sSectionMain__col-cut {
-    width: 25%
 }
 .content-loader__wrapper {
     position: fixed;

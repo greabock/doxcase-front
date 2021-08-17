@@ -8,7 +8,6 @@
                     ><input
                         v-model="titleValue"
                         class="form-wrap__input form-control"
-                        :class="{'is-invalid': titleError && titleMeta.dirty, 'is-valid': !titleError && titleMeta.dirty }"
                         name="text"
                         type="text"
                         placeholder="Заголовок поля"
@@ -22,7 +21,7 @@
                     ><input
                         v-model="descriptionValue"
                         class="form-wrap__input form-control"
-                        :class="{'is-invalid': descriptionError && descriptionMeta.dirty, 'is-valid': !descriptionError && descriptionMeta.dirty }"
+
                         name="text"
                         type="text"
                         placeholder="Краткое описание поля"
@@ -46,10 +45,6 @@
                     type="checkbox"
                 /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
                 </label>
-                <div
-                    v-if="!formMeta.valid && formMeta.dirty"
-                    class="text-center text-danger mb-3">Заполните все поля чтобы создать поле
-                </div>
                 <button
                     :disabled="!formMeta.valid"
                     class="btn btn-primary w-100"
@@ -106,8 +101,8 @@ export default {
             validationSchema: schema
         });
 
-        const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
-        const {value: descriptionValue, errorMessage: descriptionError, meta: descriptionMeta} = useField('description');
+        const {value: titleValue} = useField('title');
+        const {value: descriptionValue} = useField('description');
         const {value: requiredValue} = useField('required');
         const {value: is_present_in_cardValue} = useField('is_present_in_card');
 
@@ -140,11 +135,7 @@ export default {
             addNewField,
             formMeta,
             titleValue,
-            titleError,
-            titleMeta,
             descriptionValue,
-            descriptionError,
-            descriptionMeta,
             requiredValue,
             is_present_in_cardValue,
             submitHandle,

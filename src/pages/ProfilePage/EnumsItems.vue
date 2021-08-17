@@ -92,23 +92,22 @@
     </div>
 
     <!-- Remove enumItem alert -->
-    <div class="mock-modal__wrapper" v-show="isRemoveAlertVisible">
-        <div class="mock-modal__cont">
-            <b class="mock-modal__closer" @click="setRemoveAlertVisible(false)">x</b>
-            <div class="mock-modal__header">
-                <h3>Удаление позиции</h3>
-            </div>
-            <span
-                >Вы действительно хотите удалить позицию "{{ enumItemToRemove?.title }}" из справочника "{{
-                    enumObject?.title
-                }}"?
-            </span>
-            <div class="mock-modal__buttons">
-                <v-button class="w-100" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</v-button>
-                <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
-            </div>
+    <modal-window
+        @close="setRemoveAlertVisible(false)"
+        maxWidth="400px"
+    >
+        <div class="modal-window__header">
+            <h3>Удаление позиции</h3>
         </div>
-    </div>
+        <span>
+            Вы действительно хотите удалить позицию "{{ enumItemToRemove?.title }}" из справочника
+            "{{ enumObject?.title}}"?
+            </span>
+        <div class="modal-window__buttons">
+            <v-button class="w-100" @click="removeEnumItem(enumObject, enumItemToRemove.id)">Удалить</v-button>
+            <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
+        </div>
+    </modal-window>
 </template>
 
 <script>
@@ -117,11 +116,14 @@ import {onMounted, ref, watch, toRefs, computed} from 'vue';
 import enumsService from '@/services/enums.service';
 import {Form, Field} from 'vee-validate';
 import * as yup from 'yup';
+import ModalWindow from '@/components/ModalWindow';
+
 export default {
     components: {
         Form,
         Field,
         VButton,
+        ModalWindow,
     },
     props: {
         enumId: {
@@ -236,60 +238,7 @@ export default {
 INPUT::placeholder {
     color: #d6d6d6;
 }
-.mock-modal__wrapper {
-    display: flex;
-    z-index: 10;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-.mock-modal__cont {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 400px;
-    background-color: #fff;
-    padding: 32px;
-    border-radius: 5px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
-}
-.mock-modal__header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-.mock-modal__closer {
-    display: block;
-    position: absolute;
-    font-size: 26px;
-    line-height: 26px;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-}
-.mock-modal__buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-}
-.mock-modal__buttons button:first-child {
-    margin-right: 5px;
-}
-.change-enum-item__form {
-    position: absolute;
-    z-index: 100;
-    top: -10px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-}
+
 .block-position__item {
     margin-top: 10px;
 }

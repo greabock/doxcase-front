@@ -3,7 +3,7 @@
         <div
             class="modal-window__cont fancybox__content"
             :style="{
-                maxWidth: width,
+                maxWidth: maxWidth,
             }"
         >
             <button class="carousel__button is-close" title="Close" @click="close">
@@ -18,7 +18,7 @@
 
 export default {
     props: {
-        width: {
+        maxWidth: {
             type: String,
             default: '600px',
         },
@@ -36,26 +36,28 @@ export default {
 
 <style lang="scss">
 .modal-window__wrapper {
-    display: flex;
-    z-index: 10;
+    --carousel-button-svg-stroke-width: 2;
+    z-index: 1000;
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
     background-color: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .modal-window__cont {
     display: flex;
     position: relative;
     flex-direction: column;
-    width: 400px;
+    max-width: 500px;
     background-color: #fff;
     padding: 32px;
     border-radius: 5px;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+    margin: 1rem auto;
 }
 .modal-window__header {
     display: flex;
