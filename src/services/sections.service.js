@@ -1,7 +1,7 @@
 import {axiosInstance} from '@/utils/API';
 // import {v4 as uuidv4} from 'uuid';
 
-class sectionService {
+class sectionsService {
     //Sections _______________________________
     getSections = async () => {
         const res = await axiosInstance.get('/sections');
@@ -39,4 +39,4 @@ class sectionService {
     };
 }
 
-export default new sectionService();
+export default new sectionsService();

@@ -119,20 +119,6 @@ export default {
 };
 </script>
 <style scoped>
-.header-sections-wrapper {
-    overflow: hidden;
-}
-.topLine .row {
-    flex-wrap: nowrap;
-}
-.header-sections {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow:hidden;
-}
-.header-sections A {
-    white-space: nowrap;
-}
+
 
 </style>
