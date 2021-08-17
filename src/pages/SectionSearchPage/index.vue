@@ -291,28 +291,12 @@
                                     </div>
                                 </div>
 <!-- Типы документов -->
-                            <upload-doc-types
-                              @updateExtensions="updateExtensionsHandler"
-                            >
-                            </upload-doc-types>
-                                <div class="sSearchResult__aside-group">
-                                    <div class="fw-500 pb-3">Формат</div>
-                                    <div class="row mb-3">
-                                        <div class="col-lg-4 col-md-6 mb-2">
-                                            <label class="custom-input form-check">
-                                                <input
-                                                    v-model='queryObject.extensions'
-                                                    value='doc'
-                                                    class="custom-input__input form-check-input" name="checkbox" type="checkbox"
-                                                />
-                                                <span class="custom-input__text form-check-label">doc</span>
-                                            </label>
-                                        </div>
+                                <upload-doc-types
+                                  @updateExtensions="updateExtensionsHandler"
+                                >
+                                </upload-doc-types>
 
-                                    </div>
-                                    <a class="small fw-500">Показать все</a>
-                                </div>
-
+<!-- Чекбоксы -->
                                 <div class="sSearchResult__aside-group">
                                     <label class="custom-input form-check">
                                         <input
@@ -320,6 +304,7 @@
                                         <span class="custom-input__text form-check-label">Материал обучения</span>
                                     </label>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -360,7 +345,6 @@ export default {
             } else {
                 return [];
             }
-
         })
 
         const queryObject = ref({
