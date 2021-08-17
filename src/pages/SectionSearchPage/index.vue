@@ -84,7 +84,7 @@
                             </div>
                         </div>
 
-                        <!-- Результаты поиска -->
+ <!-- Результаты поиска -->
                         <div class="sSearchResult__items">
                             <div class="search-item">
                                 <div class="row">
@@ -210,10 +210,9 @@
                                 </div>
                             </div>
                             <div class="sSearchResult__aside-body">
+ <!-- Сортировка по дате -->
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
-
-                                    <!-- Сортировка по дате -->
                                     <div
                                         v-if="queryObject.sort.created_at === 'asc'"
                                         @click="toggleSortByCreatedAt"
@@ -252,7 +251,6 @@
                                         <div class="sSearchResult__filter-result-text">сначала старые
                                         </div>
                                     </div>
-
                                     <div
                                         v-if="queryObject.sort.name === 'asc'"
                                         @click="toggleSortByName"
@@ -291,10 +289,13 @@
                                         <div class="sSearchResult__filter-result-text">от Я до А
                                         </div>
                                     </div>
-
                                 </div>
+<!-- Типы документов -->
+                            <upload-doc-types
+                              @updateExtensions="updateExtensionsHandler"
+                            >
+                            </upload-doc-types>
                                 <div class="sSearchResult__aside-group">
-
                                     <div class="fw-500 pb-3">Формат</div>
                                     <div class="row mb-3">
                                         <div class="col-lg-4 col-md-6 mb-2">
@@ -337,10 +338,12 @@ import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
 import {useRouter} from 'vue-router';
 import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
+import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
+
 // import {API_URL} from '@/globals';
 
 export default {
-    components: { Loader, VBreadcrumb,  SectionSearchSelectors},
+    components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes},
     setup() {
 
         const router = useRouter();
@@ -418,6 +421,12 @@ export default {
                 }
             }
         }
+        const updateExtensionsHandler = (extensions) => {
+            queryObject.value = {
+                ...queryObject.value,
+                extensions
+            }
+        }
 
         onMounted(async () => {
             try {
@@ -463,6 +472,7 @@ export default {
             toggleSortByName,
             fieldsToSelectors,
             updateFilterHandler,
+            updateExtensionsHandler,
         }
     },
 }
