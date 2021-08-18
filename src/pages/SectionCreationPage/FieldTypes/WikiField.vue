@@ -1,13 +1,14 @@
 <template>
-    <div class="modal-win" id="modal-add-field-not-required">
+    <div id="modal-add-field-not-required">
         <div class="form-wrap">
+            <form @submit="submitHandle">
             <div class="form-wrap__input-wrap form-group">
                 <label
                 ><span class="form-wrap__input-title">Заголовок</span
                 ><input
-                    v-model="newField.title"
+                    v-model="titleValue"
                     class="form-wrap__input form-control"
-                    name="text"
+                    name="title"
                     type="text"
                     placeholder="Заголовок поля"
                 />
@@ -17,24 +18,27 @@
 
             <label class="custom-input form-check"
             ><input
-                v-model="newField.required"
+                v-model="requiredValue"
                 class="custom-input__input form-check-input"
-                name="checkbox"
+                name="required"
                 type="checkbox"
             /><span class="custom-input__text form-check-label">Обязательное поле</span>
             </label>
+            <button
+                :disabled="!formMeta.valid"
+                class="btn btn-primary w-100"
+                type="submit"
+            >
+                {{!!fieldToChange?.type ? 'Сохранить' : 'Добавить'}}
+            </button>
+            </form>
         </div>
-        <button
-            @click.prevent="addNewField"
-            class="btn btn-primary w-100"
-            type="submit"
-        >
-            {{!!fieldToChange?.type ? 'Сохранить' : 'Добавить'}}
-        </button>
     </div>
 </template>
 
 <script>
+import {useForm, useField} from 'vee-validate'
+import * as yup from 'yup';
 import {ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 
@@ -62,13 +66,45 @@ export default {
             },
         };
         const newField = ref({...initField, ...props.fieldToChange});
-        const addNewField = () => {
-            emit('addNewField', newField.value);
+
+        const schema = yup.object({
+            title: yup.string().required(),
+            required: yup.boolean()
+        });
+
+        const {handleSubmit, setValues, meta: formMeta} = useForm({
+            validationSchema: schema
+        });
+        const {value: titleValue} = useField('title');
+        const {value: requiredValue} = useField('required');
+
+        if (props.fieldToChange.type) {
+            setValues({
+                title: props.fieldToChange.title,
+                required: !!props.fieldToChange.required
+            });
+        }
+
+        const addNewField = ({title, required}) => {
+            console.log({title, required});
+            emit('addNewField', {
+                ...newField.value,
+                title,
+                required: !!required,
+            });
         };
+
+        const submitHandle = handleSubmit((values) => {
+            addNewField(values);
+        });
 
         return {
             newField,
             addNewField,
+            formMeta,
+            titleValue,
+            requiredValue,
+            submitHandle,
         };
     },
 };

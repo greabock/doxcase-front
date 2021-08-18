@@ -1,7 +1,6 @@
 export const sortByIndexUp = (item, arr) => {
     const idx = arr.findIndex(arrItem => arrItem.id === item.id);
     if (idx > 0) {
-        console.log('MyItem', item);
         const oldSort_index = arr[idx].sort_index;
         const newSort_index = arr[idx - 1].sort_index;
         const newUpItem = {...arr[idx], sort_index: newSort_index};

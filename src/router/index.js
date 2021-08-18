@@ -11,6 +11,7 @@ import SectionsListPage from '@/pages/SectionsListPage';
 import SectionCreationPage from '@/pages/SectionCreationPage';
 import SectionPage from '@/pages/SectionPage';
 import MaterialPage from '@/pages/MaterialPage';
+import SectionSearchPage from '@/pages/SectionSearchPage';
 import {adminGuard} from '@/guards/admin.guard';
 
 const routes = [
@@ -37,6 +38,11 @@ const routes = [
         path: '/search',
         name: 'SearchPageRoute',
         components: {default: SearchPage, header: HeaderComponent, footer: FooterComponent},
+    },
+    {
+        path: '/search/:id',
+        name: 'SectionSearchPage',
+        components: {default: SectionSearchPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
         path: '/sections',

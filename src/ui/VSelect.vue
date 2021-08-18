@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import {ref} from '@vue/reactivity';
+import {ref} from 'vue';
 
 import VInput from './VInput.vue';
 import ArrowDown from './icons/arrow-down.svg.vue';

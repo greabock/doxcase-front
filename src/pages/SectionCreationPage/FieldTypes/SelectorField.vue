@@ -1,22 +1,25 @@
 <template>
     <div id="modal-add-field-not-required">
         <div class="form-wrap">
-            <div class="form-wrap__input-wrap form-group">
-                <label
-                ><span class="form-wrap__input-title">Заголовок</span
-                ><input
-                    v-model="newField.title"
-                    class="form-wrap__input form-control"
-                    name="text"
-                    type="text"
-                    placeholder="Заголовок поля"
-                />
-                </label>
-            </div>
+            <form @submit="submitHandle">
+                <div class="form-wrap__input-wrap form-group">
+                    <label
+                    ><span class="form-wrap__input-title">Заголовок</span
+                    ><input
+                        v-model="titleValue"
+                        class="form-wrap__input form-control"
+                        name="text"
+                        type="text"
+                        placeholder="Заголовок поля"
+                    />
+                    </label>
+                </div>
             <!-- Вариант списка-->
-            <div class="form-wrap__input-title">Вариант списка</div>
+            <div
+                class="form-wrap__input-title"
+            >Вариант списка
+            </div>
             <div class="input-group-column">
-
                 <div
                     v-for='(optionString, i) in selectOptionsArray'
                     :key='optionString'
@@ -30,11 +33,10 @@
                         @click='removeOption(i)'
                         class="btn-edit-sm btn-danger">
                         <svg class="icon icon-close ">
-                            <use xlink:href="img/svg/sprite.svg#close"></use>
+                            <use xlink:href="/img/svg/sprite.svg#close"></use>
                         </svg>
                     </div>
                 </div>
-
                 <div
                     @click='addOption'
                     class="btn-add">
@@ -44,36 +46,39 @@
                     </div>
                 </div>
             </div>
-            <label class="custom-input form-check"
-            ><input
-                v-model="newField.required"
-                class="custom-input__input form-check-input"
-                name="checkbox"
-                type="checkbox"
-            /><span class="custom-input__text form-check-label">Обязательное поле</span>
-            </label>
-            <label class="custom-input form-check"
-            ><input
-                v-model="newField.is_present_in_card"
-                class="custom-input__input form-check-input"
-                name="checkbox"
-                type="checkbox"
-            /><span class="custom-input__text form-check-label">Отображать на карточке материала</span>
-            </label>
+                <label class="custom-input form-check"
+                ><input
+                    v-model="requiredValue"
+                    class="custom-input__input form-check-input"
+                    name="checkbox"
+                    type="checkbox"
+                /><span class="custom-input__text form-check-label">Обязательное поле</span>
+                </label>
+                <label class="custom-input form-check"
+                ><input
+                    v-model="multiselectValue"
+                    class="custom-input__input form-check-input"
+                    name="checkbox"
+                    type="checkbox"
+                /><span class="custom-input__text form-check-label">Множественный выбор</span>
+                </label>
+                <button
+                    :disabled="!formMeta.valid || !isOptionsValid"
+                    class="btn btn-primary w-100"
+                    type="submit"
+                >
+                    {{!!fieldToChange?.type ? 'Сохранить' : 'Добавить'}}
+                </button>
+            </form>
         </div>
-        <button
-            @click.prevent="addNewField"
-            class="btn btn-primary w-100"
-            type="submit"
-        >
-            {{!!fieldToChange?.type ? 'Сохранить' : 'Добавить'}}
-        </button>
     </div>
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 import {v4 as uuidv4} from 'uuid';
+import {useField, useForm} from 'vee-validate';
+import * as yup from 'yup';
 
 export default {
     props: {
@@ -101,10 +106,19 @@ export default {
         };
         const newField = ref({...initField, ...props.fieldToChange});
 
-        const selectOptionsArray = ref(props.fieldToChange.type?.of ?
-            props.fieldToChange.type?.of.map(item => ({value: item})) :
-            [{value: ''}, {value: ''}, {value: ''}]
-        );
+        const defineInitOptionsArray = (initField) => {
+            switch (initField.type) {
+                case undefined:
+                    return  [{value: ''}];
+
+                case 'Select':
+                    return initField.type.of.map(item => ({value: item}));
+
+                case 'List':
+                    return initField.type.of.of.map(item => ({value: item}));
+            }
+        };
+        const selectOptionsArray = ref(defineInitOptionsArray(props.fieldToChange));
 
         const removeOption = (idx) => {
             selectOptionsArray.value = [
@@ -115,21 +129,90 @@ export default {
         const addOption = () => {
             selectOptionsArray.value = [...selectOptionsArray.value, {value: ''}];
         }
-        const addNewField = () => {
+        const isOptionsValid = ref(true);
+        watch(selectOptionsArray, (newVal) => {
+            if (newVal.length === 0) {
+               isOptionsValid.value = false;
+            } else {
+                isOptionsValid.value = newVal.reduce((isValid, item) => {
+                    return isValid && !!item.value.length
+                }, true);
+            }
+        }, {deep: true});
+
+        const schema = yup.object({
+            title: yup.string().required(),
+            multiSelect: yup.boolean(),
+            required: yup.boolean()
+        });
+
+
+        const {handleSubmit, setValues, meta: formMeta} = useForm({
+            validationSchema: schema
+        });
+
+        const {value: titleValue} = useField('title');
+        const {value: requiredValue} = useField('required');
+        const {value: multiselectValue} = useField('multiSelect');
+
+        if (props.fieldToChange.type) {
+            setValues({
+                title: props.fieldToChange.title,
+                required: !!props.fieldToChange.required,
+                multiSelect: !!props.fieldToChange.type?.of?.of
+            });
+        }
+
+        const addNewField = ({title, required, multiSelect}) => {
+
             const options = selectOptionsArray.value.map(({value}) => value);
-            const field = {...newField.value, type: {name:'Select', of: options}};
+            console.log(options);
+
+            let typeOfField;
+            if (multiSelect) {
+                typeOfField = {
+                    name: 'List',
+                    of: {
+                        name: 'Select',
+                        of: options
+                    }
+                }
+            } else {
+                typeOfField = {
+                    name: 'Select',
+                    of: options
+                }
+            }
+            const field = {
+                ...newField.value,
+                title,
+                required: !!required,
+                type: typeOfField
+            }
+            console.log(field);
             emit('addNewField', field);
         };
 
+
+        const submitHandle = handleSubmit((values) => {
+            addNewField(values);
+        });
+
         return {
-            newField,
-            addNewField,
             selectOptionsArray,
             removeOption,
             addOption,
+            formMeta,
+            titleValue,
+            requiredValue,
+            multiselectValue,
+            submitHandle,
+            isOptionsValid,
         };
     },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

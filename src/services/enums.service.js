@@ -11,7 +11,7 @@ class enumService {
     };
     createEnum = async (title) => {
         const newEnum = {
-            ...title,
+            title,
             id: uuidv4(),
             values: [],
         };

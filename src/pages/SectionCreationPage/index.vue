@@ -66,30 +66,20 @@
                                         >
                                     </label>
                                 </div>
-                                <div class="d-lg-none">
+                                <div class="d-lg-none mb-3">
                                     <button
-                                        @click="setFiltersOpen(true)"
+                                        @click="setMobFiltersShow(!isMobFiltersShow)"
                                         class="btn btn-outline-primary w-100"
                                         type="button"
                                         >
                                         Настроить фильтры для раздела
                                     </button>
                                 </div>
-                                <!-- Фильтры для разделов -->
-<!--                                <FilterSections />-->
 
-<!--                                <div class="form-wrap__footer">-->
-<!--                                    <button-->
-<!--                                        @click="createSection"-->
-<!--                                        :class="{disabled: section.title === ''}"-->
-<!--                                        class="btn btn-primary"-->
-<!--                                    >-->
-<!--                                        Сохранить <span class="d-none d-lg-inline">раздел</span>-->
-<!--                                    </button>-->
-<!--                                    <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>-->
-<!--                                </div>-->
-
-                                <div class="form-wrap__modal-win" id="modal-filter">
+                                <div
+                                    class="form-wrap__modal-win"
+                                    :class="{'mobile-filters-show': isMobFiltersShow}"
+                                >
                                     <p class="fw-500">Фильтры для раздела</p>
 
                                     <fields-to-filter @click.stop
@@ -122,7 +112,8 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange(null); setFieldModalVisible(true)">
+                                         @click="setFieldToChange({}); setFieldModalVisible(true)"
+                                    >
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
@@ -172,7 +163,7 @@
                                     <div class="btn-add">
                                         <div class="btn-add__plus"></div>
                                         <div
-                                             @click="setFieldModalVisible(true)"
+                                             @click="setFieldToChange({}); setFieldModalVisible(true)"
                                              class="btn-add__text"
                                         >Добавить</div>
                                     </div>
@@ -200,21 +191,23 @@
         ></new-field-form>
 
         <!-- Remove Field alert -->
-        <div class="mock-modal__wrapper" v-show="isFieldAlertVisible">
-            <div class="mock-modal__cont">
-                <b class="mock-modal__closer" @click="setFieldAlertVisible(false)">x</b>
-                <div class="mock-modal__header">
-                    <h3>Удаление поля</h3>
-                </div>
-                <span
-                >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
-            </span>
-                <div class="mock-modal__buttons">
-                    <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
-                    <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
-                </div>
+        <modal-window
+            @click="setFieldAlertVisible(false)"
+            v-model="isFieldAlertVisible"
+            maxWidth="400px"
+        >
+            <div class="modal-window__header">
+                <h3>Удаление поля</h3>
             </div>
-        </div>
+            <span
+            >Вы действительно хотите удалить поле "{{ fieldToRemove?.title }}"?
+            </span>
+            <div class="modal-window__buttons">
+                <v-button class="w-100" @click="removeField(fieldToRemove); setFieldAlertVisible(false)">Удалить</v-button>
+                <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
+            </div>
+        </modal-window>
+
     </main>
 </template>
 
@@ -232,10 +225,11 @@ import FieldsList from '@/pages/SectionCreationPage/FieldsList';
 import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
+import ModalWindow from '@/components/ModalWindow';
 
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -248,6 +242,7 @@ export default {
         };
         const allSections = ref([]);
         const allEnums = ref([]);
+
         const router = useRouter();
         const section = ref({...initSection});
         const sortedFields = computed(() => {
@@ -266,7 +261,7 @@ export default {
             isFieldModalVisible.value = bool;
         };
 
-        const fieldToChange = ref(null);
+        const fieldToChange = ref({});
         const setFieldToChange = (field) => {
             fieldToChange.value = {...field};
             if (fieldToChange.value) {
@@ -288,6 +283,7 @@ export default {
             }
             setFieldModalVisible(false);
         };
+
         const createSection = async () => {
             try {
                 await sectionsService.createSection(section.value);
@@ -297,11 +293,11 @@ export default {
             }
         };
 
+        // Section Filters_____________
         const isFiltersOpen = ref(false);
         const setFiltersOpen = (bool) => {
             isFiltersOpen.value = bool;
         }
-
         const sortFieldUp = (item) => {
             section.value.fields = sortByIndexUp(item, sortedFields.value);
         };
@@ -314,27 +310,34 @@ export default {
                 fields: newFields,
             };
         };
-            const fieldToRemove = ref(null);
-            const setFieldToRemove = (field) => {
-                fieldToRemove.value = field;
-                setFieldAlertVisible(true);
-            }
-            const removeField = (item) => {
-                section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
-            };
-            const isFieldAlertVisible = ref(false);
-            const setFieldAlertVisible = (bool) => {
-                isFieldAlertVisible.value = bool;
-            }
 
-            onMounted(async () => {
-                try{
-                    allEnums.value = await enumService.getEnums();
-                    allSections.value = await sectionsService.getSections();
-                } catch(e) {
-                    console.log(e)
-                }
-            });
+        // Remove field_________________
+        const isFieldAlertVisible = ref(false);
+        const setFieldAlertVisible = (bool) => {
+            isFieldAlertVisible.value = bool;
+        }
+        const fieldToRemove = ref(null);
+        const setFieldToRemove = (field) => {
+            fieldToRemove.value = field;
+            setFieldAlertVisible(true);
+        }
+        const removeField = (item) => {
+            section.value.fields = [...sortedFields.value.filter((field) => field.id !== item.id)];
+        };
+
+        const isMobFiltersShow = ref(false);
+        const setMobFiltersShow = (bool) => {
+            isMobFiltersShow.value = bool;
+        }
+
+        onMounted(async () => {
+            try{
+                allEnums.value = await enumService.getEnums();
+                allSections.value = await sectionsService.getSections();
+            } catch(e) {
+                console.log(e)
+            }
+        });
 
         return {
             allEnums,
@@ -359,6 +362,8 @@ export default {
             isFieldAlertVisible,
             setFieldAlertVisible,
             removeField,
+            isMobFiltersShow,
+            setMobFiltersShow,
         };
     },
 };
@@ -368,59 +373,7 @@ export default {
 .file-uploader__cont > button {
     margin-right: 5px;
 }
-.sSectionMain__col-title {
-    width: 25%;
+.mobile-filters-show {
+    display:block !important;
 }
-.sSectionMain__col-content {
-    width: 40%;
-}
-.sSectionMain__col-cut {
-    width: 25%
-}
-.mock-modal__wrapper {
-    display: flex;
-    z-index: 10;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-.mock-modal__cont {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 400px;
-    background-color: #fff;
-    padding: 32px;
-    border-radius: 5px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
-}
-.mock-modal__header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-.mock-modal__closer {
-    display: block;
-    position: absolute;
-    font-size: 26px;
-    line-height: 26px;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-}
-.mock-modal__buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-}
-.mock-modal__buttons button:first-child {
-    margin-right: 5px;
-}
-
 </style>

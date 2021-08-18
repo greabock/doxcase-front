@@ -8,7 +8,7 @@
                 <!-- +e.input-wrap-->
                 <button class="search-block__btn" type="submit">
                     <svg class="icon icon-search">
-                        <use xlink:href="img/svg/sprite.svg#search"></use>
+                        <use xlink:href="/img/svg/sprite.svg#search"></use>
                     </svg>
                 </button>
             </form>

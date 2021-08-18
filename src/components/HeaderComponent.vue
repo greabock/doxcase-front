@@ -2,16 +2,14 @@
     <div class="topLine section" id="topLine">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-auto" v-if="$route.path !== '/'">
-                    <router-link to="/" class="topLine__link-back">
-                        <svg class="icon icon-arrow-left">
-                            <use xlink:href="img/svg/sprite.svg#arrow-left"></use>
-                        </svg>
-                    </router-link>
-                </div>
+
                 <div class="col-auto d-lg-none">
                     <div class="topLine__toggle-wrap">
-                        <div class="toggle-menu-mobile toggle-menu-mobile--js"><span></span></div>
+                        <div
+                            @click='toggleMenuMobileActive'
+                            class="toggle-menu-mobile toggle-menu-mobile--js"
+                            :class="{'on': isMenuMobileActive}"
+                        ><span></span></div>
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
@@ -25,13 +23,16 @@
                     </router-link>
                 </div>
                 <div class="col-lg order-lg-0 order-last">
-                    <div class="menu-mobile menu-mobile--js d-lg-block">
+                    <div
+                        class="menu-mobile menu-mobile--js d-lg-block"
+                        :class="{'active': isMenuMobileActive}"
+                    >
                         <div class="row">
                             <div class="col-lg-auto">
                                 <div class="menu-mobile__btn-wrap">
                                     <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
-                                            <use xlink:href="img/svg/sprite.svg#setting"></use>
+                                            <use xlink:href="/img/svg/sprite.svg#setting"></use>
                                         </svg>
                                         <span class="topLine__btn-text d-lg-none">Настроить разделы</span>
                                     </router-link>
@@ -39,11 +40,13 @@
                             </div>
                             <div class="col-lg">
 <!-- Section links in header -->
-                                <ul v-if='sectionsInHeader?.length' class="menu" id="header-sections">
-                                    <li v-for="section in sectionsInHeader" :key="section?.id">
-                                        <router-link :to="'/sections/' + section?.id">{{ section?.title }}</router-link>
-                                    </li>
-                                </ul>
+                                <div class="header-sections-wrapper">
+                                    <ul v-if='sectionsInHeader?.length' class="menu header-sections">
+                                        <li v-for="section in sectionsInHeader" :key="section?.id">
+                                            <router-link :to="'/search/' + section?.id">{{ section?.title }}</router-link>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -67,7 +70,7 @@
 </template>
 
 <script>
-import {computed, onMounted} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
@@ -89,6 +92,11 @@ export default {
             return []
         });
 
+        const isMenuMobileActive = ref(false);
+        const toggleMenuMobileActive = () => {
+            isMenuMobileActive.value = !isMenuMobileActive.value;
+        };
+
         onMounted(async () => {
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
@@ -98,14 +106,13 @@ export default {
             user: computed(() => store.getters['user/getUser']),
             userAvatar: computed(() => store.getters['user/getUserAvatar']),
             sectionsInHeader,
+            toggleMenuMobileActive,
+            isMenuMobileActive,
         };
     },
 };
 </script>
 <style scoped>
-#header-sections {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-}
+
+
 </style>
