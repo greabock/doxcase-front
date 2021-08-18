@@ -123,7 +123,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 INPUT::placeholder {
     color: #d6d6d6;
 }
@@ -155,5 +155,9 @@ INPUT::placeholder {
 }
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
+}
+.form-control.input__element.input__right-offset {
+    border: 1px solid #d6d6d6;
+    margin-bottom: 1rem;
 }
 </style>

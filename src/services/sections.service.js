@@ -1,7 +1,7 @@
 import {axiosInstance} from '@/utils/API';
 // import {v4 as uuidv4} from 'uuid';
 
-class sectionService {
+class sectionsService {
     //Sections _______________________________
     getSections = async () => {
         const res = await axiosInstance.get('/sections');
@@ -15,6 +15,12 @@ class sectionService {
             return res.data.data;
         } else throw new Error('Error fetching section');
     }
+    getSectionMaterials = async (id) => {
+        const res = await axiosInstance.get(`/sections/${id}/materials`);
+        if (res.data) {
+            return res.data;
+        } else throw new Error('Error fetching sections');
+    };
     updateSectionsList = async (sections) => {
         const res = await axiosInstance.patch('/sections', sections);
         if (res.data.data) {
@@ -39,4 +45,4 @@ class sectionService {
     };
 }
 
-export default new sectionService();
+export default new sectionsService();

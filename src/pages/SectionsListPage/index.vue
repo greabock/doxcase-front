@@ -181,7 +181,7 @@ export default {
         });
         watch(sections, (newVal) => {
             store.commit('sections/setSections', newVal);
-        })
+        }, {deep: true});
 
         const isSectionsLoading = ref(true);
 
@@ -235,6 +235,7 @@ export default {
 
         onMounted(async () => {
             try {
+                isSectionsLoading.value = true;
                 initSections.value = await sectionsService.getSections();
                 sections.value = JSON.parse(JSON.stringify(initSections.value));
                 isSectionsLoading.value = false;

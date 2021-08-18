@@ -2,13 +2,7 @@
     <div class="topLine section" id="topLine">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-auto" v-if="$route.path !== '/'">
-                    <router-link to="/" class="topLine__link-back">
-                        <svg class="icon icon-arrow-left">
-                            <use xlink:href="/img/svg/sprite.svg#arrow-left"></use>
-                        </svg>
-                    </router-link>
-                </div>
+
                 <div class="col-auto d-lg-none">
                     <div class="topLine__toggle-wrap">
                         <div
@@ -119,20 +113,6 @@ export default {
 };
 </script>
 <style scoped>
-.header-sections-wrapper {
-    overflow: hidden;
-}
-.topLine .row {
-    flex-wrap: nowrap;
-}
-.header-sections {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow:hidden;
-}
-.header-sections A {
-    white-space: nowrap;
-}
+
 
 </style>

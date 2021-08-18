@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    <div class="form-wrap__input-wrap form-group">
+                    <div :style="{width: '170px'}" class="form-wrap__input-wrap form-group">
                         <label>
                             <span class="form-wrap__input-title">Максимальный размер файла</span>
                             <input
@@ -47,15 +47,6 @@
                     </div>
                     <!-- +e.input-wrap-->
                 </div>
-                <label class="custom-input form-check">
-                    <input
-                    v-model="requiredValue"
-                    class="custom-input__input form-check-input"
-                    name="checkbox"
-                    type="checkbox"
-                     />
-                    <span class="custom-input__text form-check-label">Обязательное поле</span>
-                </label>
                 <button
                     :disabled="!formMeta.valid"
                     class="btn btn-primary w-100"
@@ -107,7 +98,6 @@ export default {
             title: yup.string().required(),
             fileExtensions: yup.array().min(1),
             maxFileSize: yup.string().required(),
-            required: yup.boolean(),
         });
 
         const {
@@ -124,22 +114,19 @@ export default {
             {initialValue: []}
         );
         const {value: maxFileSizeValue} = useField('maxFileSize');
-        const {value: requiredValue} = useField('required');
 
         if (props.fieldToChange.type) {
             setValues({
                 title: props.fieldToChange.title,
-                required: !!props.fieldToChange.required,
                 fileExtensions: props.fieldToChange.type.extensions,
                 maxFileSize: props.fieldToChange.type?.max,
             });
         }
 
-        const addNewField = ({title, fileExtensions, maxFileSize, required }) => {
+        const addNewField = ({title, fileExtensions, maxFileSize}) => {
             const field = {
                 ...newField.value,
                 title,
-                required: !!required,
                 type: {
                     ...fieldType.value,
                     extensions: fileExtensions,
@@ -162,7 +149,6 @@ export default {
             fileExtensionsError,
             fileExtensionsMeta,
             maxFileSizeValue,
-            requiredValue,
             submitHandle,
             formMeta,
         };
