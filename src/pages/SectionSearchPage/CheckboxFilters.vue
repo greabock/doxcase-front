@@ -5,7 +5,7 @@
             :key="item.id"
             class="custom-input form-check">
             <input
-                @change="(event) => $emit('updateFilter', { name: item.id, value: event.target.checked})"
+                @change="(event) => $emit('updateFilter', { name: item.id, value: event.target.checked ? 1 : 0})"
                 class="custom-input__input form-check-input"
                 type="checkbox"
             />

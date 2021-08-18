@@ -76,20 +76,77 @@ import {ref} from 'vue';
 
 export default {
     props: {
-        allSections: Array,
+        currentSection: {
+           type: Object,
+            default: () => {}
+        },
+        allSections: {
+            type: Array,
+            default: () => []
+        },
     },
 
-    setup() {
+    setup(props) {
         const closeToggleHandler = (e) => {
             (e.target.closest('.search-item').classList
                 .toggle('search-item--open'));
         };
 
-        const docSnippetsArr = ref([])
+        const materialSnippetsArr = ref([]);
+
+        const createMaterialSnippet = (material) => {
+
+            const serializeHighLights = (highlight) => {
+                const highlightsArr = [];
+
+                for (let key in highlight) {
+
+                    const field = currentSection.fields.find(field => field.id === key);
+
+                    if (field) {
+                        highlightsArr.push({
+                            name: field.title,
+                            value: highlight.key[0]
+                        });
+                    }
+                }
+                return highlightsArr;
+            }
+            const serializeFields = (material) => {
+                const fieldsArr = [];
+
+                for (let key in material) {
+
+                    if (key === 'id' || key === 'name') continue
+
+                    const field = currentSection.fields.find(field => field.id === key);
+                    if (field) {
+                        fieldsArr.push({
+                            name: field.title,
+                            value: material.key[0]
+                        });
+                    }
+                }
+                return fieldsArr;
+            }
+
+            const currentSection = props.allSections.find(section => section.id === material.section.id);
+
+            return {
+               title: material.name,
+               image: currentSection.image,
+               docsValue: 111,
+               created_at : material.created_at,
+               highLights: serializeHighLights(material.highlight),
+               fields: serializeFields(material.highlight),
+            };
+        }
+
 
         return {
             closeToggleHandler,
-            docSnippetsArr,
+            materialSnippetsArr,
+            createMaterialSnippet,
         }
     }
 

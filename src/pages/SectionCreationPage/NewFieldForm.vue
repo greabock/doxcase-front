@@ -11,6 +11,7 @@
                         <div class="h3 mb-4">Новое поле</div>
 
                         <v-select
+                            :bordered='true'
                             v-model="fieldType"
                             :options="options"
                         ></v-select>
@@ -155,9 +156,5 @@ INPUT::placeholder {
 }
 .mock-modal__buttons button:first-child {
     margin-right: 5px;
-}
-.form-control.input__element.input__right-offset {
-    border: 1px solid #d6d6d6;
-    margin-bottom: 1rem;
 }
 </style>

@@ -1,9 +1,8 @@
 <template>
 
-    <loader v-if="isLoading"></loader>
-    <main v-else class="main-block">
-        <!-- start sSearchResult-->
-        <span :style='{fontSize: "12px"}'>{{resultString}}</span>
+    <loader v-show="isLoading"></loader>
+    <main class="main-block">
+<!--        <span :style='{fontSize: "12px"}'>{{resultString}}</span>-->
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
                 <div class="row">
@@ -32,7 +31,9 @@
                                                 placeholder="Поиск"/>
                                         </div>
                                         <!-- +e.input-wrap-->
-                                        <button class="search-block__btn" type="submit">
+                                        <button
+                                            @click.prevent="updateMaterialsAndFiles"
+                                            class="search-block__btn">
                                             <svg class="icon icon-search ">
                                                 <use xlink:href="/img/svg/sprite.svg#search"></use>
                                             </svg>
@@ -63,7 +64,7 @@
                             <div class="mb-3">
  <!-- Селекторы -->
                                 <section-search-selectors
-                                    :fieldsArray="fieldsToSelectors"
+                                    :fieldsArray="selectorOptionsArr"
                                     @updateFilter="updateFilterHandler"
                                 ></section-search-selectors>
                             </div>
@@ -72,14 +73,6 @@
                                     <svg class="icon icon-close ">
                                         <use xlink:href="/img/svg/sprite.svg#close"></use>
                                     </svg><span class="ms-2">очистить фильтр</span>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="btn-add">
-                                    <div class="btn-add__plus">
-                                    </div>
-                                    <div class="btn-add__text">Добавить материал
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -251,7 +244,7 @@
 </template>
 
 <script>
-import {onMounted, ref, computed} from 'vue';
+import {onMounted, ref, computed, watch} from 'vue';
 import Loader from '@/components/Loader';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -261,7 +254,8 @@ import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelec
 import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
-// import {API_URL} from '@/globals';
+import enumsService from '@/services/enums.service';
+
 
 export default {
     components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes, CheckboxFilters, SearchResults},
@@ -271,19 +265,13 @@ export default {
         const isLoading = ref(false);
         const section = ref({});
         const allSections = ref([]);
+        const currentURL = ref(router.currentRoute.value.params.id);
 
         // Выдача поиска_______________
         const materials = ref([]);
         const files = ref([]);
 
-        const fieldsToSelectors = computed(() => {
-            if (section.value.fields?.length) {
-                return [...section.value.fields].filter( field => !!field.filter_sort_index)
-            } else {
-                return [];
-            }
-        })
-
+        //Строка запроса______________________
         const queryObject = ref({
             search: '',
             sort: {
@@ -294,7 +282,6 @@ export default {
             filter: {
             }
         });
-
         const serialize = (obj, prefix) => {
             const str = [];
 
@@ -309,11 +296,98 @@ export default {
             }
             return str.join("&");
         }
-
         const resultString = computed(() => {
             return '?' + serialize(queryObject.value);
         });
 
+        //Селекторы____________________________________
+        const selectorOptionsArr = ref([]);
+        const fieldsToSelectors = computed(() => {
+            if (section.value.fields?.length) {
+                return [...section.value.fields].filter( field => !!field.filter_sort_index)
+            } else {
+                return [];
+            }
+        })
+        const createSelectOption = (field) => {
+            selectorOptionsArr.value.push({
+                id: field.id,
+                title: field.title,
+                options: (field.type.of).map(item => (
+                    {
+                        title: item,
+                        value: item
+                    }))
+            });
+        };
+        const createEnumOption = async (field, id) => {
+            try {
+                const enumObj = await enumsService.getEnumsObject(id);
+                selectorOptionsArr.value.push({
+                    id,
+                    title: field.title,
+                    options: (enumObj.values).map(item => (
+                        {
+                            title: item.title,
+                            value: item.id
+                        }))
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        const createDictionaryOption = async (field, id) => {
+            try {
+                const sectionMaterials = await sectionsService.getSectionMaterials(id);
+                selectorOptionsArr.value.push({
+                    id,
+                    title: field.title,
+                    options: (sectionMaterials.data).map(item => (
+                        {
+                            title: item.name,
+                            value: item.id
+                        }))
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        watch(fieldsToSelectors, async (newVal) => {
+            if (newVal.length) {
+                newVal.map( async (field) => {
+
+                    switch (field.type.name) {
+                        case 'Select':
+                            createSelectOption(field);
+                            break;
+
+                        case 'Enum':
+                            await createEnumOption(field, field.type.of);
+                            break;
+
+                        case 'Dictionary':
+                            await createDictionaryOption(field, field.type.of);
+                            break;
+
+                        case 'List':
+                            switch (field.type.of.name) {
+
+                                case 'Enum':
+                                    await createEnumOption(field, field.type.of.of);
+                                    break;
+
+                                case 'Dictionary':
+                                    await createDictionaryOption(field, field.type.of.of);
+                                    break;
+                            }
+                    }
+                });
+            }
+        });
+
+
+        //Обработчики событий_______________________________________
         const toggleSort = (field, direction) => {
                 queryObject.value = {
                     ...queryObject.value,
@@ -322,36 +396,40 @@ export default {
                         direction
                     }
                 }
-            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
+            updateMaterialsAndFiles();
         };
-        const updateFilterHandler = (option) => {
-                queryObject.value = {
-                    ...queryObject.value,
-                    filter: {
-                           ...queryObject.value.filter,
-                        [option.name]: option.value
-                }
-            }
-            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
-        }
         const updateExtensionsHandler = (extensions) => {
             queryObject.value = {
                 ...queryObject.value,
                 extensions
             }
-            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
+            updateMaterialsAndFiles();
         }
+        const updateFilterHandler = (option) => {
+            queryObject.value = {
+                ...queryObject.value,
+                filter: {
+                    ...queryObject.value.filter,
+                    [option.name]: option.value
+                }
+            }
+            updateMaterialsAndFiles();
+        };
 
-        const updateMaterialsAndFiles = async (url) => {
-            console.log(url);
-            isLoading.value = true;
-            const materialsAndFiles = await searchService.searchSection(url);
-            materials.value = materialsAndFiles.materials;
-            files.value = materialsAndFiles.files;
-            isLoading.value = false;
+        const updateMaterialsAndFiles = async () => {
+            try {
+                isLoading.value = true;
+                const materialsAndFiles = await searchService.searchSection(currentURL.value + resultString.value);
+                materials.value = materialsAndFiles.materials;
+                files.value = materialsAndFiles.files;
+                isLoading.value = false;
+            } catch(e) {
+                console.log(e);
+                isLoading.value = false;
+            }
+
         }
-
-        onMounted(async () => {
+        const updateSearchPage = async () => {
             try {
                 isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
@@ -363,6 +441,12 @@ export default {
                 console.log(e)
                 isLoading.value = false;
             }
+        };
+        watch(currentURL, async () => {
+            await updateSearchPage();
+        });
+        onMounted(async () => {
+            await updateSearchPage();
         });
 
         return {
@@ -377,6 +461,8 @@ export default {
             searchService,
             materials,
             files,
+            selectorOptionsArr,
+            updateMaterialsAndFiles,
         }
     },
 }
