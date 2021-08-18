@@ -67,11 +67,8 @@
                             <button class="sCardHead__aside-btn btn-outline-primary" type="button" @click="deleteMaterial">
                                 Удалить материал
                             </button>
-                             <!-- <button class="sCardHead__aside-btn btn-outline-primary" type="button">
-                                Редактировать материал
-                            </button> -->
                             <ul>
-                                <li v-for="(el, i) of list" :key="i">
+                                <li v-for="(el, i) of lists" :key="i">
                                     <div class="strong">{{ el.title }}</div>
                                     <ul>
                                         <li v-for="(v, x) of el.value" :key="x">{{ v }}</li>
@@ -212,7 +209,7 @@ export default {
                     } else {
                         return {
                             ...x,
-                            value: format(material[x.id], 'dd.mm.yyyy'),
+                            value: format(new Date(material[x.id]), 'dd.mm.yyyy'),
                             title: x.title,
                         };
                     }

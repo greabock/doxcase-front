@@ -283,8 +283,11 @@ export default {
                     }
                 } else if (field.type == 'List') {
                     if (field.value) {
-                        fieldsSubmit[field.id] = field.value.map((x) => x.name);
-
+                        if (field.ofType == 'Enum') {
+                            fieldsSubmit[field.id] = field.value.map((x) => ({ id: x.key, title: x.name }));
+                        } else {
+                            fieldsSubmit[field.id] = field.value.map((x) => x.name);
+                        }
                     }
                 } else if (field.type == 'Boolean') {
                     // fieldsSubmit[field.id] = field.value;
