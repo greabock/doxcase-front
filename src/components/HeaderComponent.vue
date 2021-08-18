@@ -9,15 +9,6 @@
                         </svg>
                     </router-link>
                 </div>
-                <div class="col-auto d-lg-none">
-                    <div class="topLine__toggle-wrap">
-                        <div
-                            @click='toggleMenuMobileActive'
-                            class="toggle-menu-mobile toggle-menu-mobile--js"
-                            :class="{'on': isMenuMobileActive}"
-                        ><span></span></div>
-                    </div>
-                </div>
                 <div class="col-lg-auto col text-center">
                     <router-link to="/">
                         <div class="d-sm-none">
