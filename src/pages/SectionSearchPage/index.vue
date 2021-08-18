@@ -231,7 +231,8 @@ export default {
 
         const router = useRouter();
         const isLoading = ref(false);
-        const section = ref({})
+        const section = ref({});
+        const allSections = ref([]);
 
         // Выдача поиска_______________
         const materials = ref([]);
@@ -248,11 +249,11 @@ export default {
         const queryObject = ref({
             search: '',
             sort: {
-                name: 'asc',
-                created_at: 'asc'
+                field: 'name', // name || created_at
+                direction: 'asc',
             },
-            extensions: [],
-            filter: {
+            extensions: [], //
+            filter: { // key : arr
             }
         });
 
@@ -346,15 +347,16 @@ export default {
         const updateMaterialsAndFiles = async (url) => {
             console.log(url);
             isLoading.value = true;
-            const materialsAndFiles = await searchService.searchSection(url);
-            materials.value = materialsAndFiles.materials;
-            files.value = materialsAndFiles.files;
-            isLoading.value = false;
+            // const materialsAndFiles = await searchService.searchSection(url);
+            // materials.value = materialsAndFiles.materials;
+            // files.value = materialsAndFiles.files;
+            // isLoading.value = false;
         }
 
         onMounted(async () => {
             try {
                 isLoading.value = true;
+                allSections.value = await sectionsService.getSections();
                 section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
                 await updateMaterialsAndFiles(router.currentRoute.value.params.id);
                 isLoading.value = false;
@@ -372,6 +374,10 @@ export default {
             fieldsToSelectors,
             updateFilterHandler,
             updateExtensionsHandler,
+            allSections,
+            searchService,
+            materials,
+            files,
         }
     },
 }

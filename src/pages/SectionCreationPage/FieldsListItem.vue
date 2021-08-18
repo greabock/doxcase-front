@@ -187,6 +187,14 @@ export default {
                                 content_title: "Содержание",
                                 type_view:  "Значения из выпадающего списка",
                             };
+                        case "File":
+                            return {
+                                field,
+                                title,
+                                description: type.of.extensions.map((item, i) => `${i + 1}. ${item}`).join(' '),
+                                content_title: "Допустимые форматы",
+                                type_view:  "Загрузка вложений",
+                            };
                     }
                 }
             }

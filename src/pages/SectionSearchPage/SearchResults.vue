@@ -2,11 +2,15 @@
     <div class="sSearchResult__items">
         <div class="search-item search-item--open">
             <div class="row">
+                <div class="col-auto">
+                    <div class="search-item__icon-wrap">
+                        <img alt='' src="/img/@1x/avatar-2.png" />
+                    </div>
+                </div>
                 <div class="col">
                     <div class="h6">PRS - Почта Банк - ЭДО </div>
                     <div class="text-dark small">Опубликовано 01.01.2020
-                        <span
-                            class="d-sm-none text-primary">
+                        <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
                                 <use xlink:href="/img/svg/sprite.svg#doc"></use>
                             </svg>25
@@ -68,14 +72,24 @@
 </template>
 
 <script>
+import {ref} from 'vue';
+
 export default {
+    props: {
+        allSections: Array,
+    },
+
     setup() {
-        const closeToggleHandler = (e) =>
+        const closeToggleHandler = (e) => {
             (e.target.closest('.search-item').classList
                 .toggle('search-item--open'));
+        };
+
+        const docSnippetsArr = ref([])
 
         return {
             closeToggleHandler,
+            docSnippetsArr,
         }
     }
 
@@ -88,5 +102,12 @@ export default {
 }
 .search-item__dropdown {
     display: none;
+}
+.search-item__icon-wrap {
+    width: 50px;
+}
+.search-item__icon-wrap IMG {
+    max-width: 100%;
+    height:auto;
 }
 </style>
