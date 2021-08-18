@@ -27,7 +27,7 @@
     </div>
 </template>
 <script>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, watch} from 'vue';
 import enumsService from '@/services/enums.service';
 import sectionsService from '@/services/sections.service';
 
@@ -41,6 +41,9 @@ export default {
     setup(props) {
 
         const selectorOptionsArr = ref([]);
+        watch(selectorOptionsArr, (newVal) => {
+            console.log(newVal);
+        })
 
         const createSelectOption = (field) => {
             selectorOptionsArr.value.push({

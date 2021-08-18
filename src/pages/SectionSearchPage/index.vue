@@ -1,9 +1,9 @@
 <template>
 
     <loader v-if="isLoading"></loader>
-
     <main v-else class="main-block">
         <!-- start sSearchResult-->
+        <span :style='{fontSize: "12px"}'>{{resultString}}</span>
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
                 <div class="row">
@@ -113,8 +113,8 @@
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
                                     <div
-                                        v-if="queryObject.sort.created_at === 'asc'"
-                                        @click="toggleSortByCreatedAt"
+                                        v-if="queryObject.sort?.field === 'created_at' && queryObject.sort?.direction === 'asc'"
+                                        @click="toggleSort('created_at','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -132,8 +132,8 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else
-                                        @click="toggleSortByCreatedAt"
+                                        v-else-if="queryObject.sort?.field === 'created_at' && queryObject.sort?.direction === 'desc'"
+                                        @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -150,9 +150,28 @@
                                         <div class="sSearchResult__filter-result-text">сначала старые
                                         </div>
                                     </div>
+                                        <div
+                                            v-else-if="queryObject.sort?.field === 'name'"
+                                            @click="toggleSort('created_at','asc')"
+                                            class="sSearchResult__filter-item">
+                                            <div class="sSearchResult__filter-btns">
+                                                <div class="sSearchResult__filter-btn">
+                                                    <svg class="icon icon-arrow-up ">
+                                                        <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
+                                                    </svg>
+                                                </div>
+                                                <div class="sSearchResult__filter-btn">
+                                                    <svg class="icon icon-arrow-down ">
+                                                        <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="sSearchResult__filter-result-text">сначала новые
+                                            </div>
+                                        </div>
                                     <div
-                                        v-if="queryObject.sort.name === 'asc'"
-                                        @click="toggleSortByName"
+                                        v-if="queryObject.sort?.field === 'name' && queryObject.sort?.direction === 'asc'"
+                                        @click="toggleSort('name','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
@@ -170,11 +189,30 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else
-                                        @click="toggleSortByName"
+                                        v-else-if="queryObject.sort?.field === 'name' && queryObject.sort?.direction === 'desc'"
+                                        @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
+                                            <div class="sSearchResult__filter-btn">
+                                                <svg class="icon icon-a ">
+                                                    <use xlink:href="/img/svg/sprite.svg#a"></use>
+                                                </svg>
+                                            </div>
                                             <div class="sSearchResult__filter-btn active">
+                                                <svg class="icon icon-Ya ">
+                                                    <use xlink:href="/img/svg/sprite.svg#Ya"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="sSearchResult__filter-result-text">от Я до А
+                                        </div>
+                                    </div>
+                                    <div
+                                        v-if="queryObject.sort?.field === 'created_at'"
+                                        @click="toggleSort('name','asc')"
+                                        class="sSearchResult__filter-item">
+                                        <div class="sSearchResult__filter-btns">
+                                            <div class="sSearchResult__filter-btn">
                                                 <svg class="icon icon-Ya ">
                                                     <use xlink:href="/img/svg/sprite.svg#Ya"></use>
                                                 </svg>
@@ -185,7 +223,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">от Я до А
+                                        <div class="sSearchResult__filter-result-text">от А до Я
                                         </div>
                                     </div>
                                 </div>
@@ -213,7 +251,7 @@
 </template>
 
 <script>
-import {onMounted, ref, computed, watch} from 'vue';
+import {onMounted, ref, computed} from 'vue';
 import Loader from '@/components/Loader';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -249,83 +287,43 @@ export default {
         const queryObject = ref({
             search: '',
             sort: {
-                field: 'name', // name || created_at
+                field: 'created_at',
                 direction: 'asc',
             },
-            extensions: [], //
-            filter: { // key : arr
+            extensions: [],
+            filter: {
             }
         });
 
-        const serialize = function(obj, prefix) {
+        const serialize = (obj, prefix) => {
             const str = [];
-            for (const key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) {
 
-                    const k = prefix ? prefix + "[" + key + "]" : key,
-                        v = obj[key];
-
-                    if (typeof v !== 'object') {
-                        str.push( k + "=" + v);
-                    } else if (typeof v === 'object' && v.length) {
-                        str.push(k + "=[" + v + ']');
-                    }
-                    else if (typeof v === 'object' && !v.length)
-                        str.push(serialize(v, k));
+            for (const p in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, p)) {
+                    const k = prefix ? prefix + "[" + p + "]" : p,
+                        v = obj[p];
+                    str.push((v !== null && typeof v === "object") ?
+                        serialize(v, k) :
+                        k + "=" + v);
                 }
             }
             return str.join("&");
-        };
+        }
 
         const resultString = computed(() => {
             return '?' + serialize(queryObject.value);
         });
 
-        watch(resultString, (newVal) => {
-            console.log(newVal)
-            console.log(router.currentRoute.value.path);
-        });
-
-        const toggleSortByName = () => {
-            if (queryObject.value.sort.name === 'asc') {
+        const toggleSort = (field, direction) => {
                 queryObject.value = {
                     ...queryObject.value,
                     sort: {
-                        ...queryObject.value.sort,
-                        name: 'desc'
+                        field,
+                        direction
                     }
                 }
-            } else {
-                queryObject.value = {
-                    ...queryObject.value,
-                    sort: {
-                        ...queryObject.value.sort,
-                        name: 'asc'
-                    }
-                }
-            }
             updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
-        }
-        const toggleSortByCreatedAt = () => {
-            if (queryObject.value.sort.created_at === 'asc') {
-                queryObject.value = {
-                    ...queryObject.value,
-                    sort: {
-                        ...queryObject.value.sort,
-                        created_at: 'desc'
-                    }
-                }
-            } else {
-                queryObject.value = {
-                    ...queryObject.value,
-                    sort: {
-                        ...queryObject.value.sort,
-                        created_at: 'asc'
-                    }
-                }
-            }
-            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
-        }
+        };
         const updateFilterHandler = (option) => {
                 queryObject.value = {
                     ...queryObject.value,
@@ -347,10 +345,10 @@ export default {
         const updateMaterialsAndFiles = async (url) => {
             console.log(url);
             isLoading.value = true;
-            // const materialsAndFiles = await searchService.searchSection(url);
-            // materials.value = materialsAndFiles.materials;
-            // files.value = materialsAndFiles.files;
-            // isLoading.value = false;
+            const materialsAndFiles = await searchService.searchSection(url);
+            materials.value = materialsAndFiles.materials;
+            files.value = materialsAndFiles.files;
+            isLoading.value = false;
         }
 
         onMounted(async () => {
@@ -358,6 +356,7 @@ export default {
                 isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
                 section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
+                console.log('Section: ', section.value);
                 await updateMaterialsAndFiles(router.currentRoute.value.params.id);
                 isLoading.value = false;
             } catch(e) {
@@ -369,12 +368,12 @@ export default {
         return {
             isLoading,
             queryObject,
-            toggleSortByCreatedAt,
-            toggleSortByName,
+            toggleSort,
             fieldsToSelectors,
             updateFilterHandler,
             updateExtensionsHandler,
             allSections,
+            resultString,
             searchService,
             materials,
             files,

@@ -166,7 +166,6 @@ export default {
         const addNewField = ({title, required, multiSelect}) => {
 
             const options = selectOptionsArray.value.map(({value}) => value);
-            console.log(options);
 
             let typeOfField;
             if (multiSelect) {
@@ -189,7 +188,6 @@ export default {
                 required: !!required,
                 type: typeOfField
             }
-            console.log(field);
             emit('addNewField', field);
         };
 

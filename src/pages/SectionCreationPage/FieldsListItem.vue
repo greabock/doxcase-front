@@ -158,7 +158,7 @@ export default {
                         title,
                         description: props.allSections.find((item) => item.id === props.field.type.of).title,
                         content_title: "Содержание",
-                        type_view:  "Значения из списка",
+                        type_view:  "Значения из раздела",
                     };
 
                 case "List":
