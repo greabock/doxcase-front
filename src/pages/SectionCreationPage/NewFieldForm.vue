@@ -11,7 +11,7 @@
                         <div class="h3 mb-4">Новое поле</div>
 
                         <v-select
-                        class="mb-3"
+                            class="mb-3"
                             v-model="fieldType"
                             :options="options"
                             bordered
