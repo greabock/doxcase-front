@@ -87,11 +87,6 @@ export default {
         };
         const newField = ref({...initField, ...props.fieldToChange});
 
-        const fieldType = ref({
-            name: 'File',
-            max: 200,
-        });
-
         const allExtensions =  ['doc', 'xls', 'xlsx', 'jpg', 'pdf', 'fig', 'pptx',];
 
         const schema = yup.object({
@@ -118,8 +113,8 @@ export default {
         if (props.fieldToChange.type) {
             setValues({
                 title: props.fieldToChange.title,
-                fileExtensions: props.fieldToChange.type.extensions,
-                maxFileSize: props.fieldToChange.type?.max,
+                fileExtensions: props.fieldToChange.type?.of?.extensions,
+                maxFileSize: props.fieldToChange.type?.of?.max,
             });
         }
 
@@ -128,9 +123,12 @@ export default {
                 ...newField.value,
                 title,
                 type: {
-                    ...fieldType.value,
-                    extensions: fileExtensions,
-                    max: maxFileSize
+                    name: 'List',
+                    of: {
+                        name: 'File',
+                        max: maxFileSize,
+                        extensions: fileExtensions
+                    }
                 }
             }
             emit('addNewField', field);

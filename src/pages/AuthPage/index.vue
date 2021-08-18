@@ -22,7 +22,7 @@
                     <!-- +e.input-wrap-->
                     <v-button :disabled="loading" class="w-100">
                         <span v-show="loading" class="spinner-border spinner-border-sm"></span>
-                        <span>Login</span>
+                        <span>Войти</span>
                     </v-button>
                 </Form>
                 <v-button outline="true" color="white" class="w-100"> Войти с помощью Azure </v-button>
