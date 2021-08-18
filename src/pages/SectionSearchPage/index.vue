@@ -297,13 +297,11 @@
                                 </upload-doc-types>
 
 <!-- Чекбоксы -->
-                                <div class="sSearchResult__aside-group">
-                                    <label class="custom-input form-check">
-                                        <input
-                                            class="custom-input__input form-check-input" name="checkbox" type="checkbox"/>
-                                        <span class="custom-input__text form-check-label">Материал обучения</span>
-                                    </label>
-                                </div>
+                                <checkbox-filters
+                                    :fieldsArray="fieldsToSelectors"
+                                    @updateFilter="updateFilterHandler"
+                                >
+                                </checkbox-filters>
 
                             </div>
                         </div>
@@ -316,7 +314,7 @@
 </template>
 
 <script>
-import {onMounted, ref, computed} from 'vue';
+import {onMounted, ref, computed, watch} from 'vue';
 import Loader from '@/components/Loader';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -324,11 +322,11 @@ import searchService from '@/services/search.service';
 import {useRouter} from 'vue-router';
 import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
 import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
-
+import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 // import {API_URL} from '@/globals';
 
 export default {
-    components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes},
+    components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes, CheckboxFilters},
     setup() {
 
         const router = useRouter();
@@ -341,7 +339,7 @@ export default {
 
         const fieldsToSelectors = computed(() => {
             if (section.value.fields?.length) {
-                return [...section.value.fields].sort( field => !!field.filter_sort_index)
+                return [...section.value.fields].filter( field => !!field.filter_sort_index)
             } else {
                 return [];
             }
@@ -356,6 +354,35 @@ export default {
             extensions: [],
             filter: {
             }
+        });
+
+        const serialize = function(obj, prefix) {
+            const str = [];
+            for (const key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
+
+                    const k = prefix ? prefix + "[" + key + "]" : key,
+                        v = obj[key];
+
+                    if (typeof v !== 'object') {
+                        str.push( k + "=" + v);
+                    } else if (typeof v === 'object' && v.length) {
+                        str.push(k + "=[" + v + ']');
+                    }
+                    else if (typeof v === 'object' && !v.length)
+                        str.push(serialize(v, k));
+                }
+            }
+            return str.join("&");
+        };
+
+        const resultString = computed(() => {
+            return '?' + serialize(queryObject.value);
+        });
+
+        watch(resultString, (newVal) => {
+            console.log(newVal)
+            console.log(router.currentRoute.value.path);
         });
 
         const toggleSortByName = () => {
@@ -376,6 +403,7 @@ export default {
                     }
                 }
             }
+            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
         }
         const toggleSortByCreatedAt = () => {
             if (queryObject.value.sort.created_at === 'asc') {
@@ -395,6 +423,7 @@ export default {
                     }
                 }
             }
+            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
         }
         const updateFilterHandler = (option) => {
                 queryObject.value = {
@@ -404,50 +433,36 @@ export default {
                         [option.name]: option.value
                 }
             }
+            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
         }
         const updateExtensionsHandler = (extensions) => {
             queryObject.value = {
                 ...queryObject.value,
                 extensions
             }
+            updateMaterialsAndFiles(router.currentRoute.value.params.id + resultString.value);
+        }
+
+        const updateMaterialsAndFiles = async (url) => {
+            console.log(url);
+            isLoading.value = true;
+            const materialsAndFiles = await searchService.searchSection(url);
+            materials.value = materialsAndFiles.materials;
+            files.value = materialsAndFiles.files;
+            isLoading.value = false;
         }
 
         onMounted(async () => {
             try {
                 isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
-                console.log(section.value);
-                const materialsAndFiles = await searchService.searchSection(router.currentRoute.value.params.id);
-                materials.value = materialsAndFiles.materials;
-                files.value = materialsAndFiles.files;
+                await updateMaterialsAndFiles(router.currentRoute.value.params.id);
                 isLoading.value = false;
             } catch(e) {
                 console.log(e)
                 isLoading.value = false;
             }
         });
-
-        const serialize = (obj, prefix) => {
-            const str = [];
-            for (const p in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, p)) {
-                    const k = prefix ? prefix + "[" + p + "]" : p,
-                        v = obj[p];
-                    str.push((v !== null && typeof v === "object") ?
-                        serialize(v, k) :
-                        encodeURIComponent(k) + "=" + encodeURIComponent(v));
-                }
-            }
-            return str.join("&");
-        }
-
-        console.log(serialize({
-            foo: "hi there",
-            bar: {
-                blah: 123,
-                quux: [1, 2, 3]
-            }
-        }));
 
         return {
             isLoading,
