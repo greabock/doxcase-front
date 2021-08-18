@@ -232,7 +232,7 @@ export default {
                                 multiple: field.type.name == 'List',
                             },
                         });
-                    } else {
+                    } else if (field.type.of && field.type.of.name == 'Select') {
                         f.push({
                             ...field,
                             type: field.type.name,
@@ -283,11 +283,8 @@ export default {
                     }
                 } else if (field.type == 'List') {
                     if (field.value) {
-                        // if (field.ofType == 'Enum') {
-                            fieldsSubmit[field.id] = field.value.map((x) => x.name);
+                        fieldsSubmit[field.id] = field.value.map((x) => x.name);
 
-                        // }
-                        // fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
                     }
                 } else if (field.type == 'Boolean') {
                     // fieldsSubmit[field.id] = field.value;
