@@ -40,7 +40,7 @@ import {ref} from '@vue/reactivity';
 import VInput from './VInput.vue';
 import ArrowDown from './icons/arrow-down.svg.vue';
 
-import {onMounted, onUnmounted} from '@vue/runtime-core';
+import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
 
 function outsideSub(fn) {
     global.addEventListener('focusin', fn);
@@ -73,16 +73,21 @@ export default {
         const root = ref(null);
         const isActive = ref(false);
 
-        const privateOptions = ref(props.options);
+        const privateValue = ref('')
+        const privateOptions = computed(() => props.options.filter((str) => {
+                    return str.name.toString().toLowerCase().includes(privateValue.value.toLowerCase());
+                }))
+        // const privateOptions = ref(options);
         const search = (e) => {
             const value = e.target.value;
-            if (value) {
-                privateOptions.value = props.options.filter((str) => {
-                    return str.name.toString().includes(value);
-                });
-            } else {
-                privateOptions.value = props.options;
-            }
+            privateValue.value = value;
+            // if (value) {
+            //     privateOptions.value = props.options.filter((str) => {
+            //         return str.name.toString().toLowerCase().includes(value.toLowerCase());
+            //     });
+            // } else {
+            //     privateOptions.value = props.options;
+            // }
         };
 
         const privateSelected = ref('');
@@ -91,7 +96,8 @@ export default {
         const hide = (event) => {
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
-                privateOptions.value = props.options;
+                // privateOptions.value = props.options;
+                privateValue.value = ''
                 if (props.modelValue) {
                     privateSelected.value = props.modelValue.name.toString();
                 }
@@ -117,14 +123,18 @@ export default {
                 }
                 privateSelected.value = multipleSelect.value.map(x => x.name.toString()).join(', ');
                 ctx.emit('update:modelValue', multipleSelect);
+                ctx.emit('select', multipleSelect);
             } else {
                 isActive.value = false;
                 ctx.emit('update:modelValue', item);
+                ctx.emit('select', item);
                 privateSelected.value = item.name.toString();
             }
+
+            privateValue.value = ''
         };
 
-        return {isActive, root, select, privateSelected, privateOptions, search};
+        return {isActive, root, select, privateSelected, privateOptions, search, privateValue};
     },
 };
 </script>
