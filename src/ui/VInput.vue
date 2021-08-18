@@ -45,7 +45,7 @@
 import {computed} from '@vue/runtime-core';
 
 export default {
-    inheritAttrs: false,
+    // inheritAttrs: false,
     props: {
         modelValue: String,
         placeholder: String,

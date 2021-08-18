@@ -29,153 +29,45 @@
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
                                     <VSelect
+                                        v-model="sectionValue"
                                         class="input-line__input"
-                                        :options="[
-                                            {
-                                                key: 1,
-                                                name: 'placeholder 1',
-                                            },
-                                             {
-                                                key: 2,
-                                                name: 'placeholder 2',
-                                            },
-                                             {
-                                                key: 3,
-                                                name: 'placeholder 3',
-                                            },
-                                        ]"
-                                        placeholder="О Сервисе"
-                                        multiple
+                                        :options="sectionOptions"
+                                        placeholder="Раздел"
+                                        @select="selectSection"
                                     />
                                 </div>
                                 <!-- +e.input-wrap-->
                             </div>
                         </div>
                     </div>
-                    <div class="input-line">
+                    <div v-if="sectionValue" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
                                 <div class="input-line__title">Название материала</div>
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
-                                    <VInput class="input-line__input" placeholder="Введите" />
+                                    <VInput v-model="name" class="input-line__input" placeholder="Введите" />
                                 </div>
                                 <!-- +e.input-wrap-->
                             </div>
                         </div>
                     </div>
-                    <div class="input-line">
+                    <div v-for="(field, i) of fields" :key="i" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">Выберите категорию</div>
+                                <div class="input-line__title">{{ field.title }}</div>
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
-                                    <VSelect
-                                        class="input-line__input"
-                                        :options="[
-                                            {
-                                                key: 1,
-                                                name: 'placeholder 1',
-                                            },
-                                        ]"
-                                        placeholder="ФГУП Почта России"
-                                    />
-                                </div>
-                                <!-- +e.input-wrap-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">Выберите категорию</div>
-                            </div>
-                            <div class="col">
-                                <div class="input-line__input-wrap form-group">
-                                    <VSelect
-                                        class="input-line__input"
-                                        :options="[
-                                            {
-                                                key: 1,
-                                                name: 'placeholder 1',
-                                            },
-                                        ]"
-                                        placeholder="ФГУП Почта России"
-                                    />
-                                </div>
-                                <!-- +e.input-wrap-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">Краткое поле</div>
-                            </div>
-                            <div class="col">
-                                <div class="input-line__input-wrap form-group">
-                                    <VInput class="input-line__input" placeholder="Введите" />
-                                </div>
-                                <!-- +e.input-wrap-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">Дата возникновения компании</div>
-                            </div>
-                            <div class="col">
-                                <div class="input-line__input-wrap form-group">
-                                    <VDatePicker placeholder="ДД.ММ.ГГГГ" class="input-line__input" />
-                                </div>
-                                <!-- +e.input-wrap-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">Большое поле</div>
-                            </div>
-                            <div class="col">
-                                <div class="input-line__input-wrap form-group">
-                                    <textarea
-                                        class="input-line__input form-control"
-                                        name="textarea"
-                                        placeholder="Введите"
-                                    ></textarea>
-                                </div>
-                                <!-- +e.input-wrap-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">Чекбоксы</div>
-                            </div>
-                            <div class="col">
-                                <label class="custom-input form-check"
-                                    ><input
-                                        class="custom-input__input form-check-input"
-                                        name="checkbox"
-                                        type="checkbox"
-                                    /><span class="custom-input__text form-check-label">Следующий чекбокс</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">Вики-редактор</div>
-                            </div>
-                            <div class="col">
-                                <div class="input-line__input-wrap form-group">
-                                    <VTextEditor class="text-area" v-model="html" />
+                                    <component
+                                        :is="components[field.type]"
+                                        :class="field.type == 'Wiki' ? 'text-area' : 'input-line__input'"
+                                        v-model="field.value"
+                                        v-bind="field.props"
+                                    >
+                                        {{ field.title }}
+                                    </component>
                                 </div>
                                 <!-- +e.input-wrap-->
                             </div>
@@ -187,36 +79,22 @@
         <!-- end sNewMaterial-->
         <!-- start sAddDocs-->
         <section class="sAddDocs section" id="sAddDocs">
-            <div class="container-fluid">
+            <div v-if="files.length" class="container-fluid">
                 <h2>Работа с документами</h2>
                 <ul class="nav nav-tabs">
-                    <li class="nav-item"><a class="nav-link" href="#">Справочники</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Пользователи</a></li>
+                    <li v-for="(file, i) of files" :key="i" class="nav-item">
+                        <span :class="['nav-link', {active: file.isActive}]" @click="setActive(file)">
+                            {{ file.title }}
+                        </span>
+                    </li>
                 </ul>
             </div>
-            <div class="sAddDocs__body bg-white pt-3">
-                <div class="container-fluid pb-3">
-                    <VButtonFileLoader @upload="loadFiles">
-                        <div class="btn-add">
-                            <div class="btn-add__plus"></div>
-                            <div class="btn-add__text">Добавить документ</div>
-                        </div>
-                    </VButtonFileLoader>
-                </div>
-                <div v-for="(item, i) of listReverse" :key="item.key">
-                    <ItemEdit
-                        v-if="item.isEdit"
-                        :file="item.file"
-                        :data="item.data"
-                        @save="(file) => saveFile(item, file)"
-                        @close="item.isEdit = false"
-                    />
-                    <ItemFile v-else @edit="editFile(item)" @delete="deleteFile(i)" :file="item.file" :data="item.data" />
-                </div>
-            </div>
+            <template v-for="(file, i) of files" :key="i">
+                <FilesContainer v-if="file.isActive" :list="file.files" @update="(x) => updateFiles(file, x)" />
+            </template>
             <div class="sAddDocs__footer">
                 <div class="container-fluid d-flex">
-                    <VButton class="w-auto"> Сохранить изменения </VButton>
+                    <VButton class="w-auto" @click="submit"> Сохранить изменения </VButton>
                     <VButton class="ms-2" outline> Отмена </VButton>
                 </div>
             </div>
@@ -226,98 +104,275 @@
 </template>
 
 <script>
+import {ref} from 'vue';
+// import {v4 as uuidv4} from 'uuid';
+
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
 import VInput from '@/ui/VInput';
+import VCheckbox from '@/ui/VCheckbox';
 import VDatePicker from '@/ui/VDatePicker';
 import VTextEditor from '@/ui/VTextEditor';
+import VText from '@/ui/VText';
 import VButton from '@/ui/VButton';
 import VButtonFileLoader from '@/ui/VButtonFileLoader';
 
 import ItemEdit from './ItemEdit';
 import ItemFile from './ItemFile';
-import {ref} from '@vue/reactivity';
-import { computed } from '@vue/runtime-core';
+import FilesContainer from './FilesContainer';
 
-const getFileData = (file) => {
-    const {size, name, type} = file;
-    const kb = size / 1024;
-    const mb = kb / 1024;
+import sectionsService from '@/services/sections.service';
+import enumsService from '@/services/enums.service';
+import materialService from '@/services/material.service';
+import fileService from '@/services/file.service';
 
-    const n = name.split('.');
-    const t = n.splice(-1);
-    const fileName = n.length ? n.join(): t.join();
-
-    const fileType = type.split('/').splice(-1).join();
-
-    return {
-        size: mb > 0 ? `${kb.toFixed(2)} kb` : `${mb.toFixed(2)} mb`,
-        name: fileName,
-        type: fileType,
-    };
-};
+import {useRouter} from 'vue-router';
 
 export default {
     components: {
+        VText,
         VBreadcrumb,
         VSelect,
         VInput,
-        VDatePicker,
-        VTextEditor,
         VButton,
         VButtonFileLoader,
         ItemEdit,
         ItemFile,
+        FilesContainer,
     },
     setup() {
-        const listFiles = ref([]);
+        const sectionOptions = ref([]);
+        const sectionValue = ref(null);
+        const fields = ref([]);
+        const files = ref([]);
+        const name = ref('');
+        const router = useRouter();
 
-        const saveFile = (item, file) => {
-            item.isEdit = false;
-            item.file = file;
-            item.data = getFileData(file);
+        const getSections = async () => {
+            const sections = await sectionsService.getSections();
+
+            sectionOptions.value = sections.map((s) => ({
+                key: s.id,
+                name: s.title,
+            }));
         };
 
-        const editFile = (item) => {
-            listFiles.value.map(item => item.isEdit = false);
-            item.isEdit = true;
-        };
+        getSections();
 
-        const deleteFile = (i) => {
-            listFiles.value.splice(i, 1);
-        };
+        const selectSection = async (section) => {
+            const sectionObject = await sectionsService.getSectionObject(section.key);
 
-        const loadFiles = ([file]) => {
-            listFiles.value.map(item => item.isEdit = false)
-            listFiles.value.push(
-                 {
-                    key: new Date(),
-                    isEdit: true,
-                    file,
-                    data: getFileData(file),
+            const isFiles = (f) =>
+                f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
+
+            files.value = sectionObject.fields.filter(isFiles).map((f) => ({
+                ...f,
+                type: 'File',
+                files: [],
+                multi: f.type.of && f.type.of.name == 'File',
+                isActive: false,
+            }));
+
+            if (files.value.length) {
+                files.value[0].isActive = true;
+            }
+
+            const fieldList = sectionObject.fields.filter((f) => !isFiles(f));
+            const f = [];
+            for (let field of fieldList) {
+                if (field.type.name == 'Boolean') {
+                    f.push({
+                        ...field,
+                        type: field.type.name,
+                        value: false,
+                    });
+                } else if (field.type.name == 'Enum') {
+                    const enums = await enumsService.getEnumsObject(field.type.of);
+                    f.push({
+                        ...field,
+                        type: field.type.name,
+                        value: null,
+                        props: {
+                            options: enums.values.map((x) => ({
+                                key: x.id,
+                                name: x.title,
+                            })),
+                            placeholder: field.description,
+                        },
+                    });
+                } else if (field.type.name == 'Select') {
+                    f.push({
+                        ...field,
+                        type: field.type.name,
+                        value: null,
+                        props: {
+                            options:
+                                field.type.of &&
+                                field.type.of.map((x) => ({
+                                    key: x,
+                                    name: x,
+                                })),
+                            placeholder: field.description,
+                        },
+                    });
+                } else if (field.type.name == 'List') {
+                    if (field.type.of && field.type.of.name == 'Enum') {
+                        const enums = await enumsService.getEnumsObject(field.type.of.of);
+                        f.push({
+                            ...field,
+                            type: field.type.name,
+                            ofType: field.type.of.name,
+                            value: null,
+                            props: {
+                                options: enums.values.map((x) => ({
+                                    key: x.id,
+                                    name: x.title,
+                                })),
+                                placeholder: field.description,
+                                multiple: field.type.name == 'List',
+                            },
+                        });
+                    } else {
+                        f.push({
+                            ...field,
+                            type: field.type.name,
+                            value: null,
+                            props: {
+                                options:
+                                    field.type.of.of &&
+                                    field.type.of.of.map((x) => ({
+                                        key: x,
+                                        name: x,
+                                    })),
+                                placeholder: field.description,
+                                multiple: true,
+                            },
+                        });
+                    }
+                } else {
+                    f.push({
+                        id: field.id,
+                        title: field.title,
+                        type: field.type.name,
+                        value: null,
+                        props: {
+                            placeholder: field.description,
+                        },
+                    });
                 }
-            )
+            }
+
+            fields.value = f;
         };
 
-        const listReverse = computed(() => listFiles.value.reverse());
+        const setActive = (file) => {
+            files.value.map((x) => (x.isActive = false));
+            file.isActive = true;
+        };
 
-        const html = ref('');
+        const updateFiles = (file, data) => {
+            file.files = data;
+        };
+
+        const submit = async () => {
+            const fieldsSubmit = {};
+            for (const field of fields.value) {
+                if (field.type == 'Enum' || field.type == 'Select') {
+                    if (field.value) {
+                        fieldsSubmit[field.id] = field.value.key;
+                    }
+                } else if (field.type == 'List') {
+                    if (field.value) {
+                        // if (field.ofType == 'Enum') {
+                            fieldsSubmit[field.id] = field.value.map((x) => x.name);
+
+                        // }
+                        // fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
+                    }
+                } else if (field.type == 'Boolean') {
+                    // fieldsSubmit[field.id] = field.value;
+                } else {
+                    if (field.value) {
+                        fieldsSubmit[field.id] = field.value;
+                    }
+                }
+            }
+
+            console.log('fields', fieldsSubmit);
+
+            const submitFiles = {};
+            for (const file of files.value) {
+                const bodyFormData = new FormData();
+                let isFiles = false;
+                for (const f of file.files) {
+                    if (f.file) {
+                        isFiles = true;
+                        bodyFormData.append('files[]', f.file);
+                    }
+                }
+
+                if (isFiles) {
+                    const res = await fileService.uplodaFile(bodyFormData);
+                    submitFiles[file.id] = res.map((x) => ({id: x.id}));
+                }
+            }
+
+            const material = {
+                // id: uuidv4(),
+                name: name.value,
+                ...fieldsSubmit,
+                ...submitFiles,
+            };
+
+            const {id} = await materialService.createMaterial(sectionValue.value.key, material);
+            router.push({
+                name: 'MaterialItemPageRoute',
+                params: {
+                    sectionId: sectionValue.value.key,
+                    materialId: id,
+                },
+            });
+        };
+
+        const components = {
+            String: VInput,
+            Boolean: VCheckbox,
+            Text: VText,
+            Enum: VSelect,
+            List: VSelect,
+            Select: VSelect,
+            Date: VDatePicker,
+            Wiki: VTextEditor,
+        };
         return {
-            listReverse,
-            html,
-            listFiles,
-            saveFile,
-            editFile,
-            deleteFile,
-            loadFiles,
+            name,
+            components,
+            sectionOptions,
+            selectSection,
+            sectionValue,
+            fields,
+            files,
+            setActive,
+            updateFiles,
+            submit,
         };
     },
 };
 </script>
 
 <style scoped>
+.nav-item {
+    cursor: pointer;
+}
+
 .text-area {
     max-width: 863px;
     min-height: 152px;
+}
+
+.main-block {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: column;
 }
 </style>

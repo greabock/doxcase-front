@@ -123,7 +123,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 INPUT::placeholder {
     color: #d6d6d6;
 }
