@@ -85,108 +85,7 @@
                         </div>
 
  <!-- Результаты поиска -->
-                        <div class="sSearchResult__items">
-                            <div class="search-item">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="h6">Название материала</div>
-                                        <div class="text-dark small">Опубликовано 01.01.2020<span class="d-sm-none text-primary">
-														<svg class="icon icon-doc ">
-															<use xlink:href="/img/svg/sprite.svg#doc"></use>
-														</svg>25</span></div>
-                                    </div>
-                                    <div class="col-auto align-self-center d-none d-sm-block">
-                                        <div class="text-dark small">Документов 25</div>
-                                    </div>
-                                    <div class="col-auto align-self-sm-center">
-                                        <div class="btn-edit-sm btn-primary">
-                                            <svg class="icon icon-chevron-down ">
-                                                <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="search-item">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="h6">Название материала</div>
-                                        <div class="text-dark small">Опубликовано 01.01.2020<span class="d-sm-none text-primary">
-														<svg class="icon icon-doc ">
-															<use xlink:href="/img/svg/sprite.svg#doc"></use>
-														</svg>25</span></div>
-                                    </div>
-                                    <div class="col-auto align-self-center d-none d-sm-block">
-                                        <div class="text-dark small">Документов 25</div>
-                                    </div>
-                                    <div class="col-auto align-self-sm-center">
-                                        <div class="btn-edit-sm btn-primary">
-                                            <svg class="icon icon-chevron-down ">
-                                                <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="search-item search-item--open">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="h6">PRS - Почта Банк - ЭДО </div>
-                                        <div class="text-dark small">Опубликовано 01.01.2020<span class="d-sm-none text-primary">
-														<svg class="icon icon-doc ">
-															<use xlink:href="/img/svg/sprite.svg#doc"></use>
-														</svg>25</span></div>
-                                    </div>
-                                    <div class="col-auto align-self-center d-none d-sm-block">
-                                        <div class="text-dark small">Документов 25</div>
-                                    </div>
-                                    <div class="col-auto align-self-sm-center">
-                                        <div class="btn-edit-sm btn-primary">
-                                            <svg class="icon icon-chevron-down ">
-                                                <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="search-item__dropdown pt-3">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="search-item__panel">
-                                                <div class="row">
-                                                    <div class="col-auto text-primary">Заголовок </div>
-                                                    <div class="col">Текст из короткого поля длинее для типа отображен ...</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="search-item__panel">
-                                                <div class="row">
-                                                    <div class="col-auto text-primary">Заголовок </div>
-                                                    <div class="col">Текст из короткого поля длинее для типа отображенasd sda dsad asd sadasdsdasdasd</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="search-item__panel">
-                                                <div class="row">
-                                                    <div class="col-auto text-primary">Дата</div>
-                                                    <div class="col">18.08.2021</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="search-item__panel">
-                                                <div class="row">
-                                                    <div class="col-auto text-primary">Чекбокс</div>
-                                                    <div class="col"> да</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="small">Бесплатные почтовые сервисы могут также отслеживать ваши электронные письма развлекательные события. Многие услуги, такие как разработка сайтов, мультимедиа, аккредитацию участников, колл-центры и службу</div>
-                                </div>
-                            </div>
-                        </div>
+                        <search-results></search-results>
 
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
@@ -323,10 +222,11 @@ import {useRouter} from 'vue-router';
 import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
 import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
+import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 // import {API_URL} from '@/globals';
 
 export default {
-    components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes, CheckboxFilters},
+    components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes, CheckboxFilters, SearchResults},
     setup() {
 
         const router = useRouter();
