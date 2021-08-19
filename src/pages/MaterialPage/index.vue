@@ -6,21 +6,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col col--main">
-                        <VBreadcrumb
-                            :list="[
-                                {
-                                    link: '/',
-                                    name: 'Главная',
-                                },
-                                {
-                                    name: 'Новый раздел',
-                                    link: '/',
-                                },
-                                {
-                                    name: 'Материал',
-                                },
-                            ]"
-                        />
+                        <VBreadcrumb :list="breadcrumbs" />
                         <h1>{{ title }}</h1>
                         <div class="sCardHead__content">
                             <div class="d-lg-none pt-1">
@@ -64,7 +50,11 @@
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
                         <div class="sCardHead__aside">
-                            <button class="sCardHead__aside-btn btn-outline-primary" type="button" @click="deleteMaterial">
+                            <button
+                                class="sCardHead__aside-btn btn-outline-primary"
+                                type="button"
+                                @click="isShow = true"
+                            >
                                 Удалить материал
                             </button>
                             <ul>
@@ -141,6 +131,16 @@
             </div>
         </div>
         <!-- end sCardDocs-->
+        <ModalWindow v-model="isShow" maxWidth="24rem">
+            <div class="form-wrap">
+                <div class="h3 mb-4">Удаление</div>
+                <p>Вы уверены что хотите удалить раздел? Данное действие необратимое!</p>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-primary btn-cancel" @click="isShow = false">Отмена</button>
+                    <button class="btn btn-delete" @click="deleteMaterial">Удалить</button>
+                </div>
+            </div>
+        </ModalWindow>
     </main>
 </template>
 
@@ -151,10 +151,12 @@ import {useRoute, useRouter} from 'vue-router';
 import materialService from '@/services/material.service';
 import sectionsService from '@/services/sections.service';
 import {format} from 'date-fns';
+import ModalWindow from '@/components/ModalWindow';
 
 export default {
     components: {
         VBreadcrumb,
+        ModalWindow,
     },
     setup() {
         const route = useRoute();
@@ -165,10 +167,28 @@ export default {
         const lists = ref([]);
         const files = ref([]);
         const topBlocks = ref([]);
+        const isShow = ref(false);
+        const breadcrumbs = ref([
+            {
+                link: '/',
+                name: 'Главная',
+            },
+        ]);
 
         const getData = async () => {
             const section = await sectionsService.getSectionObject(sectionId);
             const material = await materialService.getMaterial(sectionId, materialId);
+
+            breadcrumbs.value = [
+                ...breadcrumbs.value,
+                {
+                    name: section.title,
+                    link: `/sections/${sectionId}`,
+                },
+                {
+                    name: material.name,
+                },
+            ];
 
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
@@ -234,10 +254,12 @@ export default {
 
         const deleteMaterial = async () => {
             await materialService.removeMaterial(sectionId, materialId);
-            router.push('/')
-        }
+            router.push('/');
+        };
 
         return {
+            isShow,
+            breadcrumbs,
             deleteMaterial,
             setActive,
             title,

@@ -61,8 +61,11 @@
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
                                     <component
+                                        :class="[
+                                            {'d-flex align-center': field.type == 'Boolean'},
+                                            field.type == 'Wiki' ? 'text-area' : 'input-line__input'
+                                        ]"
                                         :is="components[field.type]"
-                                        :class="field.type == 'Wiki' ? 'text-area' : 'input-line__input'"
                                         v-model="field.value"
                                         v-bind="field.props"
                                     >

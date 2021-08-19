@@ -1,17 +1,19 @@
 <template>
-    <label class="checkbox-input__container">
-        <input
-            class="form-check-input checkbox-input"
-            name="checkbox"
-            type="checkbox"
-            @change="changeValue"
-            :checked="modelValue"
-            v-bind="$attrs"
-        />
-        <span class="checkbox-input__text">
-            <slot></slot>
-        </span>
-    </label>
+    <div>
+        <label class="checkbox-input__container">
+            <input
+                class="form-check-input checkbox-input"
+                name="checkbox"
+                type="checkbox"
+                @change="changeValue"
+                :checked="modelValue"
+                v-bind="$attrs"
+            />
+            <span class="checkbox-input__text">
+                <slot></slot>
+            </span>
+        </label>
+    </div>
 </template>
 
 <script>
