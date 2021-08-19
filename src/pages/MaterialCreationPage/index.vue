@@ -58,13 +58,10 @@
                             <div class="col-md-auto">
                                 <div class="input-line__title">{{ field.title }}</div>
                             </div>
-                            <div class="col">
+                            <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
                                 <div class="input-line__input-wrap form-group">
                                     <component
-                                        :class="[
-                                            {'d-flex align-center': field.type == 'Boolean'},
-                                            field.type == 'Wiki' ? 'text-area' : 'input-line__input'
-                                        ]"
+                                        :class="field.type == 'Wiki' ? 'text-area' : 'input-line__input'"
                                         :is="components[field.type]"
                                         v-model="field.value"
                                         v-bind="field.props"
@@ -287,7 +284,7 @@ export default {
                 } else if (field.type == 'List') {
                     if (field.value) {
                         if (field.ofType == 'Enum') {
-                            fieldsSubmit[field.id] = field.value.map((x) => ({ id: x.key, title: x.name }));
+                            fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
                         } else {
                             fieldsSubmit[field.id] = field.value.map((x) => x.name);
                         }
