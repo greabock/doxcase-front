@@ -11,10 +11,11 @@
                         <div class="h3 mb-4">Новое поле</div>
 
                         <v-select
-                            :bordered='true'
+                            class="mb-3"
                             v-model="fieldType"
                             :options="options"
-                        ></v-select>
+                            bordered
+                        />
                         <!-- +e.input-wrap-->
                         <div class="typed-field-forms">
                             <text-field :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Text'"></text-field>
@@ -124,7 +125,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 INPUT::placeholder {
     color: #d6d6d6;
 }
