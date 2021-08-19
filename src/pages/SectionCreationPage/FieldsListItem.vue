@@ -87,6 +87,15 @@ export default {
 
         const defineView = (field) => {
             const {title, description, type} = field;
+
+            const findSectionTitle = (sectionId) => {
+                const section = props.allSections.find((item) => item.id === sectionId)
+                if (section) {
+                    return section.title;
+                }
+                return "Раздел был удален"
+            };
+
             switch (type.name) {
                 case "String":
                     return {
@@ -175,7 +184,7 @@ export default {
                             return {
                                 field,
                                 title,
-                                description: props.allSections.find((item) => item.id === props.field.type.of.of).title,
+                                description: findSectionTitle(props.field.type.of.of),
                                 content_title: "Содержание",
                                 type_view:  "Значения из раздела",
                         };
