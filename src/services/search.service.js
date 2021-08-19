@@ -7,5 +7,12 @@ class SearchService {
             return res.data.data;
         } else throw new Error('Error fetching Search page');
     };
+
+    searchSectionPost = async (id, body) => {
+        const res = await axiosInstance.post(`/search/${id}`, body);
+        if (res.data.data) {
+            return res.data.data;
+        } else throw new Error('Error fetching Search page');
+    };
 }
 export default new SearchService();

@@ -215,6 +215,7 @@
 import {ref, computed, onMounted} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
+// import filesService from '@/services/files.service';
 import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
 import {sortByIndexDown} from '@/utils/sortByIndex';
@@ -251,6 +252,8 @@ export default {
 
         // Input File_____________________
         const fileInput = ref(null);
+
+
         const resetForm = () => {
             section.value = {...initSection};
             fileInput.value = null;
@@ -286,6 +289,13 @@ export default {
 
         const createSection = async () => {
             try {
+                // const formData = new FormData();
+                // formData.append('files', fileInput.value)
+                //
+                // const imageUrl =  await filesService.uploadFiles(formData);
+                // if (imageUrl) {
+                //     section.value.image = imageUrl;
+                // }
                 await sectionsService.createSection(section.value);
                 router.push(`/sections`);
             } catch (e) {
