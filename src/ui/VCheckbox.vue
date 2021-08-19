@@ -43,5 +43,7 @@ export default {
 .checkbox-input {
     border-radius: 0.25em;
     margin-left: -1.5em;
+    margin-right: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.25)
 }
 </style>
