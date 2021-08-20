@@ -117,6 +117,8 @@ export default {
 };
 </script>
 <style scoped>
-
+.topLine {
+    z-index: 1;
+}
 
 </style>
