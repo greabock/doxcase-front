@@ -79,9 +79,9 @@
                         <div
                             style="margin-left: 4px"
                             class="btn-edit-sm btn-danger"
-                            @click.prevent.stop="setShownEnumItemForm(false)"
+                            @click.prevent.stop="setShownEnumItemForm(false); setItemToChange(null)"
                         >
-                            <svg @click="setItemToChange(null)" class="icon icon-close">
+                            <svg class="icon icon-close">
                                 <use xlink:href="/img/svg/sprite.svg#close"></use>
                             </svg>
                         </div>
@@ -94,6 +94,7 @@
     <!-- Remove enumItem alert -->
     <modal-window
         @close="setRemoveAlertVisible(false)"
+        v-model="isRemoveAlertVisible"
         maxWidth="400px"
     >
         <div class="modal-window__header">
@@ -198,7 +199,7 @@ export default {
         const itemToChange = ref(null);
         const setItemToChange = (item) => {
             itemToChange.value = item;
-            itemToChangeFieldValue.value = item?.title;
+            itemToChangeFieldValue.value = item?.title || '';
         };
         const changeEnumsItem = async (title, actions) => {
             try {
@@ -238,7 +239,14 @@ export default {
 INPUT::placeholder {
     color: #d6d6d6;
 }
-
+.change-enum-item__form {
+    position: absolute;
+    background-color: #fff;
+    z-index: 10;
+    top: -10px;
+    right: 0;
+    left: 0;
+}
 .block-position__item {
     margin-top: 10px;
 }

@@ -14,7 +14,7 @@
                                     name: 'Главная'
                                 },
                                 {
-                                    name: 'Поиск по разделу'
+                                    name: `Поиск по разделу ${bcTitle}`
                                 },
                             ]"
                         />
@@ -269,6 +269,7 @@ export default {
         const section = ref({});
         const allSections = ref([]);
         const currentURL = ref(router.currentRoute.value.params.id);
+        const bcTitle = ref('');
 
         // Выдача поиска_______________
         const materials = ref([]);
@@ -434,7 +435,7 @@ export default {
         }
         const updateSearchPage = async () => {
 
-            section.value = ({});
+            section.value = {};
             materials.value = [];
             files.value = [];
             selectorOptionsArr.value = [];
@@ -444,6 +445,7 @@ export default {
                 allSections.value = await sectionsService.getSections();
                 console.log(allSections.value);
                 section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
+                bcTitle.value =  section.value.title;
                 console.log('Section: ', section.value);
                 await updateMaterialsAndFiles(router.currentRoute.value.params.id);
                 isLoading.value = false;
@@ -479,6 +481,7 @@ export default {
 
         return {
             isLoading,
+            bcTitle,
             queryObject,
             toggleSort,
             fieldsToSelectors,
