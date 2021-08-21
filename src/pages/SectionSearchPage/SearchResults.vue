@@ -186,6 +186,19 @@ export default {
             }
             return fieldsArr;
         }
+        const formatDate = (dateString) => {
+
+            const date = new Date( Date.parse(dateString));
+
+            const day = date.getDay();
+            const month = date.getMonth();
+            const year = date.getFullYear();
+
+            const myDay = (day > 9) ? day : '0' + day;
+            const myMonth = (month > 9) ? month : '0' + month;
+
+            return `${myDay}.${myMonth}.${year}`;
+        }
 
         const createMaterialSnippet = (material, allSections) => {
             if (allSections.length) {
@@ -193,11 +206,11 @@ export default {
                 const currentSection = allSections.find(section => section.id === material.section.id);
 
                 return {
-                    id: material.material.id,
+                   id: material.material.id,
                    title: material.material.name,
                    image: currentSection.image,
                    docsValue: 'добавить на бэк',
-                   created_at : 'добавить дату',
+                   created_at :formatDate(material.material.created_at),
                    highlights: serializeHighLights(material.highlight, currentSection),
                    fields: serializeFields(material.material, currentSection),
                 };
