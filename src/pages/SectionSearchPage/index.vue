@@ -240,7 +240,7 @@
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
-                                    :fieldsArray="fieldsToSelectors"
+                                    :fieldsArray="section.fields"
                                     @updateCheckbox="updateCheckboxHandler"
                                 >
                                 </checkbox-filters>

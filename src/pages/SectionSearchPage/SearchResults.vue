@@ -82,7 +82,7 @@
                 </div>
                 <div class="col">
                     <div class="h5">{{ file.file.name }}</div>
-                    <div class="text-dark small">Опубликовано {{file.file.created_at}}
+                    <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
                                 <use xlink:href="/img/svg/sprite.svg#doc"></use>
@@ -136,8 +136,6 @@ export default {
     },
 
     setup(props) {
-
-        console.log(props.filesArr);
 
         const closeToggleHandler = (e) => {
             (e.target.closest('.search-item').classList
@@ -225,6 +223,7 @@ export default {
             closeToggleHandler,
             materialsSnippetsArr,
             createMaterialSnippet,
+            formatDate,
         }
     }
 

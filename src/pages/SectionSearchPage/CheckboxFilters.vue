@@ -24,6 +24,8 @@ export default {
         }
     },
     setup(props, {emit}) {
+        console.log(props.fieldsArray);
+
        const filteredFields = computed(() => {
            return props.fieldsArray.filter((field) => field.type.name === 'Boolean');
        });
