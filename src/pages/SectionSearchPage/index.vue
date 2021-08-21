@@ -81,6 +81,7 @@
                         <search-results
                             :allSections="allSections"
                             :materialsArr="materials"
+                            :filesArr="files"
                         ></search-results>
 
                     </div>
@@ -460,6 +461,7 @@ export default {
                 const materialsAndFiles = await searchService.searchSectionPost(url, mergedQueryObject);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
+                console.log(files.value);
                 isLoading.value = false;
             } catch(e) {
                 console.log(e);

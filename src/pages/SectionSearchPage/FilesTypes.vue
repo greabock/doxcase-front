@@ -67,7 +67,6 @@ export default {
         });
 
         watch( extensions, (newVal) => {
-            console.log(newVal);
             const newExtensions = newVal.filter(item => item.value).map(item => item.name);
             emit('updateExtensions', newExtensions);
         },

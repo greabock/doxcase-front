@@ -2,7 +2,7 @@
     <div class="sSearchResult__items">
         <div
             v-for="snippet in materialsSnippetsArr"
-            :key="snippet.title"
+            :key="snippet.id"
             class="search-item">
             <div class="row">
                 <div class="col-auto">
@@ -67,41 +67,51 @@
         </div>
 
 <!-- Файлы в выдаче -->
-<!--        <div-->
-<!--            class="search-item">-->
-<!--            <div class="row">-->
-<!--                <div class="col-auto">-->
-<!--                    <div class="search-item__icon-wrap">-->
-<!--                        <img alt='' src="/img/avatar-2.png" />-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col">-->
-<!--                    <div class="h5">Файл</div>-->
-<!--                    <div class="text-dark small">Опубликовано-->
-<!--                        <span class="d-sm-none text-primary">-->
-<!--                            <svg class="icon icon-doc ">-->
-<!--                                <use xlink:href="/img/svg/sprite.svg#doc"></use>-->
-<!--                            </svg>25-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
+        <div
+            v-for="file in filesArr"
+            :key="file.file.name"
+            class="search-item">
+            <div class="row">
+                <div class="col-auto">
+                    <div class="search-item__icon-wrap">
+                        <img alt='' src="/img/avatar-2.png" />
+                    </div>
+                    <div class="file-extension">
+                        {{ file.file.extension }}
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="h5">{{ file.file.name }}</div>
+                    <div class="text-dark small">Опубликовано {{file.file.created_at}}
+                        <span class="d-sm-none text-primary">
+                            <svg class="icon icon-doc ">
+                                <use xlink:href="/img/svg/sprite.svg#doc"></use>
+                            </svg>25
+                        </span>
+                    </div>
+                </div>
+            </div>
 
-<!--            <div-->
-
-<!--                class="highlight-wrapper"-->
-<!--            > <span-->
-<!--                class="highlight-title"-->
-<!--            >file.name-->
-<!--            </span>-->
-<!--                <span-->
-<!--                    class="highlight-text"-->
-<!--                >-->
-<!--                    HTML совпадения-->
-<!--            </span>-->
-
-<!--            </div>-->
-<!--        </div>-->
+            <div
+                v-if="file.highlights.name.length"
+                class="highlight-wrapper"
+            >
+                <span
+                    v-html="file.highlights.name[0]"
+                >
+                </span>
+            </div>
+            <div
+                v-if="file.highlights.content.length"
+                class="highlight-wrapper"
+            >
+                <span v-for="(cont, i) in file.highlights.content"
+                    v-html="cont"
+                    :key='i'
+                >
+                </span>
+            </div>
+        </div>
 
     </div>
 </template>
@@ -117,11 +127,17 @@ export default {
         },
         materialsArr: {
             type: Array,
-            default: () =>[]
+            default: () => []
+        },
+        filesArr: {
+            type: Array,
+            default: () => []
         }
     },
 
     setup(props) {
+
+        console.log(props.filesArr);
 
         const closeToggleHandler = (e) => {
             (e.target.closest('.search-item').classList
@@ -152,17 +168,21 @@ export default {
         const serializeFields = (material, currentSection) => {
             const fieldsArr = [];
 
-            for (let key in material) {
+            for (let key in material ) {
 
-                if (key === 'id' || key === 'name') continue
+                if (Object.prototype.hasOwnProperty.call(material, key)) {
 
-                const field = currentSection.fields.find(field => field.id === key);
-                if (field && Object.prototype.hasOwnProperty.call(field, key)) {
-                    fieldsArr.push({
-                        name: field.title,
-                        value: (material[key])[0]
-                    });
+                    if (key === 'id' || key === 'name') continue
+                    const field = currentSection.fields.find(field => field.id === key);
+                    if (field && Object.prototype.hasOwnProperty.call(field, key)) {
+                        fieldsArr.push({
+                            name: field.title,
+                            value: (material[key])[0]
+                        });
+                    }
+
                 }
+
             }
             return fieldsArr;
         }
@@ -173,6 +193,7 @@ export default {
                 const currentSection = allSections.find(section => section.id === material.section.id);
 
                 return {
+                    id: material.material.id,
                    title: material.material.name,
                    image: currentSection.image,
                    docsValue: 'добавить на бэк',
@@ -182,10 +203,6 @@ export default {
                 };
             } else return [];
         }
-
-        // const createFileSnippet = (file, allSections) => {
-        //     const currentSection = allSections.find(section => section.id === material.section.id);
-        // }
 
         const materialsSnippetsArr = computed(() => {
             return props.materialsArr.map(material => createMaterialSnippet(material, props.allSections));
@@ -221,5 +238,9 @@ export default {
     align-items: flex-start;
     padding-left: 63px;
     margin: 10px 0 0;
+}
+.file-extension {
+    color: #1d47ce;
+    font-size: 14px;
 }
 </style>
