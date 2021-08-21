@@ -9,7 +9,7 @@
                     <label>
                         <span class="customs-select__input-title">{{item?.title}}</span>
                         <select
-                            @change="(event) => $emit('updateFilter', { name: item.id, value: event.target.value})"
+                            @change="(event) => $emit('updateSelector', { name: item.id, value: event.target.value})"
                             class="customs-select__input form-select custom-select"
                         >
                             <option value="Выберите" disabled selected>Выберите</option>
@@ -33,7 +33,7 @@ export default {
         fieldsArray: Array,
         default: []
     },
-    emits: ['updateFilter'],
+    emits: ['updateSelector'],
 };
 </script>
 

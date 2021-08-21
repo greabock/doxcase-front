@@ -215,7 +215,7 @@
 import {ref, computed, onMounted} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
-// import filesService from '@/services/files.service';
+import filesService from '@/services/files.service';
 import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
 import {sortByIndexDown} from '@/utils/sortByIndex';
@@ -237,7 +237,7 @@ export default {
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: 'https://dev.cdi.msharks.ru/img/avatar-2.png',
+            image: '',
             sort_index: 0,
             fields: [],
         };
@@ -255,8 +255,9 @@ export default {
 
 
         const resetForm = () => {
-            section.value = {...initSection};
-            fileInput.value = null;
+            // section.value = {...initSection};
+            // fileInput.value = null;
+            router.push('/sections');
         };
 
         const isFieldModalVisible = ref(false);
@@ -289,13 +290,13 @@ export default {
 
         const createSection = async () => {
             try {
-                // const formData = new FormData();
-                // formData.append('files', fileInput.value)
-                //
-                // const imageUrl =  await filesService.uploadFiles(formData);
-                // if (imageUrl) {
-                //     section.value.image = imageUrl;
-                // }
+                const formData = new FormData();
+                formData.append('files[]', fileInput.value)
+
+                const imageResp =  await filesService.uploadFiles(formData);
+                if (imageResp) {
+                    section.value.image = imageResp[0].url;
+                }
                 await sectionsService.createSection(section.value);
                 router.push(`/sections`);
             } catch (e) {

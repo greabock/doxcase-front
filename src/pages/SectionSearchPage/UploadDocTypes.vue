@@ -55,8 +55,8 @@
             <div class="col-lg-4 col-md-6 mb-2">
                 <label class="custom-input form-check">
                     <input
-                        v-model='extensions'
-                        value='страницы'
+                        v-model='isMaterials'
+                        value='materials'
                         class="custom-input__input form-check-input" name="checkbox" type="checkbox"
                     />
                     <span class="custom-input__text form-check-label">страницы</span>
@@ -93,15 +93,20 @@
 import {ref, watch} from 'vue';
 
 export default {
-    emits: ['updateExtensions'],
+    emits: ['updateExtensions', 'updateIsMaterials'],
 
     setup(props, {emit}) {
         const extensions = ref([]);
+        const isMaterials = ref(false);
         watch( extensions, (newVal) => {
             emit('updateExtensions', newVal);
         })
+        watch( isMaterials, (newVal) => {
+            emit('updateIsMaterials', newVal);
+        })
         return {
-            extensions
+            extensions,
+            isMaterials,
         }
     }
 

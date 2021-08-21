@@ -107,9 +107,10 @@ export default {
         const newField = ref({...initField, ...props.fieldToChange});
 
         const defineInitOptionsArray = (initField) => {
-            switch (initField.type) {
+            switch (initField.type?.name) {
+
                 case undefined:
-                    return  [{value: ''}];
+                return  [{value: ''}];
 
                 case 'Select':
                     return initField.type.of.map(item => ({value: item}));
