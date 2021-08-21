@@ -61,7 +61,9 @@
                                 <li v-for="(el, i) of lists" :key="i">
                                     <div class="strong">{{ el.title }}</div>
                                     <ul>
-                                        <li v-for="(v, x) of el.value" :key="x">{{ v }}</li>
+                                        <li v-for="(v, x) of el.value" :key="x">
+                                            {{ el.type == 'List' ? el.ofType == 'Enum' ? v.title : v : v }}
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
@@ -78,12 +80,6 @@
                     <div class="section-title">
                         <h2>Документы</h2>
                     </div>
-                    <!-- <ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link" href="#">Файлы от менеджеров</a></li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Файлы проекта</a>
-                        </li>
-                    </ul> -->
                     <ul class="nav nav-tabs">
                         <li v-for="(file, i) of files" :key="i" class="nav-item">
                             <span :class="['nav-link', {active: file.isActive}]" @click="setActive(file)">
@@ -103,25 +99,23 @@
                                 </div>
 
                                 <div v-for="(el, i) of file.value" :key="i" class="col-4">
-                                    {{ el }}
                                     <a class="sCardDocs__item" :href="el.url">
                                         <span class="sCardDocs__type">
-                                            <svg class="icon icon-doc">
-                                                <use xlink:href="img/svg/sprite.svg#doc"></use></svg
-                                            >{{ el.extension }}
+                                            <FileIcon class="icon icon-doc" />
+                                            {{ el.extension }}
                                         </span>
                                         <span class="sCardDocs__title">
                                             {{ el.name }}
                                         </span>
-                                        <span class="sCardDocs__size">
-                                            <!-- (25 mb) -->
-                                        </span>
-                                        <span class="sCardDocs__download">
-                                            <svg class="icon icon-download">
-                                                <use xlink:href="img/svg/sprite.svg#download"></use>
-                                            </svg>
-                                            Скачать
-                                        </span>
+                                        <div class="row w-100">
+                                            <span class="sCardDocs__size col">
+                                                <!-- (25 mb) -->
+                                            </span>
+                                            <span class="sCardDocs__download col">
+                                                <DownloadIcon class="icon icon-download" />
+                                                Скачать
+                                            </span>
+                                        </div>
                                     </a>
                                 </div>
                             </div>
@@ -153,10 +147,15 @@ import sectionsService from '@/services/sections.service';
 import {format} from 'date-fns';
 import ModalWindow from '@/components/ModalWindow';
 
+import DownloadIcon from '@/assets/DownloadIcon';
+import FileIcon from '@/assets/FileIcon';
+
 export default {
     components: {
         VBreadcrumb,
         ModalWindow,
+        DownloadIcon,
+        FileIcon,
     },
     setup() {
         const route = useRoute();
@@ -213,8 +212,9 @@ export default {
                 )
                 .map((x) => ({
                     ...x,
-                    value: material[x.id],
+                    value: Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]],
                     type: x.type.name,
+                    ofType: x.type.of.name,
                 }));
 
             topBlocks.value = allFields
@@ -273,6 +273,10 @@ export default {
 </script>
 
 <style scoped>
+.nav-item {
+    cursor: pointer;
+}
+
 .main-block {
     display: flex;
     flex-flow: column;

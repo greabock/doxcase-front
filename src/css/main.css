@@ -8251,6 +8251,7 @@ a {
     font-weight: 500;
     color: #000;
     margin-bottom: 0.4375rem;
+    width: 100%;
 }
 .sCardDocs__size {
     color: #000;
@@ -8260,6 +8261,8 @@ a {
 .sCardDocs__download {
     color: #1d47ce;
     font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
 }
 .sCardDocs__download .icon {
     font-size: 1.5rem;

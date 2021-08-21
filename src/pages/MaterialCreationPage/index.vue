@@ -290,15 +290,13 @@ export default {
                         }
                     }
                 } else if (field.type == 'Boolean') {
-                    // fieldsSubmit[field.id] = field.value;
+                    fieldsSubmit[field.id] = field.value;
                 } else {
                     if (field.value) {
                         fieldsSubmit[field.id] = field.value;
                     }
                 }
             }
-
-            console.log('fields', fieldsSubmit);
 
             const submitFiles = {};
             for (const file of files.value) {
@@ -318,7 +316,6 @@ export default {
             }
 
             const material = {
-                // id: uuidv4(),
                 name: name.value,
                 ...fieldsSubmit,
                 ...submitFiles,
