@@ -1,15 +1,18 @@
 <template>
     <div class="sSearchResult__items">
-        <div class="search-item search-item--open">
+        <div
+            v-for="snippet in materialsSnippetsArr"
+            :key="snippet.title"
+            class="search-item">
             <div class="row">
                 <div class="col-auto">
                     <div class="search-item__icon-wrap">
-                        <img alt='' src="/img/@1x/avatar-2.png" />
+                        <img alt='' :src="snippet.image" />
                     </div>
                 </div>
                 <div class="col">
-                    <div class="h6">PRS - Почта Банк - ЭДО </div>
-                    <div class="text-dark small">Опубликовано 01.01.2020
+                    <div class="h5">{{ snippet.title}}</div>
+                    <div class="text-dark small">Опубликовано {{ snippet.created_at }}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
                                 <use xlink:href="/img/svg/sprite.svg#doc"></use>
@@ -18,7 +21,7 @@
                     </div>
                 </div>
                 <div class="col-auto align-self-center d-none d-sm-block">
-                    <div class="text-dark small">Документов 25</div>
+                    <div class="text-dark small">Документов {{ snippet.docsValue }}</div>
                 </div>
                 <div class="col-auto align-self-sm-center">
                     <div
@@ -30,49 +33,81 @@
                     </div>
                 </div>
             </div>
+
+            <div
+                v-for="(highlight, i) in snippet.highlights"
+                :key="i"
+                class="highlight-wrapper"
+            >
+<!--                <span class="highlight-title">{{highlight.name}}</span>-->
+            <span
+                v-html="highlight.value"
+                class="highlight-text"
+            >
+            </span>
+
+            </div>
+
             <div class="search-item__dropdown pt-3">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div
+                        v-for="field in snippet.fields"
+                        :key="field.name"
+                        class="col-lg-6">
                         <div class="search-item__panel">
-                            <div class="row">
-                                <div class="col-auto text-primary">Заголовок </div>
-                                <div class="col">Текст из короткого поля длинее для типа отображен ...</div>
+                            <div class="row">    >
+                                <div class="col-auto text-primary">{{field.name}} </div>
+                                <div class="col">{{field.value}}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="search-item__panel">
-                            <div class="row">
-                                <div class="col-auto text-primary">Заголовок </div>
-                                <div class="col">Текст из короткого поля длинее для типа отображенasd sda dsad asd sadasdsdasdasd</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="search-item__panel">
-                            <div class="row">
-                                <div class="col-auto text-primary">Дата</div>
-                                <div class="col">18.08.2021</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="search-item__panel">
-                            <div class="row">
-                                <div class="col-auto text-primary">Чекбокс</div>
-                                <div class="col"> да</div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
-                <div class="small">Бесплатные почтовые сервисы могут также отслеживать ваши электронные письма развлекательные события. Многие услуги, такие как разработка сайтов, мультимедиа, аккредитацию участников, колл-центры и службу</div>
             </div>
         </div>
+
+<!-- Файлы в выдаче -->
+<!--        <div-->
+<!--            class="search-item">-->
+<!--            <div class="row">-->
+<!--                <div class="col-auto">-->
+<!--                    <div class="search-item__icon-wrap">-->
+<!--                        <img alt='' src="/img/avatar-2.png" />-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="col">-->
+<!--                    <div class="h5">Файл</div>-->
+<!--                    <div class="text-dark small">Опубликовано-->
+<!--                        <span class="d-sm-none text-primary">-->
+<!--                            <svg class="icon icon-doc ">-->
+<!--                                <use xlink:href="/img/svg/sprite.svg#doc"></use>-->
+<!--                            </svg>25-->
+<!--                        </span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div-->
+
+<!--                class="highlight-wrapper"-->
+<!--            > <span-->
+<!--                class="highlight-title"-->
+<!--            >file.name-->
+<!--            </span>-->
+<!--                <span-->
+<!--                    class="highlight-text"-->
+<!--                >-->
+<!--                    HTML совпадения-->
+<!--            </span>-->
+
+<!--            </div>-->
+<!--        </div>-->
+
     </div>
 </template>
 
 <script>
-import {ref} from 'vue';
+import {computed} from 'vue';
 
 export default {
     props: {
@@ -87,63 +122,74 @@ export default {
     },
 
     setup(props) {
+
         const closeToggleHandler = (e) => {
             (e.target.closest('.search-item').classList
                 .toggle('search-item--open'));
         };
 
-        const createMaterialSnippet = (material) => {
+        const serializeHighLights = (highlight, currentSection) => {
+            const highlightsArr = [];
 
-            if (props.allSections.length) {
-
-                const currentSection = props.allSections.find(section => section.id === material.section.id);
-
-                const serializeHighLights = (highlight) => {
-                    const highlightsArr = [];
-
-                    for (let key in highlight) {
-
-                        const field = currentSection.fields.find(field => field.id === key);
-
-                        if (field) {
-                            highlightsArr.push({
-                                name: field.title,
-                                value: highlight.key[0]
-                            });
-                        }
-                    }
-                    return highlightsArr;
+            for (let key in highlight) {
+                if (key === 'name') {
+                    highlightsArr.push({
+                        name: 'Заголовок',
+                        value: highlight.name[0]
+                    });
+                    continue;
                 }
-                const serializeFields = (material) => {
-                    const fieldsArr = [];
-
-                    for (let key in material) {
-
-                        if (key === 'id' || key === 'name') continue
-
-                        const field = currentSection.fields.find(field => field.id === key);
-                        if (field) {
-                            fieldsArr.push({
-                                name: field.title,
-                                value: material.key[0]
-                            });
-                        }
-                    }
-                    return fieldsArr;
+                const field = currentSection.fields.find(field => field.id === key);
+                if (field && Object.prototype.hasOwnProperty.call(highlight, key)) {
+                    highlightsArr.push({
+                        name: field.title,
+                        value: (highlight[key])[0]
+                    });
                 }
+            }
+            return highlightsArr;
+        }
+        const serializeFields = (material, currentSection) => {
+            const fieldsArr = [];
+
+            for (let key in material) {
+
+                if (key === 'id' || key === 'name') continue
+
+                const field = currentSection.fields.find(field => field.id === key);
+                if (field && Object.prototype.hasOwnProperty.call(field, key)) {
+                    fieldsArr.push({
+                        name: field.title,
+                        value: (material[key])[0]
+                    });
+                }
+            }
+            return fieldsArr;
+        }
+
+        const createMaterialSnippet = (material, allSections) => {
+            if (allSections.length) {
+
+                const currentSection = allSections.find(section => section.id === material.section.id);
 
                 return {
-                   title: material.name,
+                   title: material.material.name,
                    image: currentSection.image,
-                   docsValue: 111,
-                   created_at : material.created_at,
-                   highLights: serializeHighLights(material.highlight),
-                   fields: serializeFields(material.highlight),
+                   docsValue: 'добавить на бэк',
+                   created_at : 'добавить дату',
+                   highlights: serializeHighLights(material.highlight, currentSection),
+                   fields: serializeFields(material.material, currentSection),
                 };
             } else return [];
         }
 
-        const materialsSnippetsArr = ref(props.materialsArr.map(material => createMaterialSnippet(material)));
+        // const createFileSnippet = (file, allSections) => {
+        //     const currentSection = allSections.find(section => section.id === material.section.id);
+        // }
+
+        const materialsSnippetsArr = computed(() => {
+            return props.materialsArr.map(material => createMaterialSnippet(material, props.allSections));
+         });
 
         return {
             closeToggleHandler,
@@ -168,5 +214,12 @@ export default {
 .search-item__icon-wrap IMG {
     max-width: 100%;
     height:auto;
+}
+.highlight-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    padding-left: 63px;
+    margin: 10px 0 0;
 }
 </style>

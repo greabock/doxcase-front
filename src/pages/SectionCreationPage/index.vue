@@ -255,8 +255,9 @@ export default {
 
 
         const resetForm = () => {
-            section.value = {...initSection};
-            fileInput.value = null;
+            // section.value = {...initSection};
+            // fileInput.value = null;
+            router.push('/sections');
         };
 
         const isFieldModalVisible = ref(false);
