@@ -58,11 +58,11 @@
                             <div class="col-md-auto">
                                 <div class="input-line__title">{{ field.title }}</div>
                             </div>
-                            <div class="col">
+                            <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
                                 <div class="input-line__input-wrap form-group">
                                     <component
-                                        :is="components[field.type]"
                                         :class="field.type == 'Wiki' ? 'text-area' : 'input-line__input'"
+                                        :is="components[field.type]"
                                         v-model="field.value"
                                         v-bind="field.props"
                                     >
@@ -284,21 +284,19 @@ export default {
                 } else if (field.type == 'List') {
                     if (field.value) {
                         if (field.ofType == 'Enum') {
-                            fieldsSubmit[field.id] = field.value.map((x) => ({ id: x.key, title: x.name }));
+                            fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
                         } else {
                             fieldsSubmit[field.id] = field.value.map((x) => x.name);
                         }
                     }
                 } else if (field.type == 'Boolean') {
-                    // fieldsSubmit[field.id] = field.value;
+                    fieldsSubmit[field.id] = field.value;
                 } else {
                     if (field.value) {
                         fieldsSubmit[field.id] = field.value;
                     }
                 }
             }
-
-            console.log('fields', fieldsSubmit);
 
             const submitFiles = {};
             for (const file of files.value) {
@@ -318,7 +316,6 @@ export default {
             }
 
             const material = {
-                // id: uuidv4(),
                 name: name.value,
                 ...fieldsSubmit,
                 ...submitFiles,

@@ -6,21 +6,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col col--main">
-                        <VBreadcrumb
-                            :list="[
-                                {
-                                    link: '/',
-                                    name: 'Главная',
-                                },
-                                {
-                                    name: 'Новый раздел',
-                                    link: '/',
-                                },
-                                {
-                                    name: 'Материал',
-                                },
-                            ]"
-                        />
+                        <VBreadcrumb :list="breadcrumbs" />
                         <h1>{{ title }}</h1>
                         <div class="sCardHead__content">
                             <div class="d-lg-none pt-1">
@@ -64,14 +50,20 @@
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
                         <div class="sCardHead__aside">
-                            <button class="sCardHead__aside-btn btn-outline-primary" type="button" @click="deleteMaterial">
+                            <button
+                                class="sCardHead__aside-btn btn-outline-primary"
+                                type="button"
+                                @click="isShow = true"
+                            >
                                 Удалить материал
                             </button>
                             <ul>
                                 <li v-for="(el, i) of lists" :key="i">
                                     <div class="strong">{{ el.title }}</div>
                                     <ul>
-                                        <li v-for="(v, x) of el.value" :key="x">{{ v }}</li>
+                                        <li v-for="(v, x) of el.value" :key="x">
+                                            {{ el.type == 'List' ? el.ofType == 'Enum' ? v.title : v : v }}
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
@@ -88,12 +80,6 @@
                     <div class="section-title">
                         <h2>Документы</h2>
                     </div>
-                    <!-- <ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link" href="#">Файлы от менеджеров</a></li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Файлы проекта</a>
-                        </li>
-                    </ul> -->
                     <ul class="nav nav-tabs">
                         <li v-for="(file, i) of files" :key="i" class="nav-item">
                             <span :class="['nav-link', {active: file.isActive}]" @click="setActive(file)">
@@ -113,25 +99,23 @@
                                 </div>
 
                                 <div v-for="(el, i) of file.value" :key="i" class="col-4">
-                                    {{ el }}
                                     <a class="sCardDocs__item" :href="el.url">
                                         <span class="sCardDocs__type">
-                                            <svg class="icon icon-doc">
-                                                <use xlink:href="img/svg/sprite.svg#doc"></use></svg
-                                            >{{ el.extension }}
+                                            <FileIcon class="icon icon-doc" />
+                                            {{ el.extension }}
                                         </span>
                                         <span class="sCardDocs__title">
                                             {{ el.name }}
                                         </span>
-                                        <span class="sCardDocs__size">
-                                            <!-- (25 mb) -->
-                                        </span>
-                                        <span class="sCardDocs__download">
-                                            <svg class="icon icon-download">
-                                                <use xlink:href="img/svg/sprite.svg#download"></use>
-                                            </svg>
-                                            Скачать
-                                        </span>
+                                        <div class="row w-100">
+                                            <span class="sCardDocs__size col">
+                                                <!-- (25 mb) -->
+                                            </span>
+                                            <span class="sCardDocs__download col">
+                                                <DownloadIcon class="icon icon-download" />
+                                                Скачать
+                                            </span>
+                                        </div>
                                     </a>
                                 </div>
                             </div>
@@ -141,6 +125,16 @@
             </div>
         </div>
         <!-- end sCardDocs-->
+        <ModalWindow v-model="isShow" maxWidth="24rem">
+            <div class="form-wrap">
+                <div class="h3 mb-4">Удаление</div>
+                <p>Вы уверены что хотите удалить раздел? Данное действие необратимое!</p>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-primary btn-cancel" @click="isShow = false">Отмена</button>
+                    <button class="btn btn-delete" @click="deleteMaterial">Удалить</button>
+                </div>
+            </div>
+        </ModalWindow>
     </main>
 </template>
 
@@ -151,10 +145,17 @@ import {useRoute, useRouter} from 'vue-router';
 import materialService from '@/services/material.service';
 import sectionsService from '@/services/sections.service';
 import {format} from 'date-fns';
+import ModalWindow from '@/components/ModalWindow';
+
+import DownloadIcon from '@/assets/DownloadIcon';
+import FileIcon from '@/assets/FileIcon';
 
 export default {
     components: {
         VBreadcrumb,
+        ModalWindow,
+        DownloadIcon,
+        FileIcon,
     },
     setup() {
         const route = useRoute();
@@ -165,10 +166,28 @@ export default {
         const lists = ref([]);
         const files = ref([]);
         const topBlocks = ref([]);
+        const isShow = ref(false);
+        const breadcrumbs = ref([
+            {
+                link: '/',
+                name: 'Главная',
+            },
+        ]);
 
         const getData = async () => {
             const section = await sectionsService.getSectionObject(sectionId);
             const material = await materialService.getMaterial(sectionId, materialId);
+
+            breadcrumbs.value = [
+                ...breadcrumbs.value,
+                {
+                    name: section.title,
+                    link: `/sections/${sectionId}`,
+                },
+                {
+                    name: material.name,
+                },
+            ];
 
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
@@ -193,8 +212,9 @@ export default {
                 )
                 .map((x) => ({
                     ...x,
-                    value: material[x.id],
+                    value: Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]],
                     type: x.type.name,
+                    ofType: x.type.of.name,
                 }));
 
             topBlocks.value = allFields
@@ -234,10 +254,12 @@ export default {
 
         const deleteMaterial = async () => {
             await materialService.removeMaterial(sectionId, materialId);
-            router.push('/')
-        }
+            router.push('/');
+        };
 
         return {
+            isShow,
+            breadcrumbs,
             deleteMaterial,
             setActive,
             title,
@@ -251,6 +273,10 @@ export default {
 </script>
 
 <style scoped>
+.nav-item {
+    cursor: pointer;
+}
+
 .main-block {
     display: flex;
     flex-flow: column;
