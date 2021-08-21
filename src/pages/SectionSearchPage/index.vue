@@ -78,7 +78,10 @@
                         </div>
 
  <!-- Результаты поиска -->
-                        <search-results></search-results>
+                        <search-results
+                            :allSections="allSections"
+                            :materialsArr="mockMaterials"
+                        ></search-results>
 
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
@@ -419,7 +422,7 @@ export default {
         const updateMaterialsAndFiles = async () => {
             try {
                 isLoading.value = true;
-                const materialsAndFiles = await searchService.searchSection(currentURL.value + resultString.value);
+                const materialsAndFiles = await searchService.searchSectionPost(currentURL.value, queryObject.value);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
                 isLoading.value = false;
@@ -430,9 +433,16 @@ export default {
 
         }
         const updateSearchPage = async () => {
+
+            section.value = ({});
+            materials.value = [];
+            files.value = [];
+            selectorOptionsArr.value = [];
+
             try {
                 isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
+                console.log(allSections.value);
                 section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
                 console.log('Section: ', section.value);
                 await updateMaterialsAndFiles(router.currentRoute.value.params.id);
@@ -442,12 +452,30 @@ export default {
                 isLoading.value = false;
             }
         };
-        watch(currentURL, async () => {
+        watch( router.currentRoute, async () => {
             await updateSearchPage();
         });
         onMounted(async () => {
             await updateSearchPage();
         });
+
+        const mockMaterials = [
+            {
+                    "section": {
+                        "id": "628510f1-afd1-44de-b77d-7a864d2ba695"
+                    },
+                    "material": {
+                        "id": "ddb0b1e7-89e1-318b-ad0e-4dc7e2829db2",
+                        "name": "Имя материала",
+                    },
+
+                    "highlight": {
+                        "123e4567-e89b-12d3-a456-426655440000": [
+                "Название <em>удобного</em> материала"
+                    ],
+                }
+            }
+        ]
 
         return {
             isLoading,
@@ -456,6 +484,7 @@ export default {
             fieldsToSelectors,
             updateFilterHandler,
             updateExtensionsHandler,
+            section,
             allSections,
             resultString,
             searchService,
@@ -463,6 +492,7 @@ export default {
             files,
             selectorOptionsArr,
             updateMaterialsAndFiles,
+            mockMaterials,
         }
     },
 }

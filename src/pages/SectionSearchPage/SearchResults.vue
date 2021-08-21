@@ -76,14 +76,14 @@ import {ref} from 'vue';
 
 export default {
     props: {
-        currentSection: {
-           type: Object,
-            default: () => {}
-        },
         allSections: {
             type: Array,
             default: () => []
         },
+        materialsArr: {
+            type: Array,
+            default: () =>[]
+        }
     },
 
     setup(props) {
@@ -92,60 +92,62 @@ export default {
                 .toggle('search-item--open'));
         };
 
-        const materialSnippetsArr = ref([]);
-
         const createMaterialSnippet = (material) => {
 
-            const serializeHighLights = (highlight) => {
-                const highlightsArr = [];
+            if (props.allSections.length) {
 
-                for (let key in highlight) {
+                const currentSection = props.allSections.find(section => section.id === material.section.id);
 
-                    const field = currentSection.fields.find(field => field.id === key);
+                const serializeHighLights = (highlight) => {
+                    const highlightsArr = [];
 
-                    if (field) {
-                        highlightsArr.push({
-                            name: field.title,
-                            value: highlight.key[0]
-                        });
+                    for (let key in highlight) {
+
+                        const field = currentSection.fields.find(field => field.id === key);
+
+                        if (field) {
+                            highlightsArr.push({
+                                name: field.title,
+                                value: highlight.key[0]
+                            });
+                        }
                     }
+                    return highlightsArr;
                 }
-                return highlightsArr;
-            }
-            const serializeFields = (material) => {
-                const fieldsArr = [];
+                const serializeFields = (material) => {
+                    const fieldsArr = [];
 
-                for (let key in material) {
+                    for (let key in material) {
 
-                    if (key === 'id' || key === 'name') continue
+                        if (key === 'id' || key === 'name') continue
 
-                    const field = currentSection.fields.find(field => field.id === key);
-                    if (field) {
-                        fieldsArr.push({
-                            name: field.title,
-                            value: material.key[0]
-                        });
+                        const field = currentSection.fields.find(field => field.id === key);
+                        if (field) {
+                            fieldsArr.push({
+                                name: field.title,
+                                value: material.key[0]
+                            });
+                        }
                     }
+                    return fieldsArr;
                 }
-                return fieldsArr;
-            }
 
-            const currentSection = props.allSections.find(section => section.id === material.section.id);
-
-            return {
-               title: material.name,
-               image: currentSection.image,
-               docsValue: 111,
-               created_at : material.created_at,
-               highLights: serializeHighLights(material.highlight),
-               fields: serializeFields(material.highlight),
-            };
+                return {
+                   title: material.name,
+                   image: currentSection.image,
+                   docsValue: 111,
+                   created_at : material.created_at,
+                   highLights: serializeHighLights(material.highlight),
+                   fields: serializeFields(material.highlight),
+                };
+            } else return [];
         }
 
+        const materialsSnippetsArr = ref(props.materialsArr.map(material => createMaterialSnippet(material)));
 
         return {
             closeToggleHandler,
-            materialSnippetsArr,
+            materialsSnippetsArr,
             createMaterialSnippet,
         }
     }
