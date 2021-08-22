@@ -5,7 +5,9 @@
             :key="item.id"
             class="custom-input form-check">
             <input
-                @change="(e) => updateCheckboxHandler(e, item)"
+                :value="item.id"
+                :checked='modelValue.includes(item.id)'
+                @change='e => changeHandler(e.target.value)'
                 class="custom-input__input form-check-input"
                 type="checkbox"
             />
@@ -21,6 +23,10 @@ export default {
         fieldsArray: {
             type: Array,
             default: () => []
+        },
+        modelValue: {
+            type: Array,
+        default: () => []
         }
     },
     setup(props, {emit}) {
@@ -28,13 +34,19 @@ export default {
        const filteredFields = computed(() => {
            return props.fieldsArray.filter((field) => field.type.name === 'Boolean');
        });
-       const updateCheckboxHandler = (event, item) => {
-           emit('updateCheckbox', { name: item.id, value: event.target.checked ? 1 : 0})
-           };
+        const changeHandler = (cbValue) => {
+            let updCheckboxes;
+            if (props.modelValue.includes(cbValue)) {
+                updCheckboxes = props.modelValue.filter(value => value !== cbValue);
+            } else {
+                updCheckboxes = props.modelValue.concat(cbValue);
+            }
+            emit('update:modelValue', updCheckboxes);
+        };
 
     return {
         filteredFields,
-        updateCheckboxHandler,
+        changeHandler,
         }
     }
 };

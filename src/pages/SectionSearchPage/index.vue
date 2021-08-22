@@ -95,6 +95,7 @@
                                                 <use xlink:href="/img/svg/sprite.svg#close"></use>
                                             </svg>
                                             <span
+                                                @click="resetFilters"
                                                 class="ms-2">очистить фильтр
                                             </span>
                                         </div>
@@ -234,18 +235,15 @@
                                     </div>
                                 </div>
 <!-- Типы документов -->
-                                <upload-doc-types
-                                  @updateExtensions="updateExtensionsHandler"
-                                  @updateIsMaterials="updateIsMaterialsHandler"
-                                  :activeExtensions="queryObject.extensions"
-                                  :isMaterials="queryObject.materials"
+                                <files-types
+                                    v-model='extensionsObj'
                                 >
-                                </upload-doc-types>
+                                </files-types>
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
                                     :fieldsArray="section.fields"
-                                    @updateCheckbox="updateCheckboxHandler"
+                                    v-model="checkboxesObj"
                                 >
                                 </checkbox-filters>
 
@@ -267,8 +265,7 @@ import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
 import {useRouter} from 'vue-router';
 import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
-import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
-// import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
+import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import enumsService from '@/services/enums.service';
@@ -276,7 +273,7 @@ import enumsService from '@/services/enums.service';
 
 
 export default {
-    components: {UploadDocTypes, Loader, VBreadcrumb,  SectionSearchSelectors, CheckboxFilters, SearchResults},
+    components: {Loader, VBreadcrumb, FilesTypes,  SectionSearchSelectors, CheckboxFilters, SearchResults},
     setup() {
 
         const router = useRouter();
@@ -296,12 +293,18 @@ export default {
                 field: 'created_at',
                 direction: 'asc',
             },
-            materials: false,
-            extensions: [],
             checkboxes: {},
             selectors: {}
         }
+        const extensionsObj = ref([]);
+        const checkboxesObj = ref([]);
+        const resetFilters = () => {
+            checkboxesObj.value = [];
+            extensionsObj.value = [];
+        };
         const queryObject = ref(initQueryObject);
+
+//Поисковая строка____________________________________
         const serialize = (obj, prefix) => {
             const str = [];
 
@@ -454,13 +457,14 @@ export default {
             const mergedQueryObject = {
                 search: queryObject.search,
                 sort: queryObject.sort,
-                materials: queryObject.materials,
-                extensions: queryObject.extensions,
+                materials: extensionsObj.value.includes('materials'),
+                extensions: extensionsObj.value.filter(item => item !== 'materials'),
                 filters: {
                     ...queryObject.selectors,
                     ...queryObject.checkboxes,
                 }
             }
+            console.log('mergedObj',mergedQueryObject);
             try {
                 const materialsAndFiles = await searchService.searchSectionPost(url, mergedQueryObject);
                 materials.value = materialsAndFiles.materials;
@@ -501,7 +505,6 @@ export default {
             await updateSearchPage(router.currentRoute.value.params.id);
         });
 
-
         return {
             isLoading,
             bcTitle,
@@ -520,6 +523,9 @@ export default {
             selectorOptionsArr,
             updateMaterialsAndFiles,
             updateIsMaterialsHandler,
+            extensionsObj,
+            checkboxesObj,
+            resetFilters,
         }
     },
 }
