@@ -14,7 +14,7 @@
                                     name: 'Главная'
                                 },
                                 {
-                                    name: 'Поиск по разделу'
+                                    name: `Поиск по разделу ${bcTitle}`
                                 },
                             ]"
                         />
@@ -32,7 +32,7 @@
                                         </div>
                                         <!-- +e.input-wrap-->
                                         <button
-                                            @click.prevent="updateMaterialsAndFiles"
+                                            @click.prevent="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
                                             class="search-block__btn">
                                             <svg class="icon icon-search ">
                                                 <use xlink:href="/img/svg/sprite.svg#search"></use>
@@ -65,7 +65,7 @@
  <!-- Селекторы -->
                                 <section-search-selectors
                                     :fieldsArray="selectorOptionsArr"
-                                    @updateFilter="updateFilterHandler"
+                                    @updateSelector="updateSelectorHandler"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -80,7 +80,8 @@
  <!-- Результаты поиска -->
                         <search-results
                             :allSections="allSections"
-                            :materialsArr="mockMaterials"
+                            :materialsArr="materials"
+                            :filesArr="files"
                         ></search-results>
 
                     </div>
@@ -108,6 +109,7 @@
  <!-- Сортировка по дате -->
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
+
                                     <div
                                         v-if="queryObject.sort?.field === 'created_at' && queryObject.sort?.direction === 'asc'"
                                         @click="toggleSort('created_at','desc')"
@@ -127,6 +129,7 @@
                                         <div class="sSearchResult__filter-result-text">сначала новые
                                         </div>
                                     </div>
+
                                     <div
                                         v-else-if="queryObject.sort?.field === 'created_at' && queryObject.sort?.direction === 'desc'"
                                         @click="toggleSort('created_at','asc')"
@@ -146,25 +149,27 @@
                                         <div class="sSearchResult__filter-result-text">сначала старые
                                         </div>
                                     </div>
-                                        <div
-                                            v-else-if="queryObject.sort?.field === 'name'"
-                                            @click="toggleSort('created_at','asc')"
-                                            class="sSearchResult__filter-item">
-                                            <div class="sSearchResult__filter-btns">
-                                                <div class="sSearchResult__filter-btn">
-                                                    <svg class="icon icon-arrow-up ">
-                                                        <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
-                                                    </svg>
-                                                </div>
-                                                <div class="sSearchResult__filter-btn">
-                                                    <svg class="icon icon-arrow-down ">
-                                                        <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
-                                                    </svg>
-                                                </div>
+
+                                    <div
+                                        v-else-if="queryObject.sort?.field === 'name'"
+                                        @click="toggleSort('created_at','asc')"
+                                        class="sSearchResult__filter-item">
+                                        <div class="sSearchResult__filter-btns">
+                                            <div class="sSearchResult__filter-btn">
+                                                <svg class="icon icon-arrow-up ">
+                                                    <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
+                                                </svg>
                                             </div>
-                                            <div class="sSearchResult__filter-result-text">сначала новые
+                                            <div class="sSearchResult__filter-btn">
+                                                <svg class="icon icon-arrow-down ">
+                                                    <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
+                                                </svg>
                                             </div>
                                         </div>
+                                        <div class="sSearchResult__filter-result-text">сначала новые
+                                        </div>
+                                    </div>
+<!-- Сортировка по алфавиту -->
                                     <div
                                         v-if="queryObject.sort?.field === 'name' && queryObject.sort?.direction === 'asc'"
                                         @click="toggleSort('name','desc')"
@@ -184,6 +189,7 @@
                                         <div class="sSearchResult__filter-result-text">от А до Я
                                         </div>
                                     </div>
+
                                     <div
                                         v-else-if="queryObject.sort?.field === 'name' && queryObject.sort?.direction === 'desc'"
                                         @click="toggleSort('name','asc')"
@@ -203,6 +209,7 @@
                                         <div class="sSearchResult__filter-result-text">от Я до А
                                         </div>
                                     </div>
+
                                     <div
                                         v-if="queryObject.sort?.field === 'created_at'"
                                         @click="toggleSort('name','asc')"
@@ -224,15 +231,17 @@
                                     </div>
                                 </div>
 <!-- Типы документов -->
-                                <upload-doc-types
+                                <files-types
                                   @updateExtensions="updateExtensionsHandler"
+                                  @updateIsMaterials="updateIsMaterialsHandler"
+                                  :activeExtensions="queryObject.extensions"
                                 >
-                                </upload-doc-types>
+                                </files-types>
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
                                     :fieldsArray="fieldsToSelectors"
-                                    @updateFilter="updateFilterHandler"
+                                    @updateCheckbox="updateCheckboxHandler"
                                 >
                                 </checkbox-filters>
 
@@ -254,37 +263,40 @@ import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
 import {useRouter} from 'vue-router';
 import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
-import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
+// import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
+import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import enumsService from '@/services/enums.service';
 
 
 export default {
-    components: { Loader, VBreadcrumb,  SectionSearchSelectors, UploadDocTypes, CheckboxFilters, SearchResults},
+    components: { Loader, VBreadcrumb,  SectionSearchSelectors, FilesTypes, CheckboxFilters, SearchResults},
     setup() {
 
         const router = useRouter();
         const isLoading = ref(false);
         const section = ref({});
         const allSections = ref([]);
-        const currentURL = ref(router.currentRoute.value.params.id);
+        const bcTitle = ref('');
 
-        // Выдача поиска_______________
+// Выдача поиска_______________
         const materials = ref([]);
         const files = ref([]);
 
-        //Строка запроса______________________
-        const queryObject = ref({
+//Строка запроса______________________
+        const initQueryObject = {
             search: '',
             sort: {
                 field: 'created_at',
                 direction: 'asc',
             },
+            materials: false,
             extensions: [],
-            filter: {
-            }
-        });
+            checkboxes: {},
+            selectors: {}
+        }
+        const queryObject = ref(initQueryObject);
         const serialize = (obj, prefix) => {
             const str = [];
 
@@ -303,7 +315,7 @@ export default {
             return '?' + serialize(queryObject.value);
         });
 
-        //Селекторы____________________________________
+//Селекторы____________________________________
         const selectorOptionsArr = ref([]);
         const fieldsToSelectors = computed(() => {
             if (section.value.fields?.length) {
@@ -355,7 +367,6 @@ export default {
                 console.log(e);
             }
         };
-
         watch(fieldsToSelectors, async (newVal) => {
             if (newVal.length) {
                 newVal.map( async (field) => {
@@ -390,7 +401,7 @@ export default {
         });
 
 
-        //Обработчики событий_______________________________________
+//Обработчики событий_______________________________________
         const toggleSort = (field, direction) => {
                 queryObject.value = {
                     ...queryObject.value,
@@ -406,25 +417,51 @@ export default {
                 ...queryObject.value,
                 extensions
             }
-            updateMaterialsAndFiles();
         }
-        const updateFilterHandler = (option) => {
+        const updateCheckboxHandler = ({name, value}) => {
             queryObject.value = {
                 ...queryObject.value,
-                filter: {
-                    ...queryObject.value.filter,
-                    [option.name]: option.value
+                checkboxes: {
+                    ...queryObject.value.checkboxes,
+                    [name]: value,
                 }
             }
-            updateMaterialsAndFiles();
         };
+        const updateSelectorHandler = ({name, value}) => {
+            queryObject.value = {
+                ...queryObject.value,
+                selectors: {
+                    ...queryObject.value.selectors,
+                    [name]: value
+                }
+            }
+        };
+        const updateIsMaterialsHandler = (bool) => {
+            queryObject.value = {
+                ...queryObject.value,
+                materials:bool,
+            }
+        }
 
-        const updateMaterialsAndFiles = async () => {
+// Отправка поискового запроса_____________
+        const updateMaterialsAndFiles = async (url, queryObject) => {
+
+            const mergedQueryObject = {
+                search: queryObject.search,
+                sort: queryObject.sort,
+                materials: queryObject.materials,
+                extensions: queryObject.extensions,
+                filters: {
+                    ...queryObject.selectors,
+                    ...queryObject.checkboxes,
+                }
+            }
             try {
                 isLoading.value = true;
-                const materialsAndFiles = await searchService.searchSectionPost(currentURL.value, queryObject.value);
+                const materialsAndFiles = await searchService.searchSectionPost(url, mergedQueryObject);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
+                console.log(files.value);
                 isLoading.value = false;
             } catch(e) {
                 console.log(e);
@@ -432,57 +469,45 @@ export default {
             }
 
         }
-        const updateSearchPage = async () => {
-
-            section.value = ({});
-            materials.value = [];
-            files.value = [];
-            selectorOptionsArr.value = [];
+        const updateSearchPage = async (url) => {
 
             try {
                 isLoading.value = true;
+
+                section.value = {};
+                materials.value = [];
+                files.value = [];
+                selectorOptionsArr.value = [];
+                queryObject.value = initQueryObject;
+
                 allSections.value = await sectionsService.getSections();
-                console.log(allSections.value);
-                section.value = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
-                console.log('Section: ', section.value);
-                await updateMaterialsAndFiles(router.currentRoute.value.params.id);
+                section.value = await sectionsService.getSectionObject(url);
+                bcTitle.value =  section.value.title;
+                await updateMaterialsAndFiles(router.currentRoute.value.params.id, queryObject.value);
                 isLoading.value = false;
             } catch(e) {
                 console.log(e)
                 isLoading.value = false;
             }
         };
+        watch( queryObject, (newVal) => {
+            updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
+        })
         watch( router.currentRoute, async () => {
-            await updateSearchPage();
+            await updateSearchPage(router.currentRoute.value.params.id);
         });
         onMounted(async () => {
-            await updateSearchPage();
+            await updateSearchPage(router.currentRoute.value.params.id);
         });
-
-        const mockMaterials = [
-            {
-                    "section": {
-                        "id": "628510f1-afd1-44de-b77d-7a864d2ba695"
-                    },
-                    "material": {
-                        "id": "ddb0b1e7-89e1-318b-ad0e-4dc7e2829db2",
-                        "name": "Имя материала",
-                    },
-
-                    "highlight": {
-                        "123e4567-e89b-12d3-a456-426655440000": [
-                "Название <em>удобного</em> материала"
-                    ],
-                }
-            }
-        ]
 
         return {
             isLoading,
+            bcTitle,
             queryObject,
             toggleSort,
             fieldsToSelectors,
-            updateFilterHandler,
+            updateCheckboxHandler,
+            updateSelectorHandler,
             updateExtensionsHandler,
             section,
             allSections,
@@ -492,7 +517,7 @@ export default {
             files,
             selectorOptionsArr,
             updateMaterialsAndFiles,
-            mockMaterials,
+            updateIsMaterialsHandler,
         }
     },
 }

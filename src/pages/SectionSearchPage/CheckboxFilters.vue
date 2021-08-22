@@ -5,7 +5,7 @@
             :key="item.id"
             class="custom-input form-check">
             <input
-                @change="(event) => $emit('updateFilter', { name: item.id, value: event.target.checked ? 1 : 0})"
+                @change="(e) => updateCheckboxHandler(e, item)"
                 class="custom-input__input form-check-input"
                 type="checkbox"
             />
@@ -23,13 +23,17 @@ export default {
             default: () => []
         }
     },
-    setup(props) {
-
+    setup(props, {emit}) {
        const filteredFields = computed(() => {
            return props.fieldsArray.filter((field) => field.type.name === 'Boolean');
        });
+       const updateCheckboxHandler = (event, item) => {
+           emit('updateCheckbox', { name: item.id, value: event.target.checked ? 1 : 0})
+           };
+
     return {
-        filteredFields
+        filteredFields,
+        updateCheckboxHandler,
         }
     }
 };

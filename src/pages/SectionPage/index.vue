@@ -249,8 +249,9 @@ export default {
         // Input File_____________________
         const fileInput = ref(null);
         const resetForm = () => {
-            section.value = JSON.parse(JSON.stringify(initSection));
-            fileInput.value = null;
+            // section.value = JSON.parse(JSON.stringify(initSection));
+            // fileInput.value = null;
+            router.push('/sections');
         };
 
         const isFieldModalVisible = ref(false);

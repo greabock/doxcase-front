@@ -24,7 +24,10 @@
     <!-- New Enum Add Form -->
     <enums-items v-if="activeEnumId" :enumId="activeEnumId"></enums-items>
 
-    <modal-window v-model="isModalVisible">
+    <modal-window
+        v-model="isModalVisible"
+        maxWidth="400px"
+    >
         <div class="modal-window__header">
             <h3>Новый справочник</h3>
         </div>
@@ -50,7 +53,10 @@
         </modal-window>
 
     <!-- Remove enum alert -->
-    <modal-window v-model="isRemoveAlertVisible">
+    <modal-window
+        v-model="isRemoveAlertVisible"
+        maxWidth="400px"
+    >
         <div class="modal-window__header">
             <h3>Удаление справочника</h3>
         </div>
@@ -107,10 +113,11 @@ export default {
         const {handleSubmit, meta: enumFormMeta, setValues} = useForm({validationSchema: enumSchema});
         const {value: enumTitle} = useField('enumTitle');
         setValues({
-            enumTitle: 'NewTitle'
+            enumTitle: ''
         })
-        const onEnumSubmit = handleSubmit(values => {
-            addNewEnum(values.enumTitle);
+        const onEnumSubmit = handleSubmit( async(values, actions) => {
+            await addNewEnum(values.enumTitle);
+            actions.resetForm();
         });
 
         const addNewEnum = async (values) => {
