@@ -248,9 +248,7 @@ export default {
             title.value = material.name;
         };
 
-        console.log(getData);
-
-        // getData();
+        getData();
 
         const setActive = (file) => {
             files.value.map((x) => (x.isActive = false));

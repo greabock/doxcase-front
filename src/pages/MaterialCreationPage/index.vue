@@ -243,7 +243,11 @@ export default {
         const submit = async () => {
             const fieldsSubmit = {};
             for (const field of fields.value) {
-                if (field.type == 'Enum' || field.type == 'Select') {
+                if (field.type == 'Enum') {
+                    if (field.value) {
+                        fieldsSubmit[field.id] = {id: field.value.key};
+                    }
+                } else if (field.type == 'Select') {
                     if (field.value) {
                         fieldsSubmit[field.id] = field.value.key;
                     }
