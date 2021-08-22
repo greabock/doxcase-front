@@ -9,7 +9,6 @@ yup.setLocale({
 });
 
 function validateString({required, min, max}) {
-    console.log(required, min, max);
     let f = yup.string().nullable();
     if (required) {
         f = f.required();
@@ -35,8 +34,8 @@ function createFieldValidation(field, value) {
         field.id,
         validateString({
             required: field.required,
-            min: field.type.min,
-            max: field.type.max,
+            min: field.type?.min,
+            max: field.type?.max,
         })
     );
     model.value = value;
@@ -58,61 +57,13 @@ export default async function useFields(fields, materials) {
     const fieldsDictionary = {
         Boolean: ({field, value = false}) => fieldCreate({type: 'Boolean', value: !!value, field}),
         Date: ({value, field}) => {
+
             return fieldCreate({
                 field,
                 type: 'Date',
                 value,
                 props: {
                     placeholder: field.description,
-                },
-            });
-        },
-        Enum: async ({field, multiple, value, ofType}) => {
-            const of = ofType ? field.type.of.of : field.type.of;
-
-            const enums = await enumsService.getEnumsObject(of);
-            const options = enums.values.map((x) => ({
-                key: x.id,
-                name: x.title,
-            }));
-
-            return fieldCreate({
-                field,
-                ofType,
-                type: 'Enum',
-                value,
-                props: {
-                    options,
-                    placeholder: field.description,
-                    multiple,
-                },
-            });
-        },
-        Select: ({field, value, multiple, ofType}) => {
-            const of = ofType ? field.type.of.of : field.type.of;
-            const options = of.map((x) => ({
-                key: x,
-                name: x,
-            }));
-
-            return fieldCreate({
-                field,
-                type: 'Select',
-                ofType,
-                value:
-                    value && ofType
-                        ? value.map((x) => ({
-                              name: x,
-                              key: x,
-                          }))
-                        : {
-                              key: value,
-                              name: value,
-                          },
-                props: {
-                    options,
-                    placeholder: field.description,
-                    multiple,
                 },
             });
         },
@@ -155,6 +106,54 @@ export default async function useFields(fields, materials) {
                     placeholder: field.description,
                     error,
                     onBlur: handleChange,
+                },
+            });
+        },
+        Enum: async ({field, multiple, value, ofType}) => {
+            const of = ofType ? field.type.of.of : field.type.of;
+
+            const enums = await enumsService.getEnumsObject(of);
+            const options = enums.values.map((x) => ({
+                key: x.id,
+                name: x.title,
+            }));
+
+            return fieldCreate({
+                field,
+                ofType,
+                type: 'Enum',
+                value,
+                props: {
+                    options,
+                    placeholder: field.description,
+                    multiple,
+                },
+            });
+        },
+        Select: ({field, value, multiple, ofType}) => {
+            const of = ofType ? field.type.of.of : field.type.of;
+            const options = of.map((x) => ({
+                key: x,
+                name: x,
+            }));
+
+            const values = value && (ofType ? value.map((x) => ({
+                name: x,
+                key: x,
+            })) : {
+                key: value,
+                name: value,
+            })
+
+            return fieldCreate({
+                field,
+                type: 'Select',
+                ofType,
+                value: values,
+                props: {
+                    options,
+                    placeholder: field.description,
+                    multiple,
                 },
             });
         },

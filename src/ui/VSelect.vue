@@ -96,7 +96,7 @@ export default {
         const selected = computed(() => {
             if (privateValue.value == null) {
                 if (props.multiple) {
-                    return props.modelValue.map((x) => x.name.toString()).join(', ')
+                    return props.modelValue && props.modelValue.map((x) => x.name.toString()).join(', ')
                 }
                 return props.modelValue?.name || '';
             }
