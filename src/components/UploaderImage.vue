@@ -4,11 +4,11 @@
             <VButtonFileLoader @upload="uploadFile" class="col-auto mb-3">
                 <button class="form-wrap__btn-choose">Выбрать...</button>
             </VButtonFileLoader>
-            <div v-if="modelValue" class="col-auto mb-3">
+            <div v-if="modelValue || preview" class="col-auto mb-3">
                 <div
                     class="form-wrap__icon-add-wrap"
                     :style="{
-                        'background-image': `url(${src})`,
+                        'background-image': `url(${src || preview})`,
                     }"
                 ></div>
             </div>
@@ -29,6 +29,7 @@ export default {
     },
     props: {
         modelValue: File,
+        preview: String,
     },
     setup(props, {emit}) {
         const uploadFile = ([f]) => {

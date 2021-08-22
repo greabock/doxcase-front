@@ -1,16 +1,60 @@
 import enumsService from '@/services/enums.service';
+import {useField} from 'vee-validate';
+import * as yup from 'yup';
+yup.setLocale({
+    mixed: {
+        default: 'Поле не валидно.',
+        required: 'Поле обязательно для заполнения.',
+    },
+});
+
+function validateString({required, min, max}) {
+    console.log(required, min, max);
+    let f = yup.string().nullable();
+    if (required) {
+        f = f.required();
+    }
+
+    if (min) {
+        f = f.min(min);
+    }
+
+    if (max) {
+        f = f.max(max);
+    }
+
+    return f;
+}
+
+function createFieldValidation(field, value) {
+    const {
+        value: model,
+        errorMessage: error,
+        handleChange,
+    } = useField(
+        field.id,
+        validateString({
+            required: true, //field.required,
+            min: field.type.min,
+            max: field.type.max,
+        })
+    );
+    model.value = value;
+
+    return {model, error, handleChange}
+}
+
+const fieldCreate = ({type, ofType, props, value = '', field}) => {
+    return {
+        ...field,
+        type,
+        ofType,
+        props,
+        value,
+    };
+};
 
 export default async function useFields(fields, materials) {
-    const fieldCreate = ({type, ofType, props, value = null, field}) => {
-        return {
-            ...field,
-            type,
-            ofType,
-            props,
-            value,
-        };
-    };
-
     const fieldsDictionary = {
         Boolean: ({field, value = false}) => fieldCreate({type: 'Boolean', value: !!value, field}),
         Date: ({value, field}) => {
@@ -72,33 +116,48 @@ export default async function useFields(fields, materials) {
                 },
             });
         },
-        String: ({field, value}) =>
-            fieldCreate({
+        String: ({field, value}) => {
+            const { model, error, handleChange } = createFieldValidation(field, value)
+
+            return fieldCreate({
                 field,
                 type: 'String',
-                value,
+                value: model,
                 props: {
                     placeholder: field.description,
+                    error,
+                    onBlur: handleChange,
                 },
-            }),
-        Wiki: ({field, value}) =>
-            fieldCreate({
+            });
+        },
+        Wiki: ({field, value}) => {
+            const { model, error, handleChange } = createFieldValidation(field, value)
+            
+            return fieldCreate({
                 field,
                 type: 'Wiki',
-                value,
+                value: model,
                 props: {
                     placeholder: field.description,
+                    error,
+                    onBlur: handleChange,
                 },
-            }),
-        Text: ({field, value}) =>
-            fieldCreate({
+            })
+        },
+        Text: ({field, value}) => {
+            const { model, error, handleChange } = createFieldValidation(field, value)
+
+            return fieldCreate({
                 field,
                 type: 'Text',
-                value,
+                value: model,
                 props: {
                     placeholder: field.description,
+                    error,
+                    onBlur: handleChange,
                 },
-            }),
+            })
+        },
         List: ({value = [], field}) => {
             const ofType = field.type.of.name;
             return fieldsDictionary[ofType]({field, multiple: true, value, ofType});
@@ -117,5 +176,4 @@ export default async function useFields(fields, materials) {
     }
 
     return f;
-
 }

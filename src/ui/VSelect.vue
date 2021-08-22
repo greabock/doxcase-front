@@ -9,6 +9,7 @@
             :disabled="disabled"
             :readonly="readonly"
             :size="size"
+            :error="error"
             @focus="isActive = true"
             @input="search"
         >
@@ -68,6 +69,7 @@ export default {
         readonly: Boolean,
         size: String,
         multiple: Boolean,
+        error: String,
     },
     setup(props, ctx) {
         const root = ref(null);

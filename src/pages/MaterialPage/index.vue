@@ -57,11 +57,7 @@
                             >
                                 Удалить материал
                             </button>
-                            <button
-                                class="sCardHead__aside-btn btn-outline-primary"
-                                type="button"
-                                @click="edit"
-                            >
+                            <button class="sCardHead__aside-btn btn-outline-primary" type="button" @click="edit">
                                 Редактировать материал
                             </button>
                             <ul>
@@ -69,7 +65,7 @@
                                     <div class="strong">{{ el.title }}</div>
                                     <ul v-if="el.value">
                                         <li v-for="(v, x) of el.value" :key="x">
-                                            {{ el.type == 'List' ? el.ofType == 'Enum' ? v.title : v : v }}
+                                            {{ el.type == 'List' ? (el.ofType == 'Enum' ? v.title : v) : v }}
                                         </li>
                                     </ul>
                                 </li>
@@ -219,7 +215,7 @@ export default {
                 )
                 .map((x) => ({
                     ...x,
-                    value: material[x.id] ? Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]] : [],
+                    value: material[x.id] ? (Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]]) : [],
                     type: x.type.name,
                     ofType: x.type.of.name,
                 }));
@@ -252,7 +248,9 @@ export default {
             title.value = material.name;
         };
 
-        getData();
+        console.log(getData);
+
+        // getData();
 
         const setActive = (file) => {
             files.value.map((x) => (x.isActive = false));
@@ -265,8 +263,8 @@ export default {
         };
 
         const edit = () => {
-            router.push(`/material-edit/${sectionId}/${materialId}`)
-        }
+            router.push(`/material-edit/${sectionId}/${materialId}`);
+        };
 
         return {
             edit,

@@ -9,13 +9,15 @@
         >
             <slot name="left"></slot>
         </div>
-        <input :class="[
+        <input
+            :class="[
                 'form-control input__element',
                 size ? `form-control-${size}` : '',
                 {'input__left-offset': $slots.left},
                 {'input__right-offset': $slots.right},
                 {input_shadow: shadow},
                 {input_bordered: bordered},
+                {'is-invalid': error},
                 classInput,
             ]"
             :style="{
@@ -29,7 +31,7 @@
             v-bind="inputListeners"
             :value="modelValue || ''"
         />
-        <span v-if="message"> {{ message }} </span>
+        <div class="input-message invalid-feedback" v-if="error">{{ error }}</div>
         <div
             v-if="$slots.right"
             class="input__right-icon"
@@ -59,7 +61,7 @@ export default {
         offset: String,
         offsetRight: String,
         offsetLeft: String,
-        message: String,
+        error: String,
     },
     setup(props, ctx) {
         const inputListeners = computed(() => ({
@@ -80,10 +82,15 @@ export default {
 <style lang="scss" scoped>
 .input__container {
     position: relative;
+    margin-bottom: 1rem;
 }
 
 .input__element {
-    border: none;
+    border-color: transparent;
+}
+
+.is-invalid {
+    border-color: #eb5757;
 }
 
 .input_shadow {
@@ -122,8 +129,16 @@ export default {
 
 .form-control-md {
     min-height: calc(1em + 1rem + 2px);
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     font-size: 1rem;
-    border-radius: .3rem; 
+    border-radius: 0.3rem;
+}
+
+.input-message {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+    padding: 5px 1rem;
 }
 </style>

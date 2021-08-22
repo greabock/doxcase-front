@@ -1,6 +1,6 @@
 <template>
     <div ref="root" class="datepicker__container">
-        <VInput v-model="privateDate" @focus="isActive = true" v-maska="'##.##.####'" :placeholder="placeholder">
+        <VInput v-model="privateDate" @focus="isActive = true" v-maska="'##.##.####'" :placeholder="placeholder" :error="error">
             <template #right>
                 <div @click="isActive = !isActive">
                     <div class="date__icon">
@@ -42,6 +42,7 @@ export default {
     props: {
         modelValue: Date,
         placeholder: String,
+        error: String,
     },
     setup(props, ctx) {
         const root = ref(null);
