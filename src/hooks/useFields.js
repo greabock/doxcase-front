@@ -34,14 +34,14 @@ function createFieldValidation(field, value) {
     } = useField(
         field.id,
         validateString({
-            required: true, //field.required,
+            required: field.required,
             min: field.type.min,
             max: field.type.max,
         })
     );
     model.value = value;
 
-    return {model, error, handleChange}
+    return {model, error, handleChange};
 }
 
 const fieldCreate = ({type, ofType, props, value = '', field}) => {
@@ -117,7 +117,7 @@ export default async function useFields(fields, materials) {
             });
         },
         String: ({field, value}) => {
-            const { model, error, handleChange } = createFieldValidation(field, value)
+            const {model, error, handleChange} = createFieldValidation(field, value);
 
             return fieldCreate({
                 field,
@@ -131,8 +131,8 @@ export default async function useFields(fields, materials) {
             });
         },
         Wiki: ({field, value}) => {
-            const { model, error, handleChange } = createFieldValidation(field, value)
-            
+            const {model, error, handleChange} = createFieldValidation(field, value);
+
             return fieldCreate({
                 field,
                 type: 'Wiki',
@@ -142,10 +142,10 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
-            })
+            });
         },
         Text: ({field, value}) => {
-            const { model, error, handleChange } = createFieldValidation(field, value)
+            const {model, error, handleChange} = createFieldValidation(field, value);
 
             return fieldCreate({
                 field,
@@ -156,7 +156,7 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
-            })
+            });
         },
         List: ({value = [], field}) => {
             const ofType = field.type.of.name;
