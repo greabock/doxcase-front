@@ -394,11 +394,6 @@ export default {
                 }
 
                 submitFiles[file.id] = [...file.value.filter(x => x.id).map(x => ({ id: x.id, name: x.data.name })), ...submitFiles[file.id]]
-
-
-                console.log(submitFiles)
-
-                throw new Error('asd');
             }
 
             const material = {
