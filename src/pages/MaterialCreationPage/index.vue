@@ -281,7 +281,7 @@ export default {
                 }
 
                 if (!isNew.value) {
-                    const oldFiles = file.value.filter(x => x.id).map(x => ({ id: x.id, title: x.data.name }));
+                    const oldFiles = file.value.filter(x => x.id).map(x => ({ id: x.id }));
                     submitFiles[file.id] = submitFiles[file.id] ? [...oldFiles, ...submitFiles[file.id]] : oldFiles;
                 }
 
