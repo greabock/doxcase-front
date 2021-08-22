@@ -33,7 +33,7 @@ export default {
         fieldsArray: Array,
         default: []
     },
-    emits: ['updateSelector'],
+    emits: ['updateSelector']
 };
 </script>
 

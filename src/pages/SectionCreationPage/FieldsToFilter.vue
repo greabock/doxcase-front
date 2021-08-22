@@ -120,8 +120,6 @@ export default {
                    ...props.fieldsArr.slice(idx + 1)
                ]
            }
-           const toConsole = newFields.map((item) => (item.title + ' filter_sort_index: ' + item.filter_sort_index));
-           console.log(toConsole);
            emit('update-filter-sort', newFields)
        }
 

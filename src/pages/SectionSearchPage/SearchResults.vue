@@ -55,7 +55,7 @@
                         :key="field.name"
                         class="col-lg-6">
                         <div class="search-item__panel">
-                            <div class="row">    >
+                            <div class="row">
                                 <div class="col-auto text-primary">{{field.name}} </div>
                                 <div class="col">{{field.value}}</div>
                             </div>
@@ -68,8 +68,8 @@
 
 <!-- Файлы в выдаче -->
         <div
-            v-for="file in filesArr"
-            :key="file.file.name"
+            v-for="(file, i) in filesArr"
+            :key="file.file.name + i"
             class="search-item">
             <div class="row">
                 <div class="col-auto">
@@ -165,19 +165,15 @@ export default {
         }
         const serializeFields = (material, currentSection) => {
             const fieldsArr = [];
-
             for (let key in material ) {
-
                 if (Object.prototype.hasOwnProperty.call(material, key)) {
-
-                    if (key === 'id' || key === 'name') continue
+                    if (key === 'id' || key === 'name' || key === 'created_at') continue
                     const field = currentSection.fields.find(field => field.id === key);
-                    if (field && Object.prototype.hasOwnProperty.call(field, key)) {
+
                         fieldsArr.push({
                             name: field.title,
-                            value: (material[key])[0]
-                        });
-                    }
+                            value: material[key]
+                          });
 
                 }
 

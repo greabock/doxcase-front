@@ -91,7 +91,6 @@
 
 <script>
 import {ref, watch} from 'vue';
-
 export default {
     emits: ['updateExtensions', 'updateIsMaterials'],
 
@@ -100,10 +99,11 @@ export default {
         const isMaterials = ref(false);
         watch( extensions, (newVal) => {
             emit('updateExtensions', newVal);
-        })
+        });
         watch( isMaterials, (newVal) => {
             emit('updateIsMaterials', newVal);
-        })
+        });
+
         return {
             extensions,
             isMaterials,

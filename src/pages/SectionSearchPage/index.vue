@@ -93,7 +93,11 @@
                                         <div class="sSearchResult__btn-text">
                                             <svg class="icon icon-close ">
                                                 <use xlink:href="/img/svg/sprite.svg#close"></use>
-                                            </svg><span class="ms-2">очистить фильтр</span>
+                                            </svg>
+                                            <span
+                                                @click="resetSelectorsHandler"
+                                                class="ms-2">очистить фильтр
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-auto d-lg-none">
@@ -457,15 +461,11 @@ export default {
                 }
             }
             try {
-                isLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, mergedQueryObject);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
-                console.log(files.value);
-                isLoading.value = false;
             } catch(e) {
                 console.log(e);
-                isLoading.value = false;
             }
 
         }
@@ -499,6 +499,7 @@ export default {
         onMounted(async () => {
             await updateSearchPage(router.currentRoute.value.params.id);
         });
+
 
         return {
             isLoading,

@@ -86,7 +86,6 @@ export default {
         }
 
         const addNewField = ({title, required}) => {
-            console.log({title, required});
             emit('addNewField', {
                 ...newField.value,
                 title,
