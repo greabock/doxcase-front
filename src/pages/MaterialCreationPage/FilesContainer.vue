@@ -20,7 +20,6 @@
                 v-else
                 @edit="editFile(item)"
                 @delete="deleteFile(i)"
-                :file="item.file"
                 :data="item.data"
             />
         </div>

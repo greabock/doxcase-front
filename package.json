@@ -18,7 +18,7 @@
     "maska": "^1.4.5",
     "reactivity": "^2.4.1",
     "uuid": "^8.3.2",
-    "vee-validate": "^4.4.7",
+    "vee-validate": "^4.4.9",
     "vue": "^3.0.0",
     "vue-router": "4",
     "vue3-dropzone": "0.0.7",

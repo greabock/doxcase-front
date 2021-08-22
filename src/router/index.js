@@ -68,6 +68,11 @@ const routes = [
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
     },
     {
+        path: '/material-edit/:sectionId/:materialId',
+        name: 'MaterialEditPageRoute',
+        components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
+    },
+    {
         path: '/sections/:sectionId/material/:materialId',
         name: 'MaterialItemPageRoute',
         components: {default: MaterialPage, header: HeaderComponent, footer: FooterComponent},

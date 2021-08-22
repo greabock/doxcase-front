@@ -57,10 +57,17 @@
                             >
                                 Удалить материал
                             </button>
+                            <button
+                                class="sCardHead__aside-btn btn-outline-primary"
+                                type="button"
+                                @click="edit"
+                            >
+                                Редактировать материал
+                            </button>
                             <ul>
                                 <li v-for="(el, i) of lists" :key="i">
                                     <div class="strong">{{ el.title }}</div>
-                                    <ul>
+                                    <ul v-if="el.value">
                                         <li v-for="(v, x) of el.value" :key="x">
                                             {{ el.type == 'List' ? el.ofType == 'Enum' ? v.title : v : v }}
                                         </li>
@@ -212,7 +219,7 @@ export default {
                 )
                 .map((x) => ({
                     ...x,
-                    value: Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]],
+                    value: material[x.id] ? Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]] : [],
                     type: x.type.name,
                     ofType: x.type.of.name,
                 }));
@@ -257,7 +264,12 @@ export default {
             router.push('/');
         };
 
+        const edit = () => {
+            router.push(`/material-edit/${sectionId}/${materialId}`)
+        }
+
         return {
+            edit,
             isShow,
             breadcrumbs,
             deleteMaterial,

@@ -29,6 +29,7 @@
             v-bind="inputListeners"
             :value="modelValue || ''"
         />
+        <span v-if="message"> {{ message }} </span>
         <div
             v-if="$slots.right"
             class="input__right-icon"
@@ -58,6 +59,7 @@ export default {
         offset: String,
         offsetRight: String,
         offsetLeft: String,
+        message: String,
     },
     setup(props, ctx) {
         const inputListeners = computed(() => ({

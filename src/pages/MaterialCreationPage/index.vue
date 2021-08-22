@@ -2,17 +2,7 @@
     <!-- <h1>Создание нового материала</h1> -->
     <main class="main-block">
         <div class="container-fluid">
-            <VBreadcrumb
-                :list="[
-                    {
-                        link: '/',
-                        name: 'Главная',
-                    },
-                    {
-                        name: 'Создать новый материал',
-                    },
-                ]"
-            />
+            <VBreadcrumb :list="breadcrumb" />
         </div>
         <!-- start sNewMaterial-->
         <div class="sNewMaterial section" id="sNewMaterial">
@@ -21,7 +11,7 @@
                     <div class="col">
                         <h1>Новый материал</h1>
                     </div>
-                    <div class="input-line">
+                    <div v-if="isNew" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
                                 <div class="input-line__title">Выберите раздел</div>
@@ -40,7 +30,7 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="sectionValue" class="input-line">
+                    <div v-if="sectionValue || !isNew" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
                                 <div class="input-line__title">Название материала</div>
@@ -90,7 +80,7 @@
                 </ul>
             </div>
             <template v-for="(file, i) of files" :key="i">
-                <FilesContainer v-if="file.isActive" :list="file.files" @update="(x) => updateFiles(file, x)" />
+                <FilesContainer v-if="file.isActive" :list="file.value" @update="(x) => updateFiles(file, x)" />
             </template>
             <div class="sAddDocs__footer">
                 <div class="container-fluid d-flex">
@@ -105,7 +95,7 @@
 
 <script>
 import {ref} from 'vue';
-// import {v4 as uuidv4} from 'uuid';
+import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
@@ -126,7 +116,109 @@ import enumsService from '@/services/enums.service';
 import materialService from '@/services/material.service';
 import fileService from '@/services/file.service';
 
-import {useRouter} from 'vue-router';
+const fieldCreate = ({type, ofType, props, value = null, field}) => {
+    return {
+        ...field,
+        type,
+        ofType,
+        props,
+        value,
+    };
+};
+
+const fieldsDictionary = {
+    Boolean: ({field, value = false}) => fieldCreate({type: 'Boolean', value: !!value, field}),
+    Date: ({value, field}) => {
+        return fieldCreate({
+            field,
+            type: 'Date',
+            value,
+            props: {
+                placeholder: field.description,
+            },
+        });
+    },
+    Enum: async ({field, multiple, value, ofType}) => {
+        const of = ofType ? field.type.of.of : field.type.of;
+
+        const enums = await enumsService.getEnumsObject(of);
+        const options = enums.values.map((x) => ({
+            key: x.id,
+            name: x.title,
+        }));
+
+        return fieldCreate({
+            field,
+            ofType,
+            type: 'Enum',
+            value,
+            props: {
+                options,
+                placeholder: field.description,
+                multiple,
+            },
+        });
+    },
+    Select: ({field, value, multiple, ofType}) => {
+        const of = ofType ? field.type.of.of : field.type.of;
+        const options = of.map((x) => ({
+            key: x,
+            name: x,
+        }));
+
+        return fieldCreate({
+            field,
+            type: 'Select',
+            ofType,
+            value:
+                value && ofType
+                    ? value.map((x) => ({
+                          name: x,
+                          key: x,
+                      }))
+                    : {
+                          key: value,
+                          name: value,
+                      },
+            props: {
+                options,
+                placeholder: field.description,
+                multiple,
+            },
+        });
+    },
+    String: ({field, value}) =>
+        fieldCreate({
+            field,
+            type: 'String',
+            value,
+            props: {
+                placeholder: field.description,
+            },
+        }),
+    Wiki: ({field, value}) =>
+        fieldCreate({
+            field,
+            type: 'Wiki',
+            value,
+            props: {
+                placeholder: field.description,
+            },
+        }),
+    Text: ({field, value}) =>
+        fieldCreate({
+            field,
+            type: 'Text',
+            value,
+            props: {
+                placeholder: field.description,
+            },
+        }),
+    List: ({value = [], field}) => {
+        const ofType = field.type.of.name;
+        return fieldsDictionary[ofType]({field, multiple: true, value, ofType});
+    },
+};
 
 export default {
     components: {
@@ -145,124 +237,111 @@ export default {
         const sectionValue = ref(null);
         const fields = ref([]);
         const files = ref([]);
-        const name = ref('');
+        const name = ref('');       
         const router = useRouter();
+        const route = useRoute();
+        const {sectionId, materialId} = route.params;
+        const breadcrumb = ref([
+            {
+                link: '/',
+                name: 'Главная',
+            },
+            {
+                name: 'Создать новый материал',
+            },
+        ]);
 
-        const getSections = async () => {
-            const sections = await sectionsService.getSections();
+        const isNew = ref(true);
 
-            sectionOptions.value = sections.map((s) => ({
-                key: s.id,
-                name: s.title,
-            }));
-        };
-
-        getSections();
-
-        const selectSection = async (section) => {
-            const sectionObject = await sectionsService.getSectionObject(section.key);
-
+        const setFields = async (sectionObject, materials) => {
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
-            files.value = sectionObject.fields.filter(isFiles).map((f) => ({
+            const fileList = sectionObject.fields.filter(isFiles).map((f) => {
+                const files = materials && materials[f.id] && materials[f.id].map(x => {
+                    const n = x.name.split('.');
+                    const t = n.splice(-1);
+                    const name = n.length ? n.join() : t.join();
+                    return {
+                    id: f.id,
+                    key: f.id,
+                    data: {
+                        name,
+                        type: x.extension,
+                        size: 0,
+                    },
+                    isEdit: false,
+                }})
+
+                return {
                 ...f,
                 type: 'File',
-                files: [],
+                value: files ? [...files] : [],
                 multi: f.type.of && f.type.of.name == 'File',
                 isActive: false,
-            }));
+            }});
 
-            if (files.value.length) {
-                files.value[0].isActive = true;
+            if (fileList.length) {
+                fileList[0].isActive = true;
             }
 
+            files.value = fileList
+
+
             const fieldList = sectionObject.fields.filter((f) => !isFiles(f));
+
             const f = [];
-            for (let field of fieldList) {
-                if (field.type.name == 'Boolean') {
-                    f.push({
-                        ...field,
-                        type: field.type.name,
-                        value: false,
-                    });
-                } else if (field.type.name == 'Enum') {
-                    const enums = await enumsService.getEnumsObject(field.type.of);
-                    f.push({
-                        ...field,
-                        type: field.type.name,
-                        value: null,
-                        props: {
-                            options: enums.values.map((x) => ({
-                                key: x.id,
-                                name: x.title,
-                            })),
-                            placeholder: field.description,
-                        },
-                    });
-                } else if (field.type.name == 'Select') {
-                    f.push({
-                        ...field,
-                        type: field.type.name,
-                        value: null,
-                        props: {
-                            options:
-                                field.type.of &&
-                                field.type.of.map((x) => ({
-                                    key: x,
-                                    name: x,
-                                })),
-                            placeholder: field.description,
-                        },
-                    });
-                } else if (field.type.name == 'List') {
-                    if (field.type.of && field.type.of.name == 'Enum') {
-                        const enums = await enumsService.getEnumsObject(field.type.of.of);
-                        f.push({
-                            ...field,
-                            type: field.type.name,
-                            ofType: field.type.of.name,
-                            value: null,
-                            props: {
-                                options: enums.values.map((x) => ({
-                                    key: x.id,
-                                    name: x.title,
-                                })),
-                                placeholder: field.description,
-                                multiple: field.type.name == 'List',
-                            },
-                        });
-                    } else if (field.type.of && field.type.of.name == 'Select') {
-                        f.push({
-                            ...field,
-                            type: field.type.name,
-                            value: null,
-                            props: {
-                                options:
-                                    field.type.of.of &&
-                                    field.type.of.of.map((x) => ({
-                                        key: x,
-                                        name: x,
-                                    })),
-                                placeholder: field.description,
-                                multiple: true,
-                            },
-                        });
-                    }
+            for (const field of fieldList) {
+                if (materials) {
+                    const data = await fieldsDictionary[field.type.name]({field, value: materials[field.id]});
+                    f.push(data);
                 } else {
-                    f.push({
-                        id: field.id,
-                        title: field.title,
-                        type: field.type.name,
-                        value: null,
-                        props: {
-                            placeholder: field.description,
-                        },
-                    });
+                    const data = await fieldsDictionary[field.type.name]({field});
+                    f.push(data);
                 }
             }
 
             fields.value = f;
+        };
+
+        const getData = async () => {
+            if (sectionId && materialId) {
+                isNew.value = false;
+                const sectionObject = await sectionsService.getSectionObject(sectionId);
+                const material = await materialService.getMaterial(sectionId, materialId);
+                breadcrumb.value = [
+                    {
+                        name: 'Главная',
+                        link: '/',
+                    },
+                    {
+                        name: sectionObject.title,
+                        link: `/sections/${sectionId}`,
+                    },
+                    {
+                        name: material.name,
+                    },
+                ];
+
+                setFields(sectionObject, material);
+                name.value = material.name;
+            } else {
+                isNew.value = true;
+                const sections = await sectionsService.getSections();
+
+                sectionOptions.value = sections.map((s) => ({
+                    key: s.id,
+                    name: s.title,
+                }));
+            }
+        };
+
+        getData();
+
+        const selectSection = async (section) => {
+            const sectionObject = await sectionsService.getSectionObject(section.key);
+
+            setFields(sectionObject);
         };
 
         const setActive = (file) => {
@@ -271,7 +350,7 @@ export default {
         };
 
         const updateFiles = (file, data) => {
-            file.files = data;
+            file.value = data;
         };
 
         const submit = async () => {
@@ -302,7 +381,7 @@ export default {
             for (const file of files.value) {
                 const bodyFormData = new FormData();
                 let isFiles = false;
-                for (const f of file.files) {
+                for (const f of file.value) {
                     if (f.file) {
                         isFiles = true;
                         bodyFormData.append('files[]', f.file);
@@ -313,6 +392,13 @@ export default {
                     const res = await fileService.uplodaFile(bodyFormData);
                     submitFiles[file.id] = res.map((x) => ({id: x.id}));
                 }
+
+                submitFiles[file.id] = [...file.value.filter(x => x.id).map(x => ({ id: x.id, name: x.data.name })), ...submitFiles[file.id]]
+
+
+                console.log(submitFiles)
+
+                throw new Error('asd');
             }
 
             const material = {
@@ -321,14 +407,25 @@ export default {
                 ...submitFiles,
             };
 
-            const {id} = await materialService.createMaterial(sectionValue.value.key, material);
-            router.push({
-                name: 'MaterialItemPageRoute',
-                params: {
-                    sectionId: sectionValue.value.key,
-                    materialId: id,
-                },
-            });
+            if (isNew.value) {
+                const {id} = await materialService.createMaterial(sectionValue.value.key, material);
+                router.push({
+                    name: 'MaterialItemPageRoute',
+                    params: {
+                        sectionId: sectionValue.value.key,
+                        materialId: id,
+                    },
+                });
+            } else {
+                await materialService.updateMaterial(sectionId, materialId, material);
+                router.push({
+                    name: 'MaterialItemPageRoute',
+                    params: {
+                        sectionId,
+                        materialId,
+                    },
+                });
+            }
         };
 
         const components = {
@@ -341,7 +438,11 @@ export default {
             Date: VDatePicker,
             Wiki: VTextEditor,
         };
+
+
         return {
+            breadcrumb,
+            isNew,
             name,
             components,
             sectionOptions,

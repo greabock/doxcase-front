@@ -1,7 +1,7 @@
 <template>
     <div ref="root" class="select__container">
         <VInput
-            v-model="privateSelected"
+            v-model="selected"
             :placeholder="placeholder"
             :classInput="classInput"
             :bordered="bordered"
@@ -73,34 +73,39 @@ export default {
         const root = ref(null);
         const isActive = ref(false);
 
-        const privateValue = ref('')
-        const privateOptions = computed(() => props.options.filter((str) => {
+        const privateValue = ref(null);
+        const privateOptions = computed(() =>
+            props.options.filter((str) => {
+                if (privateValue.value) {
                     return str.name.toString().toLowerCase().includes(privateValue.value.toLowerCase());
-                }))
-        // const privateOptions = ref(options);
+                }
+                return props.options;
+            })
+        );
+
         const search = (e) => {
             const value = e.target.value;
             privateValue.value = value;
-            // if (value) {
-            //     privateOptions.value = props.options.filter((str) => {
-            //         return str.name.toString().toLowerCase().includes(value.toLowerCase());
-            //     });
-            // } else {
-            //     privateOptions.value = props.options;
-            // }
+         
         };
 
-        const privateSelected = ref('');
-        const multipleSelect = ref([])
+        const multipleSelect = ref([]);
 
+        const selected = computed(() => {
+            if (privateValue.value == null) {
+                if (props.multiple) {
+                    return props.modelValue.map((x) => x.name.toString()).join(', ')
+                }
+                return props.modelValue?.name || '';
+            }
+
+            return privateValue.value;
+        });
+     
         const hide = (event) => {
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
-                // privateOptions.value = props.options;
-                privateValue.value = ''
-                if (props.modelValue) {
-                    privateSelected.value = props.modelValue.name.toString();
-                }
+                privateValue.value = null;
             }
         };
 
@@ -114,27 +119,25 @@ export default {
 
         const select = (item) => {
             if (props.multiple) {
-                const index = multipleSelect.value.findIndex(x => x.key === item.key)
+                const index = multipleSelect.value.findIndex((x) => x.key === item.key);
 
                 if (multipleSelect.value[index]) {
                     multipleSelect.value.splice(index, 1);
                 } else {
-                    multipleSelect.value = [...multipleSelect.value, item]
+                    multipleSelect.value = [...multipleSelect.value, item];
                 }
-                privateSelected.value = multipleSelect.value.map(x => x.name.toString()).join(', ');
                 ctx.emit('update:modelValue', multipleSelect);
                 ctx.emit('select', multipleSelect);
             } else {
                 isActive.value = false;
                 ctx.emit('update:modelValue', item);
                 ctx.emit('select', item);
-                privateSelected.value = item.name.toString();
             }
 
-            privateValue.value = ''
+            privateValue.value = null;
         };
 
-        return {isActive, root, select, privateSelected, privateOptions, search, privateValue};
+        return {isActive, root, select, selected, privateOptions, search, privateValue};
     },
 };
 </script>
