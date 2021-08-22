@@ -95,7 +95,6 @@
                                                 <use xlink:href="/img/svg/sprite.svg#close"></use>
                                             </svg>
                                             <span
-                                                @click="resetSelectorsHandler"
                                                 class="ms-2">очистить фильтр
                                             </span>
                                         </div>
@@ -235,12 +234,13 @@
                                     </div>
                                 </div>
 <!-- Типы документов -->
-                                <files-types
+                                <upload-doc-types
                                   @updateExtensions="updateExtensionsHandler"
                                   @updateIsMaterials="updateIsMaterialsHandler"
                                   :activeExtensions="queryObject.extensions"
+                                  :isMaterials="queryObject.materials"
                                 >
-                                </files-types>
+                                </upload-doc-types>
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
@@ -267,15 +267,16 @@ import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
 import {useRouter} from 'vue-router';
 import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelectors';
-// import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
-import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
+import UploadDocTypes from '@/pages/SectionSearchPage/UploadDocTypes';
+// import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import enumsService from '@/services/enums.service';
 
 
+
 export default {
-    components: { Loader, VBreadcrumb,  SectionSearchSelectors, FilesTypes, CheckboxFilters, SearchResults},
+    components: {UploadDocTypes, Loader, VBreadcrumb,  SectionSearchSelectors, CheckboxFilters, SearchResults},
     setup() {
 
         const router = useRouter();

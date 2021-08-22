@@ -56,8 +56,9 @@
                 <label class="custom-input form-check">
                     <input
                         v-model='isMaterials'
-                        value='materials'
-                        class="custom-input__input form-check-input" name="checkbox" type="checkbox"
+                        @change.prevent.stop='isMaterialsHandler'
+                        class="custom-input__input form-check-input"
+                        type="checkbox"
                     />
                     <span class="custom-input__text form-check-label">страницы</span>
                 </label>
@@ -91,22 +92,25 @@
 
 <script>
 import {ref, watch} from 'vue';
+
 export default {
+    props: {
+        isMaterials: {type: Boolean}
+    },
     emits: ['updateExtensions', 'updateIsMaterials'],
 
     setup(props, {emit}) {
         const extensions = ref([]);
-        const isMaterials = ref(false);
         watch( extensions, (newVal) => {
             emit('updateExtensions', newVal);
         });
-        watch( isMaterials, (newVal) => {
-            emit('updateIsMaterials', newVal);
-        });
+        const isMaterialsHandler =  (e, value) => {
+            emit('updateIsMaterials', value);
+        };
 
         return {
             extensions,
-            isMaterials,
+            isMaterialsHandler,
         }
     }
 
