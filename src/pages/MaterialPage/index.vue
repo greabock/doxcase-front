@@ -101,7 +101,7 @@
                     <div class="col--main">
                         <template v-for="(file, i) of files" :key="i">
                             <div v-if="file.isActive" class="row">
-                                <div v-if="!file.value" class="sCardDocs__empty-text">
+                                <div v-if="!file.value.length" class="sCardDocs__empty-text">
                                     Пока нет добавленных документов
                                 </div>
 
