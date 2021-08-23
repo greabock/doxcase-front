@@ -61,7 +61,7 @@ export default async function useFields(fields, materials) {
             return fieldCreate({
                 field,
                 type: 'Date',
-                value: new Date(value),
+                value: value && new Date(value),
                 props: {
                     placeholder: field.description,
                 },
