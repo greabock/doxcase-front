@@ -49,7 +49,10 @@
                                 <div class="small text-dark mb-1">
                                     Только svg или png c соотношением сторон 1:1 не более 100 кБ
                                 </div>
-                                <uploader-image v-model="fileInput"></uploader-image>
+                                <uploader-image
+                                    v-model="fileInput">
+                                    :preview="section.image"
+                                </uploader-image>
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
                                     ><input
