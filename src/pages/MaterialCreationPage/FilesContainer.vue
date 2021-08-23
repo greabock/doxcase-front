@@ -1,5 +1,5 @@
 <template>
-    <div class="sAddDocs__body bg-white pt-3">
+    <div class="sAddDocs__body bg-white pt-3 pb-3">
         <div class="container-fluid pb-3">
             <VButtonFileLoader @upload="loadFiles">
                 <div class="btn-add">
@@ -11,9 +11,11 @@
         <div v-for="(item, i) of listReverse" :key="item.key">
             <ItemEdit
                 v-if="item.isEdit"
+                :id="item.id"
                 :file="item.file"
                 :data="item.data"
-                @save="(file) => saveFile(item, file)"
+                @saveFile="(file) => saveFile(item, file)"
+                @updateData="(data) => updateData(item, data)"
                 @close="item.isEdit = false"
             />
             <ItemFile
@@ -71,6 +73,12 @@ export default {
             emit('update', listFiles)
         };
 
+        const updateData = (item, data) => {
+            item.isEdit = false;
+            item.data = {...data};
+            emit('update', listFiles)
+        }
+
         const editFile = (item) => {
             listFiles.value.map((item) => (item.isEdit = false));
             item.isEdit = true;
@@ -99,6 +107,7 @@ export default {
             listReverse,
             listFiles,
             saveFile,
+            updateData,
             editFile,
             deleteFile,
             loadFiles,

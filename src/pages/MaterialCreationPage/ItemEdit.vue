@@ -11,7 +11,7 @@
                         </div>
                     </template>
                     <template #right>
-                        <div class="sAddDocs__btns align-items-center justify-content-center w-100" @click="saveFile">
+                        <div class="sAddDocs__btns align-items-center justify-content-center w-100" @click="save">
                             <div class="btn-edit-sm btn-success">
                                 <svg class="icon icon-check">
                                     <use xlink:href="/img/svg/sprite.svg#check"></use>
@@ -34,29 +34,52 @@
 <script>
 import VInput from '@/ui/VInput';
 import {ref} from '@vue/reactivity';
-import { sizeFormat } from '@/utils/helpers'
+import {sizeFormat} from '@/utils/helpers';
+
+import fileService from '@/services/files.service';
+import {computed} from '@vue/runtime-core';
 
 export default {
     components: {
         VInput,
     },
     props: {
+        id: String,
         file: File,
         data: Object,
     },
     setup(props, {emit}) {
         const name = ref(props.data.name);
 
-        const saveFile = () => {
-            const blob = props.file.slice(0, props.file.size, props.file.type);
-            const newFile = new File([blob], `${name.value}.${props.data.type}`, {type: props.file.type});
-            emit('save', newFile);
+        const isNew = computed(() => !!props.id);
+
+        const save = async () => {
+            if (!isNew.value) {
+                const blob = props.file.slice(0, props.file.size, props.file.type);
+                const newFile = new File([blob], `${name.value}.${props.data.type}`, {type: props.file.type});
+                emit('saveFile', newFile);
+            } else {
+                const res = await fileService.updateFile(props.id, {
+                    name: name.value,
+                });
+                console.log(res);
+
+                console.log({
+                    ...props.data,
+                    name: name.value,
+                });
+                emit('updateData', {
+                    ...props.data,
+                    name: name.value,
+                });
+            }
         };
 
         return {
             sizeFormat,
             name,
-            saveFile,
+            save,
+            isNew,
         };
     },
 };

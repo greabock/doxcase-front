@@ -64,7 +64,6 @@ export default {
                 return '';
             },
             set: debounce((val) => {
-                console.log(!!val);
                 if (val) {
                     const [day, month, year] = val.split('.');
                     const newDate = new Date(date.value);
