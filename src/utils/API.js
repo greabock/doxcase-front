@@ -13,3 +13,12 @@ axiosInstance.interceptors.request.use((request) => {
     }
     return request;
 });
+
+
+axiosInstance.interceptors.response.use((response) => {
+    if (response.status == '401') {
+        window.location.replace('/auth')
+    }
+
+    return response;
+});
