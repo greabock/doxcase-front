@@ -27,7 +27,7 @@ export default {
     },
     setup(props, {emit}) {
         const state = reactive({
-            content: '',
+            content: props.modelValue || '',
             editorOption: {
                 placeholder: props.placeholder,
                 modules: {

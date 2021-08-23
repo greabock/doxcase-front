@@ -10,7 +10,7 @@
                         <div class="sAddDocs__title">
                             {{ data.name }} .{{ data.type }}
                             <span class="sAddDocs__size">
-                                {{ data.size }}
+                                {{ sizeFormat(data.size) }}
                             </span>
                         </div>
                     </div>
@@ -33,9 +33,16 @@
 </template>
 
 <script>
+import { sizeFormat } from '@/utils/helpers'
+
 export default {
     props: {
         data: Object,
     },
-}
+    setup() {
+        return {
+            sizeFormat,
+        };
+    },
+};
 </script>

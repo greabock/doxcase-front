@@ -25,7 +25,7 @@
                         </div>
                     </template>
                 </VInput>
-                <span class="sAddDocs__size d-none d-md-block">.{{ data.type }}({{ data.size }})</span>
+                <span class="sAddDocs__size d-none d-md-block">.{{ data.type }}({{ sizeFormat(data.size) }})</span>
             </div>
         </div>
     </div>
@@ -33,7 +33,8 @@
 
 <script>
 import VInput from '@/ui/VInput';
-import { ref } from '@vue/reactivity';
+import {ref} from '@vue/reactivity';
+import { sizeFormat } from '@/utils/helpers'
 
 export default {
     components: {
@@ -47,15 +48,16 @@ export default {
         const name = ref(props.data.name);
 
         const saveFile = () => {
-            const blob = props.file.slice(0, props.file.size, props.file.type); 
+            const blob = props.file.slice(0, props.file.size, props.file.type);
             const newFile = new File([blob], `${name.value}.${props.data.type}`, {type: props.file.type});
-            emit('save', newFile)
-        }
+            emit('save', newFile);
+        };
 
         return {
+            sizeFormat,
             name,
             saveFile,
-        }
+        };
     },
-}
+};
 </script>

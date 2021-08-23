@@ -39,9 +39,6 @@ import ItemFile from './ItemFile';
 
 const getFileData = (file) => {
     const {size, name, type} = file;
-    const kb = size / 1024;
-    const mb = kb / 1024;
-
     const n = name.split('.');
     const t = n.splice(-1);
     const fileName = n.length ? n.join() : t.join();
@@ -49,7 +46,7 @@ const getFileData = (file) => {
     const fileType = type.split('/').splice(-1).join();
 
     return {
-        size: mb > 0 ? `${kb.toFixed(2)} kb` : `${mb.toFixed(2)} mb`,
+        size,
         name: fileName,
         type: fileType,
     };

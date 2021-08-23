@@ -51,14 +51,20 @@
                     <div class="col-aside col-lg-auto d-flex flex-column">
                         <div class="sCardHead__aside">
                             <button
+                                v-if="canUpdate"
+                                class="sCardHead__aside-btn btn-primary"
+                                type="button"
+                                @click="edit"
+                            >
+                                Редактировать материал
+                            </button>
+                            <button
+                                v-if="canUpdate"
                                 class="sCardHead__aside-btn btn-outline-primary"
                                 type="button"
                                 @click="isShow = true"
                             >
                                 Удалить материал
-                            </button>
-                            <button class="sCardHead__aside-btn btn-outline-primary" type="button" @click="edit">
-                                Редактировать материал
                             </button>
                             <ul>
                                 <li v-for="(el, i) of lists" :key="i">
@@ -112,7 +118,7 @@
                                         </span>
                                         <div class="row w-100">
                                             <span class="sCardDocs__size col">
-                                                <!-- (25 mb) -->
+                                                {{ sizeFormat(el.size) }}
                                             </span>
                                             <span class="sCardDocs__download col">
                                                 <DownloadIcon class="icon icon-download" />
@@ -131,10 +137,10 @@
         <ModalWindow v-model="isShow" maxWidth="24rem">
             <div class="form-wrap">
                 <div class="h3 mb-4">Удаление</div>
-                <p>Вы уверены что хотите удалить раздел? Данное действие необратимое!</p>
+                <p>Вы уверены что хотите удалить материал? Данное действие необратимое!</p>
                 <div class="d-flex justify-content-between">
-                    <button class="btn btn-primary btn-cancel" @click="isShow = false">Отмена</button>
-                    <button class="btn btn-delete" @click="deleteMaterial">Удалить</button>
+                    <button class="btn btn-primary btn-cancel" @click="deleteMaterial">Удалить</button>
+                    <button class="btn btn-outline-primary btn-cancel" @click="isShow = false">Закрыть</button>
                 </div>
             </div>
         </ModalWindow>
@@ -142,16 +148,19 @@
 </template>
 
 <script>
-import {ref} from 'vue';
-import VBreadcrumb from '@/ui/VBreadcrumb';
+import {computed, ref} from 'vue';
+import {useStore} from 'vuex';
 import {useRoute, useRouter} from 'vue-router';
+import {format} from 'date-fns';
 import materialService from '@/services/material.service';
 import sectionsService from '@/services/sections.service';
-import {format} from 'date-fns';
-import ModalWindow from '@/components/ModalWindow';
 
+import ModalWindow from '@/components/ModalWindow';
+import VBreadcrumb from '@/ui/VBreadcrumb';
 import DownloadIcon from '@/assets/DownloadIcon';
 import FileIcon from '@/assets/FileIcon';
+
+import {sizeFormat} from '@/utils/helpers';
 
 export default {
     components: {
@@ -176,6 +185,12 @@ export default {
                 name: 'Главная',
             },
         ]);
+
+        const store = useStore();
+        const canUpdate = computed(() => {
+            const user = store.getters['user/getUser']
+            return user?.role === 'admin' || user?.role === 'moderator';
+        });
 
         const getData = async () => {
             const section = await sectionsService.getSectionObject(sectionId);
@@ -232,7 +247,7 @@ export default {
                     } else {
                         return {
                             ...x,
-                            value: format(new Date(material[x.id]), 'dd.mm.yyyy'),
+                            value: format(new Date(material[x.id]), 'dd.MM.yyyy'),
                             title: x.title,
                         };
                     }
@@ -242,6 +257,7 @@ export default {
                 type: 'File',
                 title: f.title,
                 isActive: !i,
+                size: f.size,
                 value: material[f.id],
             }));
 
@@ -275,6 +291,8 @@ export default {
             lists,
             files,
             topBlocks,
+            sizeFormat,
+            canUpdate,
         };
     },
 };
@@ -289,5 +307,9 @@ export default {
     display: flex;
     flex-flow: column;
     justify-content: space-between;
+}
+
+.btn-primary {
+    color: #fff;
 }
 </style>

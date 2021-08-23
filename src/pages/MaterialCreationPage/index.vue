@@ -160,12 +160,12 @@ export default {
                     const t = n.splice(-1);
                     const name = n.length ? n.join() : t.join();
                     return {
-                    id: f.id,
-                    key: f.id,
+                    id: x.id,
+                    key: x.id,
                     data: {
                         name,
                         type: x.extension,
-                        size: 0,
+                        size: x.size,
                     },
                     isEdit: false,
                 }})
@@ -243,15 +243,8 @@ export default {
         const submit = async () => {
             const fieldsSubmit = {};
             for (const field of fields.value) {
-                if (field.type == 'Enum') {
-                    if (field.value) {
-                        fieldsSubmit[field.id] = {id: field.value.key};
-                    }
-                } else if (field.type == 'Select') {
-                    if (field.value) {
-                        fieldsSubmit[field.id] = field.value.key;
-                    }
-                } else if (field.type == 'List') {
+                if (field.type == 'List') {
+                    console.log(field)
                     if (field.value) {
                         if (field.ofType == 'Enum') {
                             fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
@@ -259,7 +252,15 @@ export default {
                             fieldsSubmit[field.id] = field.value.map((x) => x.name);
                         }
                     }
-                } else if (field.type == 'Boolean') {
+                } else if (field.type == 'Enum') {
+                    if (field.value) {
+                        fieldsSubmit[field.id] = {id: field.value.key};
+                    }
+                } else if (field.type == 'Select') {
+                    if (field.value) {
+                        fieldsSubmit[field.id] = field.value.key;
+                    }
+                } else  if (field.type == 'Boolean') {
                     fieldsSubmit[field.id] = field.value;
                 } else {
                     if (field.value) {

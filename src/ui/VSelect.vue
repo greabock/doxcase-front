@@ -59,7 +59,7 @@ export default {
         ArrowDown,
     },
     props: {
-        modelValue: Object,
+        modelValue: Object || Array,
         options: Array,
         placeholder: String,
         classInput: String,
@@ -90,8 +90,9 @@ export default {
             privateValue.value = value;
          
         };
-
-        const multipleSelect = ref([]);
+        
+        const multiSelect = Array.isArray(props.modelValue) ? props.modelValue : []
+        const multipleSelect = ref(multiSelect);
 
         const selected = computed(() => {
             if (privateValue.value == null) {

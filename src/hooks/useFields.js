@@ -61,7 +61,7 @@ export default async function useFields(fields, materials) {
             return fieldCreate({
                 field,
                 type: 'Date',
-                value,
+                value: new Date(value),
                 props: {
                     placeholder: field.description,
                 },
@@ -109,8 +109,15 @@ export default async function useFields(fields, materials) {
                 },
             });
         },
-        Enum: async ({field, multiple, value, ofType}) => {
+        Enum: async ({type= 'Enum',field, multiple, value, ofType}) => {
             const of = ofType ? field.type.of.of : field.type.of;
+            const values = value && (ofType ? value.map((x) => ({
+                name: x.title,
+                key: x.id,
+            })) : {
+                key: value,
+                name: value,
+            })
 
             const enums = await enumsService.getEnumsObject(of);
             const options = enums.values.map((x) => ({
@@ -121,8 +128,8 @@ export default async function useFields(fields, materials) {
             return fieldCreate({
                 field,
                 ofType,
-                type: 'Enum',
-                value,
+                type,
+                value: values,
                 props: {
                     options,
                     placeholder: field.description,
@@ -130,7 +137,7 @@ export default async function useFields(fields, materials) {
                 },
             });
         },
-        Select: ({field, value, multiple, ofType}) => {
+        Select: ({type = 'Select', field, value, multiple, ofType}) => {
             const of = ofType ? field.type.of.of : field.type.of;
             const options = of.map((x) => ({
                 key: x,
@@ -147,7 +154,7 @@ export default async function useFields(fields, materials) {
 
             return fieldCreate({
                 field,
-                type: 'Select',
+                type,
                 ofType,
                 value: values,
                 props: {
@@ -159,7 +166,7 @@ export default async function useFields(fields, materials) {
         },
         List: ({value = [], field}) => {
             const ofType = field.type.of.name;
-            return fieldsDictionary[ofType]({field, multiple: true, value, ofType});
+            return fieldsDictionary[ofType]({type: 'List', field, multiple: true, value, ofType});
         },
     };
 
