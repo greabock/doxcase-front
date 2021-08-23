@@ -108,7 +108,7 @@ export default {
         const schema = yup.object({
             title: yup.string().required(),
             description: yup.string().required(),
-            maxLength: yup.number().min(255).required(),
+            maxLength: yup.number().required(),
             is_present_in_card: yup.boolean(),
             required: yup.boolean()
         });

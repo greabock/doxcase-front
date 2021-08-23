@@ -13,6 +13,12 @@
             class="form-wrap__dropdown"
         >
             <div
+                v-if="!sortedFieldsArr?.length"
+                class='no-filters__dropdown-item'
+            >
+                Нет фильтров
+            </div>
+            <div
                 v-for="field in sortedFieldsArr"
                 :key='field?.id'
                 class="form-wrap__dropdown-item"
@@ -88,11 +94,8 @@ export default {
             return props.fieldsArr.filter(a =>
                 a.type.name === 'Boolean' ||
                 a.type.name === 'Select' ||
-                a.type.name === 'File' ||
                 a.type.name === 'Enum' ||
-                a.type.of?.name === 'Enum' ||
-                a.type.name === 'Dictionary' ||
-                a.type.of?.name === 'Dictionary'
+                a.type.name === 'List'
             )
         });
 
@@ -120,8 +123,6 @@ export default {
                    ...props.fieldsArr.slice(idx + 1)
                ]
            }
-           const toConsole = newFields.map((item) => (item.title + ' filter_sort_index: ' + item.filter_sort_index));
-           console.log(toConsole);
            emit('update-filter-sort', newFields)
        }
 
@@ -173,6 +174,9 @@ export default {
 };
 </script>
 
-<style scoped>
-
+<style>
+.no-filters__dropdown-item {
+    display: flex;
+    padding: 5px 20px;
+}
 </style>

@@ -58,7 +58,6 @@ class enumService {
             ...myEnum,
             values: newValues,
         };
-        console.log(myEnum, newEnum);
         await axiosInstance.patch(`/enums/${myEnum.id}`, newEnum);
         return newEnum;
     };

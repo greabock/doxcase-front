@@ -122,7 +122,6 @@ export default {
         });
 
         const addNewField = ({title, selectedId, required, multiSelect}) => {
-            console.log({title, selectedId, required, multiSelect});
             let typeOfField;
             if (multiSelect) {
                 typeOfField = {
