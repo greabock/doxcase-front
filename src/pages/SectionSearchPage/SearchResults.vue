@@ -55,7 +55,7 @@
                         :key="field.name"
                         class="col-lg-6">
                         <div class="search-item__panel">
-                            <div class="row">    >
+                            <div class="row">
                                 <div class="col-auto text-primary">{{field.name}} </div>
                                 <div class="col">{{field.value}}</div>
                             </div>
@@ -68,21 +68,23 @@
 
 <!-- Файлы в выдаче -->
         <div
-            v-for="file in filesArr"
-            :key="file.file.name"
+            v-for="(file, i) in filesArr"
+            :key="file.file.name + i"
             class="search-item">
             <div class="row">
                 <div class="col-auto">
                     <div class="search-item__icon-wrap">
-                        <img alt='' src="/img/avatar-2.png" />
+                        <img alt='' src="/img/fileicon.png" />
                     </div>
                     <div class="file-extension">
                         {{ file.file.extension }}
                     </div>
                 </div>
                 <div class="col">
-                    <div class="h5">{{ file.file.name }}</div>
-                    <div class="text-dark small">Опубликовано {{file.file.created_at}}
+                    <router-link :to="`materials/${file.file.id}`">
+                        <div class="h5">{{ file.file.name }}</div>
+                    </router-link>
+                    <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
                                 <use xlink:href="/img/svg/sprite.svg#doc"></use>
@@ -137,8 +139,6 @@ export default {
 
     setup(props) {
 
-        console.log(props.filesArr);
-
         const closeToggleHandler = (e) => {
             (e.target.closest('.search-item').classList
                 .toggle('search-item--open'));
@@ -167,24 +167,33 @@ export default {
         }
         const serializeFields = (material, currentSection) => {
             const fieldsArr = [];
-
             for (let key in material ) {
-
                 if (Object.prototype.hasOwnProperty.call(material, key)) {
-
-                    if (key === 'id' || key === 'name') continue
+                    if (key === 'id' || key === 'name' || key === 'created_at') continue
                     const field = currentSection.fields.find(field => field.id === key);
-                    if (field && Object.prototype.hasOwnProperty.call(field, key)) {
+
                         fieldsArr.push({
                             name: field.title,
-                            value: (material[key])[0]
-                        });
-                    }
+                            value: material[key]
+                          });
 
                 }
 
             }
             return fieldsArr;
+        }
+        const formatDate = (dateString) => {
+
+            const date = new Date( Date.parse(dateString));
+
+            const day = date.getDate();
+            const month = date.getMonth() - (-1);
+            const year = date.getFullYear();
+
+            const myDay = (day > 9) ? day : '0' + day;
+            const myMonth = (month > 9) ? month : '0' + month;
+
+            return `${myDay}.${myMonth}.${year}`;
         }
 
         const createMaterialSnippet = (material, allSections) => {
@@ -193,11 +202,11 @@ export default {
                 const currentSection = allSections.find(section => section.id === material.section.id);
 
                 return {
-                    id: material.material.id,
+                   id: material.material.id,
                    title: material.material.name,
                    image: currentSection.image,
-                   docsValue: 'добавить на бэк',
-                   created_at : 'добавить дату',
+                   docsValue: 25,
+                   created_at :formatDate(material.material.created_at),
                    highlights: serializeHighLights(material.highlight, currentSection),
                    fields: serializeFields(material.material, currentSection),
                 };
@@ -212,13 +221,14 @@ export default {
             closeToggleHandler,
             materialsSnippetsArr,
             createMaterialSnippet,
+            formatDate,
         }
     }
 
 };
 </script>
 
-<style scoped>
+<style>
 .search-item--open .search-item__dropdown {
     display: block;
 }
@@ -242,5 +252,8 @@ export default {
 .file-extension {
     color: #1d47ce;
     font-size: 14px;
+}
+.search-item em {
+    background-color: #fff5a7;
 }
 </style>

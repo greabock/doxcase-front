@@ -96,7 +96,6 @@ export default {
         }
 
         const addNewField = ({title, required, is_present_in_card}) => {
-            console.log({title, required, is_present_in_card});
             emit('addNewField', {
                 ...newField.value,
                 title: title,

@@ -230,6 +230,7 @@ import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
+import filesService from '@/services/files.service';
 
 export default {
     components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow},
@@ -249,8 +250,6 @@ export default {
         // Input File_____________________
         const fileInput = ref(null);
         const resetForm = () => {
-            // section.value = JSON.parse(JSON.stringify(initSection));
-            // fileInput.value = null;
             router.push('/sections');
         };
 
@@ -283,6 +282,15 @@ export default {
         };
         const updateSection = async () => {
             try {
+                if (fileInput.value) {
+                    const formData = new FormData();
+                    formData.append('files[]', fileInput.value)
+
+                    const imageResp =  await filesService.uploadFiles(formData);
+                    if (imageResp) {
+                        section.value.image = imageResp[0].url;
+                    }
+                }
                 await sectionsService.updateSection(section.value);
                 router.push(`/sections`);
             } catch (e) {
