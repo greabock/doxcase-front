@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div
-                    v-if="user.role === 'admin'"
+                    v-if="user?.role === 'admin'"
                     class="col-auto">
                     <router-link
                         to="/material-creation"

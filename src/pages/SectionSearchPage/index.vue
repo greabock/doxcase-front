@@ -66,7 +66,7 @@
                                 <section-search-selectors
                                     :allSections="allSections"
                                     :fieldsArray="section.fields"
-                                    @updateSelector="updateSelectorHandler"
+                                    @updateSelectors="updateSelectorHandler"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -330,12 +330,6 @@ export default {
             for (let val of iterCheckboxes) {
                 checkboxes = {...checkboxes, ...val};
             }
-            const iterSelectors = selectorsObj.value.map(item => ({[item.name]: item.value})).values();
-            let selectors = {};
-
-            for (let val of iterSelectors) {
-                selectors = {...selectors, ...val};
-            }
 
             return {
                 search: searchObj.value,
@@ -344,7 +338,7 @@ export default {
                 extensions: extensionsObj.value.filter(item => item !== 'materials'),
                 filter: {
                     ...checkboxes,
-                    ...selectors,
+                    ...selectorsObj.value,
                 }
             }
         });
@@ -390,19 +384,8 @@ export default {
                 }
             }
         };
-        const updateSelectorHandler = ({name, value}) => {
-            if (!selectorsObj.value.find(item => item.name === name)) {
-
-                selectorsObj.value = [
-                    ...selectorsObj.value,
-                    { name, value }
-                ]
-            } else {
-                selectorsObj.value = [
-                    ...selectorsObj.value.filter(item => item.name !== name),
-                    { name, value }
-                ]
-            }
+        const updateSelectorHandler = (newSelectors) => {
+            selectorsObj.value = newSelectors;
         }
 
 // Отправка поискового запроса_____________

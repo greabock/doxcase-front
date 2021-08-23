@@ -5,24 +5,21 @@
                 <div
                     v-for="item of selectorOptionsArr"
                     :key="item?.id"
-                    class="col-auto">
+                    class="col-auto"
+                >
                     <div v-if="item" class="customs-select__input-wrap form-group">
                         <label>
                             <span class="customs-select__input-title">{{item?.title}}</span>
-                            <select
-                                :multiple='item?.multi'
-                                v-model='item.selectValue'
-                                class="customs-select__input form-select custom-select"
-                                @change="changeHandler(item?.id, item?.selectValue)"
-                            >
-                                <option
-                                    v-for="option in item?.options"
-                                    :value="option?.value"
-                                    :key="option?.name"
-                                >{{option?.title}}
-                                </option>
-                            </select>
 
+                            <v-select
+                                class="mb-3"
+                                v-model="item.selectValue"
+                                :options="item.options"
+                                bordered
+                                size="md"
+                                :multiple='true'
+                            >
+                            </v-select>
                         </label>
                     </div>
                 </div>
@@ -35,8 +32,12 @@
 import {ref, computed, watch} from 'vue';
 import enumsService from '@/services/enums.service';
 import sectionsService from '@/services/sections.service';
+import VSelect from '@/ui/VSelect';
 
 export default {
+    components: {
+        VSelect
+    },
     props: {
         fieldsArray: {
             type: Array,
@@ -47,7 +48,7 @@ export default {
             default: () => []
         }
     },
-    emits: ['updateSelector'],
+    emits: ['updateSelectors'],
 
     setup(props, {emit}) {
         const selectorOptionsArr = ref([]);
@@ -67,14 +68,14 @@ export default {
         const createSelectOption = (field, opts, multi) => {
 
             return {
-                selectValue: multi ? [] : '',
+                selectValue: [],
                 id: field.id,
                 multi,
                 title: field.title,
                 options: opts.map(item => (
                     {
-                        title: item,
-                        value: item,
+                        key: item,
+                        name: item,
                     }))
             }
         };
@@ -82,16 +83,16 @@ export default {
             try {
                 const enumObj = await enumsService.getEnumsObject(id);
                 return {
-                    selectValue: multi? '' : [],
+                    selectValue: [],
                     id,
                     multi,
                     title: field.title,
                     options: (enumObj.values).map(item => (
                         {
-                            title: item.title,
-                            value: item.id,
+                            name: item.title,
+                            key: item.id,
                         }))
-                }
+                };
             } catch (e) {
                 console.log(e);
             }
@@ -100,14 +101,14 @@ export default {
             try {
                 const sectionMaterials = await sectionsService.getSectionMaterials(id);
                 return {
-                    selectValue: multi? '' : [],
+                    selectValue: [],
                     id,
                     multi,
                     title: field.title,
                     options: (sectionMaterials.data).map(item => (
                         {
-                            title: item.name,
-                            value: item.id,
+                            name: item.name,
+                            key: item.id,
                         }))
                 }
 
@@ -145,20 +146,22 @@ export default {
              }));
         }, {deep: true});
 
-        const changeHandler = (id, value) => {
+        watch(selectorOptionsArr, (newOptsArr) => {
 
-               let payload;
-            if (!value.length) {
-               payload = [value];
-            } else {
-                payload = value;
-            }
-            emit('updateSelector', {name: id, value: payload});
-        }
+            let newSelectors = {}
+
+            newOptsArr.forEach((item) => {
+                if (item.selectValue && item.selectValue.length) {
+                    newSelectors[item.id] = item.selectValue.map(item => item.key);
+                }
+            });
+            console.log(newSelectors);
+            emit('updateSelectors', newSelectors);
+        },
+            {deep:true});
 
         return {
             selectorOptionsArr,
-            changeHandler
         }
 
     }

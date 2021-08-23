@@ -1,6 +1,5 @@
 import {axiosInstance} from '@/utils/API';
-// import axios from 'axios';
-// import {API_URL} from "@/globals";
+
 
 class FileService {
     uploadFile = async (files) => {
@@ -11,6 +10,20 @@ class FileService {
             return res.data.data;
         } else throw new Error('Error fetching files');
     };
+    getFile = async (id, label ) => {
+        try {
+            const response = await axiosInstance.get(`/files/${id}`, { responseType: 'blob' });
+            const blob = new Blob([response.data], { type: 'application/pdf' })
+            const link = document.createElement('a')
+            link.href = URL.createObjectURL(blob)
+            link.download = label
+            link.click()
+            URL.revokeObjectURL(link.href)
+
+        } catch(e) {
+            console.log(e)
+        }
+    }
 }
 
 export default new FileService();

@@ -11,7 +11,11 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="h5">{{ snippet.title}}</div>
+                    <div class="h5">
+                        <router-link :to="`/sections/${snippet.sectionId}/material/${snippet.id}`">
+                        {{ snippet.title}}
+                        </router-link>
+                    </div>
                     <div class="text-dark small">Опубликовано {{ snippet.created_at }}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
@@ -21,7 +25,7 @@
                     </div>
                 </div>
                 <div class="col-auto align-self-center d-none d-sm-block">
-                    <div class="text-dark small">Документов {{ snippet.docsValue }}</div>
+<!--                    <div class="text-dark small">Документов {{ snippet.docsValue }}</div>-->
                 </div>
                 <div class="col-auto align-self-sm-center">
                     <div
@@ -81,9 +85,9 @@
                     </div>
                 </div>
                 <div class="col">
-                    <router-link :to="`materials/${file.file.id}`">
+                    <a :href="API_URL + '/files/' +file.file.id">
                         <div class="h5">{{ file.file.name }}</div>
-                    </router-link>
+                    </a>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
@@ -120,6 +124,8 @@
 
 <script>
 import {computed} from 'vue';
+import fileService from '@/services/file.service';
+import {API_URL} from '@/globals';
 
 export default {
     props: {
@@ -175,7 +181,7 @@ export default {
                         fieldsArr.push({
                             name: field.title,
                             value: material[key]
-                          });
+                    });
 
                 }
 
@@ -205,6 +211,7 @@ export default {
                    id: material.material.id,
                    title: material.material.name,
                    image: currentSection.image,
+                   sectionId: currentSection.id,
                    docsValue: 25,
                    created_at :formatDate(material.material.created_at),
                    highlights: serializeHighLights(material.highlight, currentSection),
@@ -222,6 +229,8 @@ export default {
             materialsSnippetsArr,
             createMaterialSnippet,
             formatDate,
+            fileService,
+            API_URL,
         }
     }
 
