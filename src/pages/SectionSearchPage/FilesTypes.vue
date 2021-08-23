@@ -33,7 +33,7 @@ export default {
             }
     },
     setup(props, {emit}) {
-        const initExtensions = (['materials', 'doc', 'xls', 'xlsx', 'jpg', 'pdf', 'fig', 'pptx',]);
+        const initExtensions = (['materials', 'doc', 'xls', 'xlsx', 'jpg', 'pdf', 'png', 'pptx',]);
         const changeHandler = (ext) => {
 
             let updExtensions;
@@ -55,5 +55,7 @@ export default {
 </script>
 
 <style scoped>
-
+.sSearchResult__aside-group .custom-input {
+    margin-bottom: 0;
+}
 </style>
