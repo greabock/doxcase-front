@@ -46,7 +46,7 @@
                     <div v-for="(field, i) of fields" :key="i" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">{{ field.title }}</div>
+                                <div class="input-line__title">{{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}</div>
                             </div>
                             <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
                                 <div class="input-line__input-wrap form-group">
