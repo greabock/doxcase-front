@@ -235,7 +235,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @media (min-width: 991px) {
     .sSectionMain__col-title {
         width: 25%;

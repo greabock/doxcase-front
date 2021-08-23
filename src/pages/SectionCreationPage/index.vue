@@ -289,13 +289,16 @@ export default {
 
         const createSection = async () => {
             try {
-                const formData = new FormData();
-                formData.append('files[]', fileInput.value)
+                if (fileInput.value) {
+                    const formData = new FormData();
+                    formData.append('files[]', fileInput.value)
 
-                const imageResp =  await filesService.uploadFiles(formData);
-                if (imageResp) {
-                    section.value.image = imageResp[0].url;
+                    const imageResp =  await filesService.uploadFiles(formData);
+                    if (imageResp) {
+                        section.value.image = imageResp[0].url;
+                    }
                 }
+
                 await sectionsService.createSection(section.value);
                 router.push(`/sections`);
             } catch (e) {

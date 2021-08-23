@@ -69,12 +69,16 @@
                                     @updateSelector="updateSelectorHandler"
                                 ></section-search-selectors>
                             </div>
-                            <span>{{selectorsObj}}</span>
                             <div class="mb-3">
-                                <div class="sSearchResult__btn-text">
+                                <div
+                                    v-if="showResetSelectors"
+                                    class="sSearchResult__btn-text">
                                     <svg class="icon icon-close ">
                                         <use xlink:href="/img/svg/sprite.svg#close"></use>
-                                    </svg><span class="ms-2">очистить фильтр</span>
+                                    </svg>
+                                    <span
+                                        @click='resetSelectors'
+                                        class="ms-2">очистить фильтр</span>
                                 </div>
                             </div>
                         </div>
@@ -111,11 +115,12 @@
                                     </div>
                                 </div>
                             </div>
+<!-- Сортировка -->
                             <div class="sSearchResult__aside-body">
- <!-- Сортировка по дате -->
+
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
-
+<!-- Сортировка по дате -->
                                     <div
                                         v-if="sortObj.field === 'created_at' && sortObj.direction === 'asc'"
                                         @click="toggleSort('created_at','desc')"
@@ -135,7 +140,6 @@
                                         <div class="sSearchResult__filter-result-text">сначала новые
                                         </div>
                                     </div>
-
                                     <div
                                         v-else-if="sortObj.field === 'created_at' && sortObj.direction === 'desc'"
                                         @click="toggleSort('created_at','asc')"
@@ -155,7 +159,6 @@
                                         <div class="sSearchResult__filter-result-text">сначала старые
                                         </div>
                                     </div>
-
                                     <div
                                         v-else-if="sortObj.field === 'name'"
                                         @click="toggleSort('created_at','asc')"
@@ -195,7 +198,6 @@
                                         <div class="sSearchResult__filter-result-text">от А до Я
                                         </div>
                                     </div>
-
                                     <div
                                         v-else-if="sortObj.field === 'name' && sortObj.direction === 'desc'"
                                         @click="toggleSort('name','asc')"
@@ -215,7 +217,6 @@
                                         <div class="sSearchResult__filter-result-text">от Я до А
                                         </div>
                                     </div>
-
                                     <div
                                         v-if="sortObj.field === 'created_at'"
                                         @click="toggleSort('name','asc')"
@@ -305,6 +306,21 @@ export default {
             checkboxesObj.value = [];
             extensionsObj.value = [];
         };
+        const resetSelectors = () => {
+           section.value = {
+               ...section.value,
+               fields: [...section.value.fields]
+           };
+           selectorsObj.value = [];
+        };
+        const showResetSelectors = computed(() => {
+            const bool = section.value.fields?.filter( field => !!field.filter_sort_index)
+            .filter(field => field.type.name === 'Enum' ||  field.type.name === 'Dictionary' ||
+                field.type.name === 'Select' || field.type.name === 'List').length;
+            console.log(bool);
+            console.log(section.value.fields);
+            return bool
+        });
 
         const queryObject = computed(() => {
 
@@ -374,41 +390,20 @@ export default {
                 }
             }
         };
-        const updateSelectorHandler = ({name, value, multi}) => {
-
+        const updateSelectorHandler = ({name, value}) => {
             if (!selectorsObj.value.find(item => item.name === name)) {
 
                 selectorsObj.value = [
                     ...selectorsObj.value,
-                    { name, value: [value] }
+                    { name, value }
                 ]
             } else {
-
-            if (!multi) {
                 selectorsObj.value = [
                     ...selectorsObj.value.filter(item => item.name !== name),
-                    { name, value: [value] }
+                    { name, value }
                 ]
-            } else {
-                const itemToChange = selectorsObj.value.find(item => item.name === name);
-
-                if (itemToChange.value.includes(value)) {
-
-                    selectorsObj.value = [
-                        ...selectorsObj.value.filter(item => item.name !== name),
-                        { name, value: itemToChange.filter(item => item !== value) } // убираем value из массива
-                    ]
-                } else {
-
-                    selectorsObj.value = [
-                        ...selectorsObj.value.filter(item => item.name !== name),
-                        { name, value: [...itemToChange] } // добавляем поле
-                    ]
-                }
             }
         }
-
-        };
 
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (url, queryObject) => {
@@ -444,7 +439,6 @@ export default {
         };
         watch( queryObject, (newVal) => {
             updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
-            console.log(newVal);
         },
             {deep: true});
         watch( router.currentRoute, async () => {
@@ -475,6 +469,8 @@ export default {
             resetFilters,
             selectorsObj,
             queryObject,
+            resetSelectors,
+            showResetSelectors,
         }
     },
 }

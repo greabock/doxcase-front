@@ -55,7 +55,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto">
+                <div
+                    v-if="user.role === 'admin'"
+                    class="col-auto">
                     <router-link
                         to="/material-creation"
                         class="topLine__btn topLine__btn--plus btn-primary"

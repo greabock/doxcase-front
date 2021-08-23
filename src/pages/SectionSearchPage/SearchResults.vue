@@ -74,14 +74,16 @@
             <div class="row">
                 <div class="col-auto">
                     <div class="search-item__icon-wrap">
-                        <img alt='' src="/img/avatar-2.png" />
+                        <img alt='' src="/img/fileicon.png" />
                     </div>
                     <div class="file-extension">
                         {{ file.file.extension }}
                     </div>
                 </div>
                 <div class="col">
-                    <div class="h5">{{ file.file.name }}</div>
+                    <router-link :to="`materials/${file.file.id}`">
+                        <div class="h5">{{ file.file.name }}</div>
+                    </router-link>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
@@ -184,8 +186,8 @@ export default {
 
             const date = new Date( Date.parse(dateString));
 
-            const day = date.getDay();
-            const month = date.getMonth();
+            const day = date.getDate();
+            const month = date.getMonth() - (-1);
             const year = date.getFullYear();
 
             const myDay = (day > 9) ? day : '0' + day;
@@ -203,7 +205,7 @@ export default {
                    id: material.material.id,
                    title: material.material.name,
                    image: currentSection.image,
-                   docsValue: 'добавить на бэк',
+                   docsValue: 25,
                    created_at :formatDate(material.material.created_at),
                    highlights: serializeHighLights(material.highlight, currentSection),
                    fields: serializeFields(material.material, currentSection),
@@ -226,7 +228,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .search-item--open .search-item__dropdown {
     display: block;
 }
@@ -250,5 +252,8 @@ export default {
 .file-extension {
     color: #1d47ce;
     font-size: 14px;
+}
+.search-item em {
+    background-color: #fff5a7;
 }
 </style>
