@@ -83,56 +83,7 @@
         </div>
         <!-- end sCardHead-->
         <!-- start sCardDocs-->
-        <div v-if="files.length" class="sCardDocs" id="sCardDocs">
-            <div class="container-fluid">
-                <div class="col--main">
-                    <div class="section-title">
-                        <h2>Документы</h2>
-                    </div>
-                    <ul class="nav nav-tabs">
-                        <li v-for="(file, i) of files" :key="i" class="nav-item">
-                            <span :class="['nav-link', {active: file.isActive}]" @click="setActive(file)">
-                                {{ file.title }}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="bg-white py-4">
-                <div class="container-fluid">
-                    <div class="col--main">
-                        <template v-for="(file, i) of files" :key="i">
-                            <div v-if="file.isActive" class="row">
-                                <div v-if="!file.value.length" class="sCardDocs__empty-text">
-                                    Пока нет добавленных документов
-                                </div>
-
-                                <div v-for="(el, i) of file.value" :key="i" class="col-4">
-                                    <a class="sCardDocs__item" :href="el.url">
-                                        <span class="sCardDocs__type">
-                                            <FileIcon class="icon icon-doc" />
-                                            {{ el.extension }}
-                                        </span>
-                                        <span class="sCardDocs__title">
-                                            {{ el.name }}
-                                        </span>
-                                        <div class="row w-100">
-                                            <span class="sCardDocs__size col">
-                                                {{ sizeFormat(el.size) }}
-                                            </span>
-                                            <span class="sCardDocs__download col">
-                                                <DownloadIcon class="icon icon-download" />
-                                                Скачать
-                                            </span>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <FilesContainer v-if="files.length" :files="files" />
         <!-- end sCardDocs-->
         <ModalWindow v-model="isShow" maxWidth="24rem">
             <div class="form-wrap">
@@ -157,17 +108,13 @@ import sectionsService from '@/services/sections.service';
 
 import ModalWindow from '@/components/ModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
-import DownloadIcon from '@/assets/DownloadIcon';
-import FileIcon from '@/assets/FileIcon';
-
-import {sizeFormat} from '@/utils/helpers';
+import FilesContainer from './FilesContainer';
 
 export default {
     components: {
         VBreadcrumb,
         ModalWindow,
-        DownloadIcon,
-        FileIcon,
+        FilesContainer,
     },
     setup() {
         const route = useRoute();
@@ -291,7 +238,6 @@ export default {
             lists,
             files,
             topBlocks,
-            sizeFormat,
             canUpdate,
         };
     },
