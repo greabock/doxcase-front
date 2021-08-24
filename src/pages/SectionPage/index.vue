@@ -295,10 +295,10 @@ export default {
                     }
                 }
                 await sectionsService.updateSection(section.value);
-                isLoading.value = false;
                 router.push(`/sections`);
             } catch (e) {
                 console.log(e);
+            } finally {
                 isLoading.value = false;
             }
         };
@@ -345,9 +345,9 @@ export default {
                 section.value = initSection;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
-                isLoading.value = false;
             } catch(e) {
                 console.log(e)
+            } finally {
                 isLoading.value = false;
             }
         });

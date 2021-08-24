@@ -241,10 +241,10 @@ export default {
                 isSectionsLoading.value = true;
                 initSections.value = await sectionsService.getSections();
                 sections.value = JSON.parse(JSON.stringify(initSections.value));
-                isSectionsLoading.value = false;
             } catch (e) {
-                isSectionsLoading.value = false;
                 console.log(e);
+            } finally {
+                isSectionsLoading.value = false;
             }
         });
 

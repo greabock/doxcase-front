@@ -303,12 +303,12 @@ export default {
                         section.value.image = imageResp[0].url;
                     }
                 }
-
                 await sectionsService.createSection(section.value);
-                isLoading.value = false;
                 router.push(`/sections`);
+
             } catch (e) {
                 console.log(e);
+            } finally {
                 isLoading.value = false;
             }
         };
