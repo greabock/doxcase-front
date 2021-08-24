@@ -466,4 +466,7 @@ export default {
 .sSearchResult__filter-btn.active {
     color: #1d47ce;
 }
+.sSearchResult__aside-head {
+    margin-bottom: 0.6rem;
+}
 </style>

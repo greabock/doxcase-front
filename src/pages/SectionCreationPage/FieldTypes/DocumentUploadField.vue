@@ -79,7 +79,7 @@ export default {
         const initField = {
             id: uuidv4(),
             title: '',
-            description: 'default',
+            description: 'Выбрать',
             required: false,
             is_present_in_card: false,
             sort_index: props.fieldsArrLength,
@@ -87,7 +87,7 @@ export default {
         };
         const newField = ref({...initField, ...props.fieldToChange});
 
-        const allExtensions =  ['doc', 'xls', 'xlsx', 'jpg', 'pdf', 'fig', 'pptx',];
+        const allExtensions =  ['doc', 'xls', 'xlsx', 'jpg', 'pdf', 'png', 'pptx',];
 
         const schema = yup.object({
             title: yup.string().required(),

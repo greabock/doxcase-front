@@ -1,4 +1,5 @@
 <template>
+    <div class="fw-500 pb-3" >Чекбокс</div>
     <div class="sSearchResult__aside-group">
         <label
             v-for="item in filteredFields"
@@ -53,5 +54,7 @@ export default {
 </script>
 
 <style scoped>
-
+.custom-input.form-check {
+    margin-bottom: 0.5rem;
+}
 </style>

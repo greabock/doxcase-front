@@ -181,9 +181,21 @@ export default {
                     if (key === 'id' || key === 'name' || key === 'created_at') continue
                     const field = currentSection.fields.find(field => field.id === key);
 
+                    let value;
+
+                    if (field.type.name === 'Date') {
+                        value = formatDate(material[key]);
+
+                    } else if (field.type.name === 'Boolean') {
+                        value = material[key]? 'Да' : 'Нет';
+
+                    } else {
+                        value = material[key];
+                    }
+
                         fieldsArr.push({
                             name: field.title,
-                            value: material[key]
+                            value
                     });
 
                 }

@@ -94,7 +94,7 @@ export default {
         const initField = {
             id: uuidv4(),
             title: '',
-            description: 'default',
+            description: 'Выбрать',
             required: false,
             is_present_in_card: false,
             sort_index: props.fieldsArrLength,
