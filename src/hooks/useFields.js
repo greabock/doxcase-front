@@ -115,8 +115,8 @@ export default async function useFields(fields, materials) {
                 name: x.title,
                 key: x.id,
             })) : {
-                key: value,
-                name: value,
+                key: value.id,
+                name: value.title,
             })
 
             const enums = await enumsService.getEnumsObject(of);

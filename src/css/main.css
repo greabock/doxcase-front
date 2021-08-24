@@ -8513,7 +8513,7 @@ a {
     padding-top: 1rem;
 }
 .customs-select__input-wrap {
-    width: 176px;
+    min-width: 175px;
     font-size: 13px;
     position: relative;
 }

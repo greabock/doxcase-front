@@ -84,7 +84,7 @@
             </template>
             <div class="sAddDocs__footer">
                 <div class="container-fluid d-flex">
-                    <VButton class="w-auto" @click="submit"> Сохранить изменения </VButton>
+                    <VButton class="btn-save" @click="submit" :isLoad="isLoad"> Сохранить изменения </VButton>
                     <VButton class="ms-2" outline> Отмена </VButton>
                 </div>
             </div>
@@ -138,6 +138,7 @@ export default {
         const router = useRouter();
         const route = useRoute();
         const {sectionId, materialId} = route.params;
+        const isLoad = ref(false);
         const breadcrumb = ref([
             {
                 link: '/',
@@ -241,81 +242,94 @@ export default {
         };
 
         const submit = async () => {
-            const fieldsSubmit = {};
-            for (const field of fields.value) {
-                if (field.type == 'List') {
-                    console.log(field)
-                    if (field.value) {
-                        if (field.ofType == 'Enum') {
-                            fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
-                        } else {
-                            fieldsSubmit[field.id] = field.value.map((x) => x.name);
+            if(isLoad.value) {
+                return;
+            }
+
+            isLoad.value = true;
+
+            try {
+
+                const fieldsSubmit = {};
+                for (const field of fields.value) {
+                    if (field.type == 'List') {
+                        console.log(field)
+                        if (field.value) {
+                            if (field.ofType == 'Enum') {
+                                fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
+                            } else {
+                                fieldsSubmit[field.id] = field.value.map((x) => x.name);
+                            }
+                        }
+                    } else if (field.type == 'Enum') {
+                        if (field.value) {
+                            fieldsSubmit[field.id] = {id: field.value.key};
+                        }
+                    } else if (field.type == 'Select') {
+                        if (field.value) {
+                            fieldsSubmit[field.id] = field.value.key;
+                        }
+                    } else  if (field.type == 'Boolean') {
+                        fieldsSubmit[field.id] = field.value;
+                    } else {
+                        if (field.value) {
+                            fieldsSubmit[field.id] = field.value;
                         }
                     }
-                } else if (field.type == 'Enum') {
-                    if (field.value) {
-                        fieldsSubmit[field.id] = {id: field.value.key};
+                }
+    
+                const submitFiles = {};
+                for (const file of files.value) {
+                    const bodyFormData = new FormData();
+                    let isFiles = false;
+                    for (const f of file.value) {
+                        if (f.file) {
+                            isFiles = true;
+                            bodyFormData.append('files[]', f.file);
+                        }
                     }
-                } else if (field.type == 'Select') {
-                    if (field.value) {
-                        fieldsSubmit[field.id] = field.value.key;
+    
+                    if (isFiles) {
+                        const res = await fileService.uploadFiles(bodyFormData);
+                        submitFiles[file.id] = res.map((x) => ({id: x.id}));
                     }
-                } else  if (field.type == 'Boolean') {
-                    fieldsSubmit[field.id] = field.value;
+    
+                    if (!isNew.value) {
+                        const oldFiles = file.value.filter(x => x.id).map(x => ({ id: x.id }));
+                        submitFiles[file.id] = submitFiles[file.id] ? [...oldFiles, ...submitFiles[file.id]] : oldFiles;
+                    }
+    
+                }
+    
+                const material = {
+                    name: name.value,
+                    ...fieldsSubmit,
+                    ...submitFiles,
+                };
+    
+                if (isNew.value) {
+                    const {id} = await materialService.createMaterial(sectionValue.value.key, material);
+                    router.push({
+                        name: 'MaterialItemPageRoute',
+                        params: {
+                            sectionId: sectionValue.value.key,
+                            materialId: id,
+                        },
+                    });
                 } else {
-                    if (field.value) {
-                        fieldsSubmit[field.id] = field.value;
-                    }
+                    await materialService.updateMaterial(sectionId, materialId, material);
+                    router.push({
+                        name: 'MaterialItemPageRoute',
+                        params: {
+                            sectionId,
+                            materialId,
+                        },
+                    });
                 }
-            }
-
-            const submitFiles = {};
-            for (const file of files.value) {
-                const bodyFormData = new FormData();
-                let isFiles = false;
-                for (const f of file.value) {
-                    if (f.file) {
-                        isFiles = true;
-                        bodyFormData.append('files[]', f.file);
-                    }
-                }
-
-                if (isFiles) {
-                    const res = await fileService.uploadFiles(bodyFormData);
-                    submitFiles[file.id] = res.map((x) => ({id: x.id}));
-                }
-
-                if (!isNew.value) {
-                    const oldFiles = file.value.filter(x => x.id).map(x => ({ id: x.id }));
-                    submitFiles[file.id] = submitFiles[file.id] ? [...oldFiles, ...submitFiles[file.id]] : oldFiles;
-                }
-
-            }
-
-            const material = {
-                name: name.value,
-                ...fieldsSubmit,
-                ...submitFiles,
-            };
-
-            if (isNew.value) {
-                const {id} = await materialService.createMaterial(sectionValue.value.key, material);
-                router.push({
-                    name: 'MaterialItemPageRoute',
-                    params: {
-                        sectionId: sectionValue.value.key,
-                        materialId: id,
-                    },
-                });
-            } else {
-                await materialService.updateMaterial(sectionId, materialId, material);
-                router.push({
-                    name: 'MaterialItemPageRoute',
-                    params: {
-                        sectionId,
-                        materialId,
-                    },
-                });
+            } catch(e) {
+                console.log(e)
+            } finally {
+                isLoad.value = false;
             }
         };
 
@@ -344,6 +358,7 @@ export default {
             setActive,
             updateFiles,
             submit,
+            isLoad,
         };
     },
 };
@@ -363,5 +378,9 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-flow: column;
+}
+
+.btn-save {
+    min-width: 12rem;
 }
 </style>
