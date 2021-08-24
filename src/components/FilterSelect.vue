@@ -82,7 +82,7 @@ export default {
 
         const privateValue = computed(() => {
             if (props.modelValue && props.modelValue.length) {
-                return `Выбранно: ${props.modelValue.length}`;
+                return `Выбрано: ${props.modelValue.length}`;
             }
 
             return 'Все';
