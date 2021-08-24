@@ -292,8 +292,9 @@ export default {
                             bodyFormData.append('files[]', f.file);
                         }
                     }
-    
+
                     if (isFiles) {
+                        bodyFormData.append('field[id]', file.id);
                         const res = await fileService.uploadFiles(bodyFormData);
                         submitFiles[file.id] = res.map((x) => ({id: x.id}));
                     }

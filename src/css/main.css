@@ -8252,6 +8252,7 @@ a {
     color: #000;
     margin-bottom: 0.4375rem;
     width: 100%;
+    word-break: break-word;
 }
 .sCardDocs__size {
     color: #000;
