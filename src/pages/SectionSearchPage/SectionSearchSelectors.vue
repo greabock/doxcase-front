@@ -76,7 +76,7 @@ export default {
                 const enumObj = await enumsService.getEnumsObject(id);
                 return {
                     selectValue: [],
-                    id,
+                    id: field.id,
                     multi,
                     title: field.title,
                     options: enumObj.values.map((item) => ({
@@ -93,7 +93,7 @@ export default {
                 const sectionMaterials = await sectionsService.getSectionMaterials(id);
                 return {
                     selectValue: [],
-                    id,
+                    id: field.id,
                     multi,
                     title: field.title,
                     options: sectionMaterials.data.map((item) => ({
@@ -162,4 +162,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style>
+.customs-select__input-wrap .form-control-md {
+    padding: 1.2rem 1rem 0.5rem;
+ }
+</style>
