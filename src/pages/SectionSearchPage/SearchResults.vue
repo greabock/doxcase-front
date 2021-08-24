@@ -193,6 +193,10 @@ export default {
                         value = material[key];
                     }
 
+                    if (!value || value.toLowerCase() === 'null') {
+                        value = ' ';
+                    }
+
                         fieldsArr.push({
                             name: field.title,
                             value

@@ -61,7 +61,7 @@
                             </div>
                         </div>
                         <div class="d-lg-block d-none">
-                            <div class="mb-3">
+                            <div class="">
  <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
