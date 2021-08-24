@@ -1,5 +1,5 @@
 <template>
-    <div class="sAddDocs__body bg-white pt-3 pb-3">
+    <div class="sAddDocs__body bg-white pt-3 pb-4">
         <div class="container-fluid pb-3">
             <VButtonFileLoader @upload="loadFiles">
                 <div class="btn-add">

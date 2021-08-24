@@ -15,7 +15,8 @@ function validateString({required, min, max}) {
     }
 
     if (min) {
-        f = f.min(min);
+        // f = f.min(min);
+        console.log(min)
     }
 
     if (max) {

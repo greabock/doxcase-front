@@ -40,10 +40,12 @@
                             </div>
                             <div class="sCardHead__body">
                                 <template v-for="(field, i) of fields" :key="i">
-                                    <h6>{{ field.title }}</h6>
-                                    <p v-if="field.type !== 'Wiki'">{{ field.value }}</p>
-                                    <p v-else v-html="field.value" />
-                                    <br />
+                                    <template v-if="field.value">
+                                        <h6>{{ field.title }}</h6>
+                                        <p v-if="field.type !== 'Wiki'">{{ field.value }}</p>
+                                        <p v-else v-html="field.value" />
+                                        <br />
+                                    </template>
                                 </template>
                             </div>
                         </div>
@@ -68,12 +70,14 @@
                             </button>
                             <ul>
                                 <li v-for="(el, i) of lists" :key="i">
-                                    <div class="strong">{{ el.title }}</div>
-                                    <ul v-if="el.value">
-                                        <li v-for="(v, x) of el.value" :key="x">
-                                            {{ el.type == 'List' ? (el.ofType == 'Enum' ? v.title : v) : v }}
-                                        </li>
-                                    </ul>
+                                    <template v-if="el.value && el.value.length">
+                                        <div class="strong">{{ el.title }}</div>
+                                        <ul v-if="el.value">
+                                            <li v-for="(v, x) of el.value" :key="x">
+                                                {{ el.type == 'List' ? (el.ofType == 'Enum' ? v.title : v) : el.type == 'Enum' ? v.title : v }}
+                                            </li>
+                                        </ul>
+                                    </template>
                                 </li>
                             </ul>
                         </div>

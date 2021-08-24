@@ -84,8 +84,8 @@
             </template>
             <div class="sAddDocs__footer">
                 <div class="container-fluid d-flex">
-                    <VButton class="btn-save" @click="submit" :isLoad="isLoad"> Сохранить изменения </VButton>
-                    <VButton class="ms-2" outline> Отмена </VButton>
+                    <VButton class="btn-save" @click="submit" :isLoad="isLoad"> Сохранить </VButton>
+                    <VButton class="ms-2" outline @click="back"> Отмена </VButton>
                 </div>
             </div>
         </section>
@@ -148,6 +148,10 @@ export default {
                 name: 'Создать новый материал',
             },
         ]);
+
+        const back = () => {
+            router.go(-1)
+        }
 
         const isNew = ref(true);
 
@@ -359,6 +363,7 @@ export default {
             updateFiles,
             submit,
             isLoad,
+            back,
         };
     },
 };
@@ -382,5 +387,9 @@ export default {
 
 .btn-save {
     min-width: 12rem;
+}
+
+.sNewMaterial {
+    padding-bottom: 0;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div ref="root" class="select__container">
         <div class="select__element" @click="isActive = !isActive">
-            <div>
+            <div class="select__title">
                 {{ title }}
             </div>
             <div class="select__input">
@@ -85,7 +85,7 @@ export default {
                 return `Выбранно: ${props.modelValue.length}`;
             }
 
-            return '';
+            return 'Все';
         });
 
         const hide = (event) => {
@@ -148,6 +148,7 @@ $blue: #1d47ce;
 .select__input {
     display: flex;
     justify-content: space-between;
+    color: var(--bs-primary);
 }
 
 .select__arrow {
@@ -216,5 +217,10 @@ $blue: #1d47ce;
 
 .select-list__item_active {
     font-weight: 500;
+}
+
+.select__title {
+    color: #6e6e6e;
+    margin-bottom: 0.1rem;
 }
 </style>

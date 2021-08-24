@@ -7747,6 +7747,7 @@ iframe {
     background: #fff;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    border-top: 1px solid #e8e8e8;
 }
 .footer .container-fluid,
 .footer .container-lg,
