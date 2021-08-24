@@ -18,6 +18,6 @@ deploy:
 deploy:
   script:
     # Deploy release branch
-    - ssh -o StrictHostKeyChecking=no kb_admin@knowledge.oktadi.ru "cd /var/www/knowledge/frontend/ && git fetch --all && git reset --hard origin/release && echo "export const API_URL = 'https://api.oktadi.msharks.ru/api';" > src/globals.js && npm install && npm run build"
+    - ssh -o StrictHostKeyChecking=no kb_admin@knowledge.oktadi.ru "cd /var/www/knowledge/frontend/ && git fetch --all && git reset --hard origin/release && cp .env src/globals.js && npm install && npm run build"
   only:
     - release
