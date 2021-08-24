@@ -8,14 +8,15 @@ before_script:
   - chmod 700 ~/.ssh
   - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
 
-deploy:
+deploy_dev:
   script:
     # Deploy develop branch
     - ssh -o StrictHostKeyChecking=no knowledge@knowledge.msharks.ru "cd ~/knowledge.msharks.ru/frontend/ && git fetch --all && git reset --hard origin/develop && cd ../ && docker-compose up node"
   only:
     - develop
 
-deploy:
+
+deploy_release:
   script:
     # Deploy release branch
     - ssh -o StrictHostKeyChecking=no kb_admin@knowledge.oktadi.ru "cd /var/www/knowledge/frontend/ && git fetch --all && git reset --hard origin/release && cp .env src/globals.js && npm install && npm run build"
