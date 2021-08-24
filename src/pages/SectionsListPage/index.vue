@@ -137,7 +137,10 @@
             </div>
         </div>
 
-        <modal-window v-model="isRemoveAlertVisible">
+        <modal-window
+            v-model="isRemoveAlertVisible"
+            maxWidth="400px"
+        >
             <div class="modal-window__header">
                 <h3>Удаление</h3>
             </div>

@@ -3,9 +3,10 @@
         class="main-block"
         @click="setFiltersOpen(false)"
     >
-        <div v-if="isSectionLoading" class="content-loader__wrapper">
-            <div class="content-loader__cont">Loading...</div>
-        </div>
+        <loader
+            v-if="isLoading"
+        >
+        </loader>
         <!-- start sCabinet-->
         <section v-else class="sCabinet section py-0" id="sCabinet">
             <div class="container-fluid">
@@ -46,9 +47,6 @@
                                 </div>
                                 <!-- +e.input-wrap-->
                                 <p class="fw-500">Изображение раздела</p>
-                                <div class="small text-dark mb-1">
-                                    Только svg или png c соотношением сторон 1:1 не более 100 кБ
-                                </div>
                                 <uploader-image
                                     v-model="fileInput">
                                     :preview="section.image"
@@ -224,6 +222,7 @@ import {ref, computed, onMounted} from 'vue';
 import sectionsService from '@/services/sections.service';
 import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
+import Loader from "@/components/Loader";
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
@@ -236,9 +235,9 @@ import ModalWindow from '@/components/ModalWindow';
 import filesService from '@/services/files.service';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
     setup() {
-        const isSectionLoading = ref(true);
+        const isLoading = ref(true);
         let initSection = null;
         const allSections = ref([]);
         const allEnums = ref([]);
@@ -285,6 +284,7 @@ export default {
         };
         const updateSection = async () => {
             try {
+                isLoading.value = true;
                 if (fileInput.value) {
                     const formData = new FormData();
                     formData.append('files[]', fileInput.value)
@@ -295,9 +295,11 @@ export default {
                     }
                 }
                 await sectionsService.updateSection(section.value);
+                isLoading.value = false;
                 router.push(`/sections`);
             } catch (e) {
                 console.log(e);
+                isLoading.value = false;
             }
         };
 
@@ -338,15 +340,15 @@ export default {
 
         onMounted(async () => {
             try{
-                isSectionLoading.value = true;
+                isLoading.value = true;
                 initSection = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
                 section.value = initSection;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
-                isSectionLoading.value = false;
+                isLoading.value = false;
             } catch(e) {
                 console.log(e)
-                isSectionLoading.value = false;
+                isLoading.value = false;
             }
         });
 
@@ -373,7 +375,7 @@ export default {
             isFieldAlertVisible,
             setFieldAlertVisible,
             removeField,
-            isSectionLoading,
+            isLoading,
             isMobFiltersShow,
             setMobFiltersShow,
         };

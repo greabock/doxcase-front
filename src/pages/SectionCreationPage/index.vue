@@ -42,9 +42,6 @@
                                 </div>
                                 <!-- +e.input-wrap-->
                                 <p class="fw-500">Изображение раздела</p>
-                                <div class="small text-dark mb-1">
-                                    Только svg или png c соотношением сторон 1:1 не более 100 кБ
-                                </div>
                                 <uploader-image v-model="fileInput"></uploader-image>
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
@@ -208,6 +205,11 @@
             </div>
         </modal-window>
 
+        <loader
+            v-if="isLoading"
+        >
+        </loader>
+
     </main>
 </template>
 
@@ -218,6 +220,7 @@ import sectionsService from '@/services/sections.service';
 import filesService from '@/services/files.service';
 import enumService from '@/services/enums.service';
 import {useRouter} from 'vue-router';
+import Loader from "@/components/Loader";
 import {sortByIndexDown} from '@/utils/sortByIndex';
 import {sortByIndexUp} from '@/utils/sortByIndex';
 import NewFieldForm from '@/pages/SectionCreationPage/NewFieldForm';
@@ -229,7 +232,7 @@ import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
     setup() {
         let initSection = {
             id: uuidv4(),
@@ -240,6 +243,7 @@ export default {
             sort_index: 0,
             fields: [],
         };
+        const isLoading = ref(false);
         const allSections = ref([]);
         const allEnums = ref([]);
 
@@ -289,6 +293,7 @@ export default {
 
         const createSection = async () => {
             try {
+                isLoading.value = true;
                 if (fileInput.value) {
                     const formData = new FormData();
                     formData.append('files[]', fileInput.value)
@@ -300,9 +305,11 @@ export default {
                 }
 
                 await sectionsService.createSection(section.value);
+                isLoading.value = false;
                 router.push(`/sections`);
             } catch (e) {
                 console.log(e);
+                isLoading.value = false;
             }
         };
 
@@ -345,10 +352,13 @@ export default {
 
         onMounted(async () => {
             try{
+                isLoading.value = true;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
+                isLoading.value = false;
             } catch(e) {
                 console.log(e)
+                isLoading.value = false;
             }
         });
 
@@ -377,6 +387,7 @@ export default {
             removeField,
             isMobFiltersShow,
             setMobFiltersShow,
+            isLoading,
         };
     },
 };
