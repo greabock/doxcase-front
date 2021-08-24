@@ -233,13 +233,13 @@ import ModalWindow from '@/components/ModalWindow';
 
 export default {
     components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
-    setup() {
+        setup() {
         let initSection = {
             id: uuidv4(),
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: '',
+            image: '/img/@1x/avatar-2.png',
             sort_index: 0,
             fields: [],
         };
