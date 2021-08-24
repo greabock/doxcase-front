@@ -1,7 +1,8 @@
 import axios from 'axios';
+import {API_URL} from '@/globals';
 
 export const axiosInstance = axios.create({
-    baseURL: process.env.API_URL || "http://api.knowledge.msharks.ru/api",
+    baseURL: API_URL,
     responseType: 'json',
 });
 
