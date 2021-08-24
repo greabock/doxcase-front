@@ -233,7 +233,7 @@ import ModalWindow from '@/components/ModalWindow';
 
 export default {
     components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
-    setup() {
+        setup() {
         let initSection = {
             id: uuidv4(),
             title: '',
