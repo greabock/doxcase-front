@@ -14,3 +14,10 @@ deploy:
     - ssh -o StrictHostKeyChecking=no knowledge@knowledge.msharks.ru "cd ~/knowledge.msharks.ru/frontend/ && git fetch --all && git reset --hard origin/develop && cd ../ && docker-compose up node"
   only:
     - develop
+
+deploy:
+  script:
+    # Deploy release branch
+    - ssh -o StrictHostKeyChecking=no kb_admin@knowledge.oktadi.ru "cd /var/www/knowledge/frontend/ && git fetch --all && git reset --hard origin/release && npm install && npm run build"
+  only:
+    - release
