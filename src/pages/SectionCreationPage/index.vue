@@ -355,9 +355,9 @@ export default {
                 isLoading.value = true;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
-                isLoading.value = false;
             } catch(e) {
                 console.log(e)
+            } finally {
                 isLoading.value = false;
             }
         });
