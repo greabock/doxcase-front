@@ -1,19 +1,23 @@
 <template>
-    <div class="fw-500 pb-3" >Чекбокс</div>
-    <div class="sSearchResult__aside-group">
-        <label
-            v-for="item in filteredFields"
-            :key="item.id"
-            class="custom-input form-check">
-            <input
-                :value="item.id"
-                :checked='modelValue.includes(item.id)'
-                @change='e => changeHandler(e.target.value)'
-                class="custom-input__input form-check-input"
-                type="checkbox"
-            />
-            <span class="custom-input__text form-check-label">{{item.title}}</span>
-        </label>
+    <div
+    v-if="filteredFields?.length"
+    >
+        <div class="fw-500 pb-3" >Чекбокс</div>
+        <div class="sSearchResult__aside-group">
+            <label
+                v-for="item in filteredFields"
+                :key="item.id"
+                class="custom-input form-check">
+                <input
+                    :value="item.id"
+                    :checked='modelValue.includes(item.id)'
+                    @change='e => changeHandler(e.target.value)'
+                    class="custom-input__input form-check-input"
+                    type="checkbox"
+                />
+                <span class="custom-input__text form-check-label">{{item.title}}</span>
+            </label>
+        </div>
     </div>
 </template>
 
