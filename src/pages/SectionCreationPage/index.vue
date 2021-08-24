@@ -239,7 +239,7 @@ export default {
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: '',
+            image: '/img/@1x/avatar-2.png',
             sort_index: 0,
             fields: [],
         };
