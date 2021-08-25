@@ -21,7 +21,7 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 .content-loader__cont {
     font-size: 26px;

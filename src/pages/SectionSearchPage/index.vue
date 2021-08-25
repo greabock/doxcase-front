@@ -2,7 +2,6 @@
 
     <loader v-show="isLoading"></loader>
     <main class="main-block">
-<!--        <span :style='{fontSize: "12px"}'>{{resultString}}</span>-->
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
                 <div class="row">
@@ -287,13 +286,6 @@ export default {
         const files = ref([]);
 
 //Строка запроса______________________
-        const initQueryObject = {
-            search: '',
-            sort: {
-                field: 'created_at',
-                direction: 'asc',
-            }
-        }
         const sortObj = ref({
             field: 'created_at',
             direction: 'asc',
@@ -326,11 +318,9 @@ export default {
 
             const iterCheckboxes = checkboxesObj.value.map((item, i, arr) => ({[arr[i]] : 1 })).values();
             let checkboxes = {};
-
             for (let val of iterCheckboxes) {
                 checkboxes = {...checkboxes, ...val};
             }
-
             return {
                 search: searchObj.value,
                 sort: sortObj.value,
@@ -392,43 +382,54 @@ export default {
         const updateMaterialsAndFiles = async (url, queryObject) => {
 
             try {
+                isLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, queryObject);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
             } catch(e) {
                 console.log(e);
+            } finally {
+                isLoading.value = false;
             }
 
         }
-        const updateSearchPage = async (url) => {
-
+        const updateSearchPage = async (id) => {
             try {
                 isLoading.value = true;
+                section.value = await sectionsService.getSectionObject(id);
+                resetSelectors();
+                resetFilters();
 
-                section.value = {};
-                materials.value = [];
-                files.value = [];
-                queryObject.value = initQueryObject;
 
-                allSections.value = await sectionsService.getSections();
-                section.value = await sectionsService.getSectionObject(url);
-                bcTitle.value =  section.value.title;
-                await updateMaterialsAndFiles(router.currentRoute.value.params.id, queryObject.value);
-                isLoading.value = false;
             } catch(e) {
                 console.log(e)
+            } finally {
                 isLoading.value = false;
             }
         };
-        watch( queryObject, (newVal) => {
-            updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
-        },
-            {deep: true});
+
+        watch( queryObject, (newVal, oldVal) => {
+            if (newVal.search === oldVal.search) {
+                updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
+            }
+        },  {deep: true}
+        );
+
         watch( router.currentRoute, async () => {
             await updateSearchPage(router.currentRoute.value.params.id);
         });
         onMounted(async () => {
-            await updateSearchPage(router.currentRoute.value.params.id);
+            try {
+                isLoading.value = true;
+
+                allSections.value = await sectionsService.getSections();
+                await updateSearchPage(router.currentRoute.value.params.id);
+            } catch(e) {
+                console.log(e)
+            } finally {
+                isLoading.value = false;
+            }
+
         });
 
         return {
