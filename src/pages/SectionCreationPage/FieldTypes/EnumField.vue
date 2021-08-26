@@ -17,16 +17,14 @@
                 <!-- +e.input-wrap-->
                 <div class="form-wrap__input-wrap form-group">
                     <label><span class="form-wrap__input-title">Выберите готовый список</span>
-                        <select
-                            v-model='selectedIdValue'
-                            class="form-wrap__input form-select"
-                            name="selectedId"
+                        <v-select
+                            class="mb-3"
+                            name="selectedObj"
+                            v-model="selectedObjValue"
+                            :options="enumOptions"
+                            bordered
                         >
-                            <option
-                                v-for="enumItem in allEnums"
-                                :key='enumItem?.id'
-                                :value="enumItem?.id">{{ enumItem?.title }}</option>
-                        </select>
+                        </v-select>
                     </label>
                 </div>
 
@@ -61,22 +59,26 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import {useField, useForm} from 'vee-validate';
 import * as yup from 'yup';
+import VSelect from '@/ui/VSelect';
 
 export default {
+    components: {VSelect},
     props: {
         allEnums: {
-            type: Array
+            type: Array,
+            default: () => []
         },
         fieldsArrLength: {
             type: Number,
             default: 0,
         },
         fieldToChange: {
-            type: Object
+            type: Object,
+            default: () => {}
         },
     },
     setup(props, {emit}) {
@@ -90,9 +92,13 @@ export default {
             filter_sort_index: null,
         };
 
+        const enumOptions = computed(() => {
+            return props.allEnums.map(enumItem => ({key: enumItem.id, name: enumItem.title}))
+        })
+
         const schema = yup.object({
             title: yup.string().required(),
-            selectedId: yup.string().required(),
+            selectedObj: yup.object().required(),
         });
 
         const newField = ref({...initField, ...props.fieldToChange});
@@ -103,14 +109,34 @@ export default {
         } = useForm({validationSchema: schema});
 
         const {value: titleValue} = useField('title');
-        const {value: selectedIdValue} = useField('selectedId');
+        const {value: selectedObjValue} = useField('selectedObj');
         const {value: requiredValue} = useField('required');
         const {value: multiSelectValue} = useField('multiSelect');
+
+        const defineSelectedObj = (field, allEnums) => {
+            if (field && field.type?.name === 'Enum') {
+                const myEnum = allEnums.find(item => item.id === field.type?.of);
+                console.log('MyEnum enum', field.type.of, myEnum);
+                return {
+                    key: myEnum.id,
+                    name: myEnum.title
+                }
+            }
+            if (field && field.type?.name === 'List') {
+                const myEnum = allEnums.find(item => item.id === field.type?.of?.of);
+                console.log('MyEnum list', field.type.of.of, myEnum);
+                return {
+                    key: myEnum.id,
+                    name: myEnum.title
+                }
+            }
+            return undefined;
+        };
 
         if (props.fieldToChange.type) {
             setValues({
                 title: props.fieldToChange.title,
-                selectedId: props.fieldToChange?.type?.of?.of || props.fieldToChange?.type?.of,
+                selectedObj: defineSelectedObj(props.fieldToChange, props.allEnums),
                 required: !!props.fieldToChange.required,
                 multiSelect: !!props.fieldToChange?.type?.of?.of
 
@@ -121,20 +147,20 @@ export default {
             addNewField(values);
         });
 
-        const addNewField = ({title, selectedId, required, multiSelect}) => {
+        const addNewField = ({title, selectedObj, required, multiSelect}) => {
             let typeOfField;
             if (multiSelect) {
                 typeOfField = {
                     name: 'List',
                     of: {
                         name: 'Enum',
-                        of: selectedId
+                        of: selectedObj.key
                     }
                 }
             } else {
                 typeOfField = {
                     name: 'Enum',
-                    of: selectedId
+                    of: selectedObj.key
                 }
             }
             const field = {
@@ -151,10 +177,11 @@ export default {
             addNewField,
             formMeta,
             titleValue,
-            selectedIdValue,
+            selectedObjValue,
             requiredValue,
             multiSelectValue,
             submitHandle,
+            enumOptions,
         };
     },
 };
