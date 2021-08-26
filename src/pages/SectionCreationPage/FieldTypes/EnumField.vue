@@ -116,7 +116,6 @@ export default {
         const defineSelectedObj = (field, allEnums) => {
             if (field && field.type?.name === 'Enum') {
                 const myEnum = allEnums.find(item => item.id === field.type?.of);
-                console.log('MyEnum enum', field.type.of, myEnum);
                 return {
                     key: myEnum.id,
                     name: myEnum.title
@@ -124,7 +123,6 @@ export default {
             }
             if (field && field.type?.name === 'List') {
                 const myEnum = allEnums.find(item => item.id === field.type?.of?.of);
-                console.log('MyEnum list', field.type.of.of, myEnum);
                 return {
                     key: myEnum.id,
                     name: myEnum.title

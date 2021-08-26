@@ -26,7 +26,7 @@
                             <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Date'"></date-field>
                             <document-upload-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'File'"></document-upload-field>
                             <enum-field :allEnums="allEnums"  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Enum'"></enum-field>
-<!--                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Dictionary'"></dictionary-field>-->
+                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Dictionary'"></dictionary-field>
                         </div>
                     </form>
                 </div>
@@ -44,7 +44,7 @@ import DateField from '@/pages/SectionCreationPage/FieldTypes/DateField';
 import EnumField from '@/pages/SectionCreationPage/FieldTypes/EnumField';
 import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
-// import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
+import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
 import WikiField from '@/pages/SectionCreationPage/FieldTypes/WikiField';
 import VSelect from '@/ui/VSelect';
 
@@ -57,7 +57,7 @@ export default {
         EnumField,
         DocumentUploadField,
         SelectorField,
-        // DictionaryField,
+        DictionaryField,
         WikiField,
         VSelect,
     },
