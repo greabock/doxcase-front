@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <a :href="API_URL + '/files/' +file.file.id">
+                    <a :href="'/files/' +file.file.id">
                         <div class="h5">{{ file.file.name }}</div>
                     </a>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
@@ -128,7 +128,6 @@
 <script>
 import {computed} from 'vue';
 import fileService from '@/services/file.service';
-import {API_URL} from '@/globals';
 
 export default {
     props: {
@@ -249,7 +248,6 @@ export default {
             createMaterialSnippet,
             formatDate,
             fileService,
-            API_URL,
         }
     }
 

@@ -145,7 +145,7 @@ export default {
                 let newSelectors = {};
 
                 newOptsArr.forEach((item) => {
-                    if (item.selectValue && item.selectValue.length) {
+                    if (item && item.selectValue && item.selectValue.length) {
                         newSelectors[item.id] = item.selectValue.map((item) => item.key);
                     }
                 });
