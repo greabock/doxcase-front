@@ -80,6 +80,7 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
+                handleChange,
             });
         },
         Wiki: ({field, value}) => {
@@ -94,6 +95,7 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
+                handleChange
             });
         },
         Text: ({field, value}) => {
@@ -108,6 +110,7 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
+                handleChange
             });
         },
         Enum: async ({type= 'Enum',field, multiple, value, ofType}) => {
