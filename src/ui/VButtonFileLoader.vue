@@ -12,6 +12,7 @@ import {ref} from '@vue/reactivity';
 export default {
     props: {
         multiple: Boolean,
+        accept: Array,
     },
     setup(props, ctx) {
         const files = ref([]);
@@ -21,7 +22,7 @@ export default {
             ctx.emit('reject', rejectReasons);
         }
 
-        const {getRootProps, getInputProps, ...rest} = useDropzone({onDrop});
+        const {getRootProps, getInputProps, ...rest} = useDropzone({onDrop, accept: props.accept});
 
         return {
             files,

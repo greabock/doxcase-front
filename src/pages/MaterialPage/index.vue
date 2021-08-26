@@ -151,7 +151,7 @@ export default {
                 ...breadcrumbs.value,
                 {
                     name: section.title,
-                    link: `/sections/${sectionId}`,
+                    link: `/search/${sectionId}`,
                 },
                 {
                     name: material.name,

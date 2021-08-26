@@ -1,7 +1,7 @@
 <template>
     <div class="sAddDocs__body bg-white pt-3 pb-4">
         <div class="container-fluid pb-3">
-            <VButtonFileLoader @upload="loadFiles">
+            <VButtonFileLoader :accept="accept" @upload="loadFiles">
                 <div class="btn-add">
                     <div class="btn-add__plus"></div>
                     <div class="btn-add__text">Добавить документ</div>
@@ -18,21 +18,14 @@
                 @updateData="(data) => updateData(item, data)"
                 @close="item.isEdit = false"
             />
-            <ItemFile
-                v-else
-                @edit="editFile(item)"
-                @delete="deleteFile(i)"
-                :data="item.data"
-            />
+            <ItemFile v-else @edit="editFile(item)" @delete="deleteFile(i)" :data="item.data" />
         </div>
     </div>
 </template>
 
-
 <script>
 import {ref} from 'vue';
 import {computed} from '@vue/runtime-core';
-
 
 import VButtonFileLoader from '@/ui/VButtonFileLoader';
 
@@ -60,24 +53,25 @@ export default {
         ItemEdit,
         ItemFile,
     },
-    props:{
+    props: {
         list: Array,
+        accept: Array,
     },
-    setup(props, { emit }) {
+    setup(props, {emit}) {
         const listFiles = ref(props.list);
 
         const saveFile = (item, file) => {
             item.isEdit = false;
             item.file = file;
             item.data = getFileData(file);
-            emit('update', listFiles)
+            emit('update', listFiles);
         };
 
         const updateData = (item, data) => {
             item.isEdit = false;
             item.data = {...data};
-            emit('update', listFiles)
-        }
+            emit('update', listFiles);
+        };
 
         const editFile = (item) => {
             listFiles.value.map((item) => (item.isEdit = false));
@@ -86,7 +80,7 @@ export default {
 
         const deleteFile = (i) => {
             listFiles.value.splice(i, 1);
-            emit('update', listFiles)
+            emit('update', listFiles);
         };
 
         const loadFiles = ([file]) => {
@@ -98,7 +92,7 @@ export default {
                 data: getFileData(file),
             });
 
-            emit('update', listFiles)
+            emit('update', listFiles);
         };
 
         const listReverse = computed(() => listFiles.value.reverse());

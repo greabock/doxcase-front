@@ -37,7 +37,13 @@
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
-                                    <VInput v-model="name" class="input-line__input" placeholder="Введите" />
+                                    <VInput
+                                        @blur="handleChange"
+                                        v-model="name"
+                                        class="input-line__input"
+                                        placeholder="Введите"
+                                        :error="error"
+                                    />
                                 </div>
                                 <!-- +e.input-wrap-->
                             </div>
@@ -46,12 +52,18 @@
                     <div v-for="(field, i) of fields" :key="i" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">{{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}</div>
+                                <div class="input-line__title">
+                                    {{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}
+                                </div>
                             </div>
                             <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
                                 <div class="input-line__input-wrap form-group">
                                     <component
-                                        :class="field.type == 'Wiki' || field.type == 'Text' ? 'text-area' : 'input-line__input'"
+                                        :class="
+                                            field.type == 'Wiki' || field.type == 'Text'
+                                                ? 'text-area'
+                                                : 'input-line__input'
+                                        "
                                         :is="components[field.type]"
                                         v-model="field.value"
                                         v-bind="field.props"
@@ -80,7 +92,12 @@
                 </ul>
             </div>
             <template v-for="(file, i) of files" :key="i">
-                <FilesContainer v-if="file.isActive" :list="file.value" @update="(x) => updateFiles(file, x)" />
+                <FilesContainer
+                    v-if="file.isActive"
+                    :list="file.value"
+                    :accept="file.accept"
+                    @update="(x) => updateFiles(file, x)"
+                />
             </template>
             <div class="sAddDocs__footer">
                 <div class="container-fluid d-flex">
@@ -115,7 +132,16 @@ import sectionsService from '@/services/sections.service';
 import materialService from '@/services/material.service';
 import fileService from '@/services/files.service';
 
-import useFields from '@/hooks/useFields'
+import useFields from '@/hooks/useFields';
+
+import {useField} from 'vee-validate';
+import * as yup from 'yup';
+yup.setLocale({
+    mixed: {
+        default: 'Поле не валидно.',
+        required: 'Поле обязательно для заполнения.',
+    },
+});
 
 export default {
     components: {
@@ -130,11 +156,12 @@ export default {
         FilesContainer,
     },
     setup() {
+        const {value: name, errorMessage: error, handleChange} = useField('name', yup.string().required());
+
         const sectionOptions = ref([]);
         const sectionValue = ref(null);
         const fields = ref([]);
         const files = ref([]);
-        const name = ref('');       
         const router = useRouter();
         const route = useRoute();
         const {sectionId, materialId} = route.params;
@@ -150,8 +177,8 @@ export default {
         ]);
 
         const back = () => {
-            router.go(-1)
-        }
+            router.go(-1);
+        };
 
         const isNew = ref(true);
 
@@ -160,38 +187,46 @@ export default {
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
             const fileList = sectionObject.fields.filter(isFiles).map((f) => {
-                const files = materials && materials[f.id] && materials[f.id].map(x => {
-                    const n = x.name.split('.');
-                    const t = n.splice(-1);
-                    const name = n.length ? n.join() : t.join();
-                    return {
-                    id: x.id,
-                    key: x.id,
-                    data: {
-                        name,
-                        type: x.extension,
-                        size: x.size,
-                    },
-                    isEdit: false,
-                }})
+                console.log(f);
+                const files =
+                    materials &&
+                    materials[f.id] &&
+                    materials[f.id].map((x) => {
+                        const n = x.name.split('.');
+                        const t = n.splice(-1);
+                        const name = n.length ? n.join() : t.join();
+                        return {
+                            id: x.id,
+                            key: x.id,
+                            data: {
+                                name,
+                                type: x.extension,
+                                size: x.size,
+                            },
+                            accept: f.type.of.extensions.map((x) => `.${x}`),
+                            isEdit: false,
+                        };
+                    });
 
                 return {
-                ...f,
-                type: 'File',
-                value: files ? [...files] : [],
-                multi: f.type.of && f.type.of.name == 'File',
-                isActive: false,
-            }});
+                    ...f,
+                    type: 'File',
+                    value: files ? [...files] : [],
+                    multi: f.type.of && f.type.of.name == 'File',
+                    accept: f.type.of.extensions.map((x) => `.${x}`),
+                    isActive: false,
+                };
+            });
 
             if (fileList.length) {
                 fileList[0].isActive = true;
             }
 
-            files.value = fileList
+            files.value = fileList;
 
             const fieldList = sectionObject.fields.filter((f) => !isFiles(f));
 
-            const f = await useFields(fieldList, materials)
+            const f = await useFields(fieldList, materials);
 
             fields.value = f;
         };
@@ -208,7 +243,7 @@ export default {
                     },
                     {
                         name: sectionObject.title,
-                        link: `/sections/${sectionId}`,
+                        link: `/search/${sectionId}`,
                     },
                     {
                         name: material.name,
@@ -246,18 +281,22 @@ export default {
         };
 
         const submit = async () => {
-            if(isLoad.value) {
+            if (!name.value) {
+                handleChange('');
+                return;
+            }
+
+            if (isLoad.value) {
                 return;
             }
 
             isLoad.value = true;
 
             try {
-
                 const fieldsSubmit = {};
                 for (const field of fields.value) {
                     if (field.type == 'List') {
-                        console.log(field)
+                        console.log(field);
                         if (field.value) {
                             if (field.ofType == 'Enum') {
                                 fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
@@ -273,7 +312,7 @@ export default {
                         if (field.value) {
                             fieldsSubmit[field.id] = field.value.key;
                         }
-                    } else  if (field.type == 'Boolean') {
+                    } else if (field.type == 'Boolean') {
                         fieldsSubmit[field.id] = field.value;
                     } else {
                         if (field.value) {
@@ -281,7 +320,7 @@ export default {
                         }
                     }
                 }
-    
+
                 const submitFiles = {};
                 for (const file of files.value) {
                     const bodyFormData = new FormData();
@@ -298,20 +337,19 @@ export default {
                         const res = await fileService.uploadFiles(bodyFormData);
                         submitFiles[file.id] = res.map((x) => ({id: x.id}));
                     }
-    
+
                     if (!isNew.value) {
-                        const oldFiles = file.value.filter(x => x.id).map(x => ({ id: x.id }));
+                        const oldFiles = file.value.filter((x) => x.id).map((x) => ({id: x.id}));
                         submitFiles[file.id] = submitFiles[file.id] ? [...oldFiles, ...submitFiles[file.id]] : oldFiles;
                     }
-    
                 }
-    
+
                 const material = {
                     name: name.value,
                     ...fieldsSubmit,
                     ...submitFiles,
                 };
-    
+
                 if (isNew.value) {
                     const {id} = await materialService.createMaterial(sectionValue.value.key, material);
                     router.push({
@@ -331,8 +369,8 @@ export default {
                         },
                     });
                 }
-            } catch(e) {
-                console.log(e)
+            } catch (e) {
+                console.log(e);
             } finally {
                 isLoad.value = false;
             }
@@ -349,7 +387,6 @@ export default {
             Wiki: VTextEditor,
         };
 
-
         return {
             breadcrumb,
             isNew,
@@ -365,6 +402,8 @@ export default {
             submit,
             isLoad,
             back,
+            error,
+            handleChange,
         };
     },
 };

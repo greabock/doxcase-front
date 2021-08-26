@@ -12,7 +12,7 @@
             :class="['file-loader', multiple ? 'file-loader_multiple' : 'file-loader_single']"
             v-bind="getRootProps()"
         >
-            <input v-bind="getInputProps()" />
+            <input v-bind="getInputProps()" :accept="accept" />
             <p v-if="isDragActive">Перетащите файлы сюда ...</p>
             <p v-else>Перетащите сюда несколько файлов или щелкните, чтобы выбрать файлы.</p>
         </div>
@@ -26,6 +26,7 @@ import {ref} from '@vue/reactivity';
 export default {
     props: {
         multiple: Boolean,
+        accept: Array,
     },
     setup(props, ctx) {
         const files = ref([]);
