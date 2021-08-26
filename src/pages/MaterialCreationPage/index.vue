@@ -243,7 +243,7 @@ export default {
                     },
                     {
                         name: sectionObject.title,
-                        link: `/sections/${sectionId}`,
+                        link: `/search/${sectionId}`,
                     },
                     {
                         name: material.name,
