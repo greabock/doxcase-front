@@ -90,4 +90,13 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.nav-link {
+    cursor: pointer;
+}
+
+.nav-link.active {
+    background: #f7f7f7;
+    border-color: #f7f7f7; 
+}
+</style>
