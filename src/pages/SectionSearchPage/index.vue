@@ -399,7 +399,7 @@ export default {
                 section.value = await sectionsService.getSectionObject(id);
                 resetSelectors();
                 resetFilters();
-
+                bcTitle.value = section.value.title;
 
             } catch(e) {
                 console.log(e)

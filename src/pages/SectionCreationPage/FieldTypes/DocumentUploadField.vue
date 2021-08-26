@@ -114,7 +114,7 @@ export default {
             setValues({
                 title: props.fieldToChange.title,
                 fileExtensions: props.fieldToChange.type?.of?.extensions,
-                maxFileSize: props.fieldToChange.type?.of?.max,
+                maxFileSize: Number(props.fieldToChange.type?.of?.max) / 1024,
             });
         }
 
@@ -126,7 +126,7 @@ export default {
                     name: 'List',
                     of: {
                         name: 'File',
-                        max: maxFileSize,
+                        max: Number(maxFileSize) * 1024,
                         extensions: fileExtensions
                     }
                 }
