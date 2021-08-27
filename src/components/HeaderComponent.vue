@@ -42,6 +42,7 @@
 <!-- Section links in header -->
 
                                 <top-menu
+                                    v-if="sectionsInHeader?.length"
                                     :sectionsInHeader="sectionsInHeader"
                                 ></top-menu>
                             </div>
