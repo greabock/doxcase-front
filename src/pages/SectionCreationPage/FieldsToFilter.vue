@@ -95,7 +95,9 @@ export default {
                 a.type.name === 'Boolean' ||
                 a.type.name === 'Select' ||
                 a.type.name === 'Enum' ||
-                a.type.name === 'List'
+                a.type.name === 'Dictionary' ||
+                a.type.name === 'List' && a.type.of.name !== 'File'
+
             )
         });
 

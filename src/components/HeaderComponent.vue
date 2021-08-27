@@ -40,17 +40,10 @@
                             </div>
                             <div class="col-lg">
 <!-- Section links in header -->
-                                <div class="header-sections-wrapper">
-                                    <ul v-if='sectionsInHeader?.length' class="menu header-sections">
-                                        <li v-for="section in sectionsInHeader" :key="section?.id">
-                                            <router-link
-                                                :class="{active: section.id === $route.params.id}"
-                                                :to="'/search/' + section?.id">
-                                                {{ section?.title }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
+
+                                <top-menu
+                                    :sectionsInHeader="sectionsInHeader"
+                                ></top-menu>
                             </div>
                         </div>
                     </div>
@@ -80,11 +73,13 @@ import {ref, computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
+import TopMenu from '@/components/TopMenu';
 
 export default {
     components: {
         LogoIcon,
         LogoIconSmall,
+        TopMenu,
     },
     setup() {
         const store = useStore();
@@ -118,6 +113,7 @@ export default {
     },
 };
 </script>
+
 <style scoped>
 .topLine {
     z-index: 1;

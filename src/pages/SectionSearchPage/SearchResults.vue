@@ -282,4 +282,7 @@ export default {
 .search-item em {
     background-color: #fff5a7;
 }
+.search-item__panel .col-auto {
+    width:auto;
+}
 </style>

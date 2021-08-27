@@ -37,5 +37,6 @@ setup(props) {
 <style scoped>
 .search-radio__label {
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 </style>
