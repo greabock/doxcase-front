@@ -18,7 +18,7 @@
         </ul>
         <div class="menu-with-dropdown__block">
             <div
-                @click="() => isDropdownShow = !isDropdownShow"
+                @click.stop="() => isDropdownShow = !isDropdownShow"
                 class="menu-with-dropdown__toggle d-none d-lg-block">
                 <svg class="icon icon-dots ">
                     <use xlink:href="/img/svg/sprite.svg#dots"></use>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {onUpdated, onMounted, onBeforeUnmount, ref} from 'vue';
+import {watch, onMounted, onUnmounted, ref} from 'vue';
 
 export default {
 props: {
@@ -70,15 +70,23 @@ setup(props) {
         });
         sectionsInDropdown.value = dropdownArr;
     };
+    const closeDropdown = (e) => {
+        if (!ulBlock.value.contains(e.target)) {
+            isDropdownShow.value = false;
+        }
+    }
+
     onMounted(() => {
         window.addEventListener('resize', linksHandler);
+        global.addEventListener('click', closeDropdown);
     });
-    onUpdated(() => {
+    watch(props.sectionsInHeader, () => {
         linksHandler();
     });
-    onBeforeUnmount(() => {
+    onUnmounted(() => {
         window.removeEventListener('resize', linksHandler);
-    });
+        global.removeEventListener('click', closeDropdown);
+    })
     return {
         ulBlock,
         sectionsInDropdown,

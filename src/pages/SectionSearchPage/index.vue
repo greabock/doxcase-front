@@ -306,12 +306,9 @@ export default {
            selectorsObj.value = [];
         };
         const showResetSelectors = computed(() => {
-            const bool = section.value.fields?.filter( field => !!field.filter_sort_index)
+            return section.value.fields?.filter( field => !!field.filter_sort_index)
             .filter(field => field.type.name === 'Enum' ||  field.type.name === 'Dictionary' ||
                 field.type.name === 'Select' || field.type.name === 'List').length;
-            console.log(bool);
-            console.log(section.value.fields);
-            return bool
         });
 
         const queryObject = computed(() => {
