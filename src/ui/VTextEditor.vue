@@ -80,3 +80,10 @@ export default {
     padding: 5px 1rem;
 }
 </style>
+
+<style scoped>
+.text-editor__container .error-text-editor >>> .ql-container.ql-snow,
+.text-editor__container .error-text-editor >>> .ql-toolbar.ql-snow {
+    border-color: #eb5757;
+}
+</style>

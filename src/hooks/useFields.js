@@ -16,7 +16,7 @@ function validateString({required, min, max}) {
 
     if (min) {
         // f = f.min(min);
-        console.log(min)
+        console.log(min);
     }
 
     if (max) {
@@ -26,7 +26,7 @@ function validateString({required, min, max}) {
     return f;
 }
 
-function createFieldValidation(field, value) {
+function createFieldValidation(field, value = '', options) {
     const {
         value: model,
         errorMessage: error,
@@ -37,20 +37,36 @@ function createFieldValidation(field, value) {
             required: field.required,
             min: field.type?.min,
             max: field.type?.max,
-        })
+        }),
+        options
     );
+
     model.value = value;
 
     return {model, error, handleChange};
 }
 
-const fieldCreate = ({type, ofType, props, value = '', field}) => {
+// function createFieldListValidation(field, value = '', options) {
+//     let f = yup.object().nullable();
+//     if (field.required) {
+//         f = f.required();
+//     }
+
+//     const {value: model, errorMessage: error, handleChange} = useField(field.id, f, options);
+
+//     model.value = value;
+
+//     return {model, error, handleChange};
+// }
+
+const fieldCreate = ({type, ofType, props, value = '', field, validate}) => {
     return {
         ...field,
         type,
         ofType,
         props,
         value,
+        validate,
     };
 };
 
@@ -58,14 +74,20 @@ export default async function useFields(fields, materials) {
     const fieldsDictionary = {
         Boolean: ({field, value = false}) => fieldCreate({type: 'Boolean', value: !!value, field}),
         Date: ({value, field}) => {
+            const {model, error, handleChange} = createFieldValidation(field, value && new Date(value), {
+                validateOnValueUpdate: false,
+            });
 
             return fieldCreate({
                 field,
                 type: 'Date',
-                value: value && new Date(value),
+                value: model,
                 props: {
                     placeholder: field.description,
+                    error,
+                    onBlur: handleChange,
                 },
+                validate: () => handleChange(model.value),
             });
         },
         String: ({field, value}) => {
@@ -80,11 +102,13 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
-                handleChange,
+                validate: () => handleChange(model.value),
             });
         },
         Wiki: ({field, value}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value);
+            const {model, error, handleChange} = createFieldValidation(field, value, {
+                validateOnValueUpdate: false,
+            });
 
             return fieldCreate({
                 field,
@@ -95,7 +119,7 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
-                handleChange
+                validate: () => handleChange(model.value),
             });
         },
         Text: ({field, value}) => {
@@ -110,24 +134,32 @@ export default async function useFields(fields, materials) {
                     error,
                     onBlur: handleChange,
                 },
-                handleChange
+                validate: () => handleChange(model.value),
             });
         },
-        Enum: async ({type= 'Enum',field, multiple, value, ofType}) => {
+        Enum: async ({type = 'Enum', field, multiple, value, ofType}) => {
             const of = ofType ? field.type.of.of : field.type.of;
-            const values = value && (ofType ? value.map((x) => ({
-                name: x.title,
-                key: x.id,
-            })) : {
-                key: value.id,
-                name: value.title,
-            })
+            const values =
+                value &&
+                (ofType
+                    ? value.map((x) => ({
+                          name: x.title,
+                          key: x.id,
+                      }))
+                    : {
+                          key: value.id,
+                          name: value.title,
+                      });
 
             const enums = await enumsService.getEnumsObject(of);
             const options = enums.values.map((x) => ({
                 key: x.id,
                 name: x.title,
             }));
+
+            // const {model, error, handleChange} = createFieldListValidation(field, values, {
+            //     validateOnValueUpdate: false,
+            // });
 
             return fieldCreate({
                 field,
@@ -138,7 +170,9 @@ export default async function useFields(fields, materials) {
                     options,
                     placeholder: field.description,
                     multiple,
+                    // error,
                 },
+                // validate: () => handleChange(model.value),
             });
         },
         Select: ({type = 'Select', field, value, multiple, ofType}) => {
@@ -148,13 +182,21 @@ export default async function useFields(fields, materials) {
                 name: x,
             }));
 
-            const values = value && (ofType ? value.map((x) => ({
-                name: x,
-                key: x,
-            })) : {
-                key: value,
-                name: value,
-            })
+            const values =
+                value &&
+                (ofType
+                    ? value.map((x) => ({
+                          name: x,
+                          key: x,
+                      }))
+                    : {
+                          key: value,
+                          name: value,
+                      });
+
+            // const {model, error, handleChange} = createFieldListValidation(field, values, {
+            //     validateOnValueUpdate: false,
+            // });
 
             return fieldCreate({
                 field,
@@ -165,7 +207,9 @@ export default async function useFields(fields, materials) {
                     options,
                     placeholder: field.description,
                     multiple,
+                    // error,
                 },
+                // validate: () => handleChange(model.value),
             });
         },
         List: ({value = [], field}) => {

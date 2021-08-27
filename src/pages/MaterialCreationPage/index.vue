@@ -187,7 +187,6 @@ export default {
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
             const fileList = sectionObject.fields.filter(isFiles).map((f) => {
-                console.log(f);
                 const files =
                     materials &&
                     materials[f.id] &&
@@ -281,8 +280,23 @@ export default {
         };
 
         const submit = async () => {
-            if (!name.value) {
+            const errors = [!!name.value];
+
+             if (!name.value) {
                 handleChange('');
+            }
+
+            for(const el of fields.value) {
+                if (el.validate) {
+                    const errors = []
+                    const res = await el.validate();
+                    errors.push(res.valid);
+                }
+            }
+
+            const isError = !!errors.filter(x => !x).length
+
+            if(isError) {
                 return;
             }
 
