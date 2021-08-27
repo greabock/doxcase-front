@@ -412,8 +412,10 @@ export default {
         },  {deep: true}
         );
 
-        watch( router.currentRoute, async () => {
-            await updateSearchPage(router.currentRoute.value.params.id);
+        watch( router.currentRoute, async (newVal) => {
+            if (newVal.params.id) {
+                await updateSearchPage(router.currentRoute.value.params.id);
+            }
         });
         onMounted(async () => {
             try {

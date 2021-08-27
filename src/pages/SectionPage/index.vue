@@ -1,7 +1,6 @@
 <template>
     <main
         class="main-block"
-        @click="setFiltersOpen(false)"
     >
         <loader
             v-if="isLoading"
@@ -117,7 +116,7 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange({}); setFieldModalVisible(true)">
+                                         @click.stop="setFieldToChange({}); setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
                                         <div
                                             class="btn-add__text"
