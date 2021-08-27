@@ -1,5 +1,6 @@
 <template>
     <div class="form-wrap__input-wrap form-group"
+         ref='root'
          @click.stop
     >
         <div
@@ -73,7 +74,7 @@
 </template>
 
 <script>
-import {computed} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {findMaxFilterIdx} from '@/utils/sortByIndex';
 
 export default {
@@ -90,6 +91,7 @@ export default {
     emits: ['update-filter-sort', 'update-is-open', 'click'],
     setup(props, {emit}) {
 
+        const root = ref(null);
         const sortedFieldsArr = computed(() => {
             return props.fieldsArr.filter(a =>
                 a.type.name === 'Boolean' ||
@@ -164,6 +166,18 @@ export default {
                 emit('update-filter-sort', newFiltersArr);
             }
         };
+        const closeModal = (e) => {
+            if (props.isFiltersOpen && !root.value.contains(e.target)) {
+                emit('update-is-open', false);
+            }
+        };
+        onMounted(() => {
+            console.log('added');
+            global.addEventListener('click', closeModal);
+        });
+        onUnmounted(() => {
+            global.removeEventListener('click', closeModal);
+        })
 
        return {
            changeHandler,
@@ -171,6 +185,7 @@ export default {
            sortedFields,
            sortFilterUp,
            sortFilterDown,
+           root
        }
     },
 };
