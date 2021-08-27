@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="col-auto align-self-center d-none d-sm-block">
-<!--                    <div class="text-dark small">Документов {{ snippet.docsValue }}</div>-->
+                    <div class="text-dark small">Документов {{ snippet.files_count }}</div>
                 </div>
                 <div class="col-auto align-self-sm-center">
                     <div
@@ -178,30 +178,27 @@ export default {
             const fieldsArr = [];
             for (let key in material ) {
                 if (Object.prototype.hasOwnProperty.call(material, key)) {
-                    if (key === 'id' || key === 'name' || key === 'created_at') continue
+                    if (key === 'id' || key === 'name' || key === 'created_at' || key === 'files_count') continue
                     const field = currentSection.fields.find(field => field.id === key);
+                    if (field) {
+                        if (field.type.of?.name === 'File') continue;
+                        let value;
 
-                    let value;
-
-                    if (field.type.name === 'Date') {
-                        value = formatDate(material[key]);
-
-                    } else if (field.type.name === 'Boolean') {
-                        value = material[key]? 'Да' : 'Нет';
-
-                    } else {
-                        value = material[key];
-                    }
-
-                    if (!value || value.toLowerCase() === 'null') {
-                        value = ' ';
-                    }
-
+                        if (field.type.name === 'Date') {
+                            value = formatDate(material[key]);
+                        } else if (field.type.name === 'Boolean') {
+                            value = material[key]? 'Да' : 'Нет';
+                        } else {
+                            value = material[key];
+                        }
+                        if (!value || value.toString().toLowerCase() === 'null') {
+                            value = ' ';
+                        }
                         fieldsArr.push({
                             name: field.title,
                             value
-                    });
-
+                        });
+                    }
                 }
 
             }
@@ -231,7 +228,7 @@ export default {
                    title: material.material.name,
                    image: currentSection.image,
                    sectionId: currentSection.id,
-                   docsValue: 25,
+                   files_count: material.material.files_count,
                    created_at :formatDate(material.material.created_at),
                    highlights: serializeHighLights(material.highlight, currentSection),
                    fields: serializeFields(material.material, currentSection),

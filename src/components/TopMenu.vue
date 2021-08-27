@@ -1,6 +1,5 @@
 <template>
     <div
-        v-if="sectionsInHeader?.length"
         class="menu-with-dropdown">
         <ul
             class="menu"
@@ -42,7 +41,7 @@
 </template>
 
 <script>
-import {watch, onMounted, onUnmounted, ref} from 'vue';
+import {onMounted, onUnmounted, ref} from 'vue';
 
 export default {
 props: {
@@ -74,13 +73,10 @@ setup(props) {
         if (!ulBlock.value.contains(e.target)) {
             isDropdownShow.value = false;
         }
-    }
-
+    };
     onMounted(() => {
         window.addEventListener('resize', linksHandler);
         global.addEventListener('click', closeDropdown);
-    });
-    watch(props.sectionsInHeader, () => {
         linksHandler();
     });
     onUnmounted(() => {
