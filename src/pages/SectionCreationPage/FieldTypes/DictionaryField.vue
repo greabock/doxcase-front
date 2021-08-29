@@ -17,16 +17,14 @@
                 <!-- +e.input-wrap-->
                 <div class="form-wrap__input-wrap form-group">
                     <label><span class="form-wrap__input-title">Выберите раздел</span>
-                        <select
-                            v-model='selectedIdValue'
-                            class="form-wrap__input form-select"
-                            name="selectedId"
+                        <v-select
+                            class="mb-3"
+                            name="selectedObj"
+                            v-model="selectedObjValue"
+                            :options="sectionOptions"
+                            bordered
                         >
-                            <option
-                                v-for="sectionItem in filteredSections"
-                                :key='sectionItem?.id'
-                                :value="sectionItem?.id">{{ sectionItem?.title }}</option>
-                        </select>
+                        </v-select>
                     </label>
                 </div>
 
@@ -61,12 +59,14 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import {useField, useForm} from 'vee-validate';
 import * as yup from 'yup';
+import VSelect from '@/ui/VSelect';
 
 export default {
+    components: {VSelect},
     props: {
         allSections: {
             type: Array
@@ -90,12 +90,33 @@ export default {
             filter_sort_index: null,
         };
 
-        const filteredSections = ref(props.allSections.filter(section => section.is_dictionary))
+        const sectionOptions = computed(() => {
+            return (props.allSections.filter(section => section.is_dictionary)
+                                     .map(section => ({key: section.id, name: section.title})));
+        })
         const newField = ref({...initField, ...props.fieldToChange});
+
+        const defineSelectedObj = (field, allSections) => {
+            if (field && field.type?.name === 'Dictionary') {
+                const mySection = allSections.find(item => item.id === field.type?.of);
+                return {
+                    key: mySection.id,
+                    name: mySection.title
+                }
+            }
+            if (field && field.type?.name === 'List') {
+                const mySection = allSections.find(item => item.id === field.type?.of?.of);
+                return {
+                    key: mySection.id,
+                    name: mySection.title
+                }
+            }
+            return undefined;
+        };
 
         const schema = yup.object({
             title: yup.string().required(),
-            selectedId: yup.string().required(),
+            selectedObj: yup.object().required(),
         });
 
         const {
@@ -105,14 +126,14 @@ export default {
         } = useForm({validationSchema: schema});
 
         const {value: titleValue, errorMessage: titleError, meta: titleMeta} = useField('title');
-        const {value: selectedIdValue} = useField('selectedId');
+        const {value: selectedObjValue} = useField('selectedObj');
         const {value: requiredValue} = useField('required');
         const {value: multiSelectValue} = useField('multiSelect');
 
         if (props.fieldToChange.type) {
             setValues({
                 title: props.fieldToChange.title,
-                selectedId: props.fieldToChange?.type?.of?.of || props.fieldToChange?.type?.of,
+                selectedObj: defineSelectedObj(props.fieldToChange, props.allSections),
                 required: !!props.fieldToChange.required,
                 multiSelect: !!props.fieldToChange?.type?.of?.of
 
@@ -123,20 +144,21 @@ export default {
             addNewField(values);
         });
 
-        const addNewField = ({title, selectedId, required, multiSelect}) => {
+        const addNewField = ({title, selectedObj, required, multiSelect}) => {
+            console.log(selectedObj);
             let typeOfField;
             if (multiSelect) {
                 typeOfField = {
                     name: 'List',
                     of: {
                         name: 'Dictionary',
-                        of: selectedId
+                        of: selectedObj.key
                     }
                 }
             } else {
                 typeOfField = {
                     name: 'Dictionary',
-                    of: selectedId
+                    of: selectedObj.key
                 }
             }
             const field = {
@@ -149,14 +171,14 @@ export default {
         };
 
         return {
-            filteredSections,
+            sectionOptions,
             newField,
             addNewField,
             formMeta,
             titleValue,
             titleError,
             titleMeta,
-            selectedIdValue,
+            selectedObjValue,
             requiredValue,
             multiSelectValue,
             submitHandle,

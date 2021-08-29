@@ -1,7 +1,10 @@
 <template>
-    <div v-if="isFieldModalVisible" class="mock-modal__wrapper">
-        <div class="mock-modal__cont fancybox__content">
-            <!-- <b class="mock-modal__closer" @click="setFieldModalVisible(false)">x</b> -->
+    <div
+        v-if="isFieldModalVisible" class="mock-modal__wrapper">
+        <div
+            @lick.stop
+            ref='root'
+            class="mock-modal__cont fancybox__content">
             <button class="carousel__button is-close" title="Close" @click="setFieldModalVisible(false)">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M20 20L4 4m16 0L4 20"></path></svg>
             </button>
@@ -26,7 +29,7 @@
                             <date-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Date'"></date-field>
                             <document-upload-field  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'File'"></document-upload-field>
                             <enum-field :allEnums="allEnums"  :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Enum'"></enum-field>
-<!--                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Dictionary'"></dictionary-field>-->
+                            <dictionary-field :allSections="allSections" :fieldToChange="fieldToChange" :fieldsArrLength="fieldsArrLength" @addNewField="addNewField" v-if="fieldType.key === 'Dictionary'"></dictionary-field>
                         </div>
                     </form>
                 </div>
@@ -36,7 +39,7 @@
 </template>
 
 <script>
-import {ref, watch} from 'vue';
+import {ref, watch, onMounted, onUnmounted} from 'vue';
 import TextField from '@/pages/SectionCreationPage/FieldTypes/TextField';
 import StringField from '@/pages/SectionCreationPage/FieldTypes/StringField';
 import CheckboxField from '@/pages/SectionCreationPage/FieldTypes/CheckboxField';
@@ -44,7 +47,7 @@ import DateField from '@/pages/SectionCreationPage/FieldTypes/DateField';
 import EnumField from '@/pages/SectionCreationPage/FieldTypes/EnumField';
 import DocumentUploadField from '@/pages/SectionCreationPage/FieldTypes/DocumentUploadField';
 import SelectorField from '@/pages/SectionCreationPage/FieldTypes/SelectorField';
-// import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
+import DictionaryField from '@/pages/SectionCreationPage/FieldTypes/DictionaryField';
 import WikiField from '@/pages/SectionCreationPage/FieldTypes/WikiField';
 import VSelect from '@/ui/VSelect';
 
@@ -57,7 +60,7 @@ export default {
         EnumField,
         DocumentUploadField,
         SelectorField,
-        // DictionaryField,
+        DictionaryField,
         WikiField,
         VSelect,
     },
@@ -94,6 +97,7 @@ export default {
             {key: "Enum", name: "Значения из справочников"},
             // {key: "Dictionary", name: "Значения из разделов"},
         ]
+        const root = ref(null);
         const defineInitType = (field) => {
             if (!field.type) {
                 return {key: "Text", name: "Текстовое поле"};
@@ -106,20 +110,32 @@ export default {
 
         const fieldType = ref("Text");
         watch(() => props.fieldToChange, () => {
-            fieldType.value = defineInitType(props.fieldToChange)
+            fieldType.value = defineInitType(props.fieldToChange);
         });
-
         const setFieldModalVisible = (bool) => {
             emit('updateFieldModalVisible', bool);
         };
         const addNewField = (newField) => {
             emit('addNewField', newField);
         };
+        const closeModal = (e) => {
+            if (props.isFieldModalVisible && !root.value.contains(e.target)) {
+                setFieldModalVisible(false);
+            }
+        };
+        onMounted(() => {
+            console.log('added');
+            global.addEventListener('click', closeModal);
+        });
+        onUnmounted(() => {
+            global.removeEventListener('click', closeModal);
+        })
         return {
             setFieldModalVisible,
             fieldType,
             addNewField,
             options,
+            root,
         };
     },
 };

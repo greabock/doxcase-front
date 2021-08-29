@@ -1,7 +1,6 @@
 <template>
     <main
         class="main-block"
-        @click="setFiltersOpen(false)"
     >
         <!-- start sCabinet-->
         <section class="sCabinet section py-0" id="sCabinet">
@@ -109,7 +108,7 @@
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
-                                         @click="setFieldToChange({}); setFieldModalVisible(true)"
+                                         @click.stop="setFieldToChange({}); setFieldModalVisible(true)"
                                     >
                                         <div class="btn-add__plus"></div>
                                         <div class="btn-add__text">Добавить</div>
