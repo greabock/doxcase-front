@@ -93,7 +93,9 @@ export default async function useFields(fields, materials) {
             });
         },
         String: ({field, value}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value);
+            const {model, error, handleChange} = createFieldValidation(field, value, {
+                validateOnValueUpdate: false,
+            });
 
             return fieldCreate({
                 field,
