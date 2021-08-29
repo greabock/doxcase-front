@@ -8,15 +8,10 @@ yup.setLocale({
     },
 });
 
-function validateString({required, min, max}) {
+function validateString({required, max}) {
     let f = yup.string().nullable();
     if (required) {
         f = f.required();
-    }
-
-    if (min) {
-        // f = f.min(min);
-        console.log(min);
     }
 
     if (max) {
@@ -46,18 +41,25 @@ function createFieldValidation(field, value = '', options) {
     return {model, error, handleChange};
 }
 
-// function createFieldListValidation(field, value = '', options) {
-//     let f = yup.object().nullable();
-//     if (field.required) {
-//         f = f.required();
-//     }
+const isRequiredList = required => value => {
+    if (required) {
+        if (value && Object.keys(value).length) {
+            return true;
+        }
 
-//     const {value: model, errorMessage: error, handleChange} = useField(field.id, f, options);
+        return 'Выберете элемент из списка.'
+    }
 
-//     model.value = value;
+    return true;
+}
 
-//     return {model, error, handleChange};
-// }
+function createFieldListValidation(field, value, options) {
+    const {value: model, errorMessage: error, handleChange} = useField(field.id, isRequiredList(field.required), options);
+
+    model.value = value;
+
+    return {model, error, handleChange};
+}
 
 const fieldCreate = ({type, ofType, props, value = '', field, validate}) => {
     return {
@@ -123,7 +125,9 @@ export default async function useFields(fields, materials) {
             });
         },
         Text: ({field, value}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value);
+            const {model, error, handleChange} = createFieldValidation(field, value, {
+                validateOnValueUpdate: false,
+            });
 
             return fieldCreate({
                 field,
@@ -157,9 +161,11 @@ export default async function useFields(fields, materials) {
                 name: x.title,
             }));
 
-            // const {model, error, handleChange} = createFieldListValidation(field, values, {
-            //     validateOnValueUpdate: false,
-            // });
+            
+
+            const {model, error, handleChange} = createFieldListValidation(field, values, {
+                validateOnValueUpdate: false,
+            });
 
             return fieldCreate({
                 field,
@@ -170,9 +176,11 @@ export default async function useFields(fields, materials) {
                     options,
                     placeholder: field.description,
                     multiple,
-                    // error,
+                    error,
+                    onSelect: handleChange,
+                    onBlur: () => handleChange(model.value),
                 },
-                // validate: () => handleChange(model.value),
+                validate: () => handleChange(model.value),
             });
         },
         Select: ({type = 'Select', field, value, multiple, ofType}) => {
@@ -194,22 +202,24 @@ export default async function useFields(fields, materials) {
                           name: value,
                       });
 
-            // const {model, error, handleChange} = createFieldListValidation(field, values, {
-            //     validateOnValueUpdate: false,
-            // });
-
+            const {model, error, handleChange} = createFieldListValidation(field, values, {
+                validateOnValueUpdate: false,
+            });
+        
             return fieldCreate({
                 field,
                 type,
                 ofType,
-                value: values,
+                value: model,
                 props: {
                     options,
                     placeholder: field.description,
                     multiple,
-                    // error,
+                    error,
+                    onSelect: handleChange,
+                    onBlur: () => handleChange(model.value),
                 },
-                // validate: () => handleChange(model.value),
+                validate: () => handleChange(model.value),
             });
         },
         List: ({value = [], field}) => {

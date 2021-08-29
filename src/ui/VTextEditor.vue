@@ -1,10 +1,11 @@
 <template>
-    <div class="text-editor__container">
+    <div :class="['text-editor__container', {'error-text-editor': error}]">
         <quill-editor
             class="text-editor"
             v-model:value="state.content"
             :options="state.editorOption"
             @change="onEditorChange($event)"
+            @blur="$emit('blur', modelValue)"    
         />
         <div class="input-message invalid-feedback" v-if="error">{{ error }}</div>
     </div>
@@ -79,11 +80,9 @@ export default {
     transform: translateY(100%);
     padding: 5px 1rem;
 }
-</style>
 
-<style scoped>
-.text-editor__container .error-text-editor >>> .ql-container.ql-snow,
-.text-editor__container .error-text-editor >>> .ql-toolbar.ql-snow {
+.text-editor__container.error-text-editor >>> .ql-container.ql-snow,
+.text-editor__container.error-text-editor >>> .ql-toolbar.ql-snow {
     border-color: #eb5757;
 }
 </style>

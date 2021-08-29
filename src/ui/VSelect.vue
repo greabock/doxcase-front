@@ -59,7 +59,7 @@ export default {
         ArrowDown,
     },
     props: {
-        modelValue: Object || Array,
+        modelValue: [Object, Array],
         options: Array,
         placeholder: String,
         classInput: String,
@@ -106,10 +106,16 @@ export default {
         });
      
         const hide = (event) => {
+            if (!isActive.value) {
+                return 
+            }
+
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
                 privateValue.value = null;
             }
+
+            ctx.emit('blur', props.modelValue)
         };
 
         onMounted(() => {
@@ -129,8 +135,8 @@ export default {
                 } else {
                     multipleSelect.value = [...multipleSelect.value, item];
                 }
-                ctx.emit('update:modelValue', multipleSelect);
-                ctx.emit('select', multipleSelect);
+                ctx.emit('update:modelValue', multipleSelect.value);
+                ctx.emit('select', multipleSelect.value);
             } else {
                 isActive.value = false;
                 ctx.emit('update:modelValue', item);
