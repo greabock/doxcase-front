@@ -24,14 +24,14 @@
         <div class="col-lg-auto">
             <div class="sSectionMain__btn-control">
                 <div
-                    @click="changeField(field)"
+                    @click.stop="changeField(field)"
                     class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-edit">
                         <use xlink:href="/img/svg/sprite.svg#edit"></use>
                     </svg>
                 </div>
                 <div
-                    @click="removeField(fieldsViewModel?.field)"
+                    @click.stop="removeField(fieldsViewModel?.field)"
                      class="btn-edit-sm btn-danger"
                 >
                     <svg class="icon icon-basket">
@@ -39,7 +39,7 @@
                     </svg>
                 </div>
                 <div
-                    @click="sortFieldUp(fieldsViewModel?.field)"
+                    @click.stop="sortFieldUp(fieldsViewModel?.field)"
                      class="btn-edit-sm btn-secondary">
                     <svg class="icon icon-chevron-up text-primary"
                     >
@@ -47,7 +47,7 @@
                     </svg>
                 </div>
                 <div
-                    @click="sortFieldDown(fieldsViewModel?.field)"
+                    @click.stop="sortFieldDown(fieldsViewModel?.field)"
                     class="btn-edit-sm btn-secondary"
                 >
                     <svg class="icon icon-chevron-down text-primary">
