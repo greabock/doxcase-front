@@ -330,13 +330,6 @@ export default {
         const files = ref([]);
 
 //Строка запроса______________________
-//         const initQueryObject = {
-//             search: '',
-//             sort: {
-//                 field: 'created_at',
-//                 direction: 'asc',
-//             }
-//         }
         const sortObj = ref({
             field: 'created_at',
             direction: 'asc',
@@ -355,14 +348,13 @@ export default {
                 fields: [...section.value.fields]
             };
             selectorsObj.value = [];
+            searchObj.value = '';
         };
         const showResetSelectors = computed(() => {
-            const bool = section.value.fields?.filter( field => !!field.filter_sort_index)
+            return !!section.value.fields?.filter( field => !!field.filter_sort_index)
                 .filter(field => field.type.name === 'Enum' ||  field.type.name === 'Dictionary' ||
-                    field.type.name === 'Select' || field.type.name === 'List').length;
-            console.log(bool);
-            console.log(section.value.fields);
-            return bool
+                    field.type.name === 'Select' || field.type.of?.name === 'Enum' || field.type.of?.name === 'Dictionary' ||
+                    field.type.of?.name === 'Select').length;
         });
 
         const queryObject = computed(() => {

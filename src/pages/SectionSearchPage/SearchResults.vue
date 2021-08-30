@@ -24,8 +24,10 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-auto align-self-center d-none d-sm-block">
-                    <div class="text-dark small">Документов {{ snippet.files_count }}</div>
+                <div
+                    v-if="snippet.files_count"
+                    class="col-auto align-self-center d-none d-sm-block">
+                    <div class="text-dark small">Документов: {{ snippet.files_count }}</div>
                 </div>
                 <div class="col-auto align-self-sm-center">
                     <div
