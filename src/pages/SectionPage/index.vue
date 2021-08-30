@@ -41,6 +41,7 @@
                                         class="form-wrap__input form-control"
                                         type="text"
                                         placeholder="Заполнить"
+                                        maxLength="50"
                                     />
                                     </label>
                                 </div>

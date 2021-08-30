@@ -36,6 +36,7 @@
                                             class="form-wrap__input form-control"
                                             type="text"
                                             placeholder="Заполнить"
+                                            maxLength="50"
                                         />
                                     </label>
                                 </div>
@@ -88,7 +89,7 @@
                                     <div class="form-wrap__footer">
                                         <button
                                             @click="createSection"
-                                            :class="{disabled: section.title === '' || section.title.length > 100}"
+                                            :class="{disabled: section.title === ''}"
                                             class="btn btn-primary"
                                         >
                                             Сохранить <span class="d-none d-lg-inline">раздел</span>
