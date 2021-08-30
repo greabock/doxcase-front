@@ -119,5 +119,4 @@ export default {
 .topLine {
     z-index: 1;
 }
-
 </style>

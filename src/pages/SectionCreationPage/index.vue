@@ -88,7 +88,7 @@
                                     <div class="form-wrap__footer">
                                         <button
                                             @click="createSection"
-                                            :class="{disabled: section.title === ''}"
+                                            :class="{disabled: section.title === '' || section.title.length > 100}"
                                             class="btn btn-primary"
                                         >
                                             Сохранить <span class="d-none d-lg-inline">раздел</span>

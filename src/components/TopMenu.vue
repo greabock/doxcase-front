@@ -15,7 +15,11 @@
                 </router-link>
             </li>
         </ul>
-        <div class="menu-with-dropdown__block">
+        <div
+            v-if="sectionsInDropdown?.length"
+            class="menu-with-dropdown__block"
+            :style="{left: dotsLeft + 'px'}"
+        >
             <div
                 @click.stop="() => isDropdownShow = !isDropdownShow"
                 class="menu-with-dropdown__toggle d-none d-lg-block">
@@ -55,6 +59,7 @@ setup(props) {
     const sectionsInDropdown = ref([]);
     const ulBlock = ref(null);
     const isDropdownShow = ref(false);
+    const dotsLeft = ref(0);
 
     const linksHandler = () => {
         const blockWidth = ulBlock.value.clientWidth;
@@ -65,10 +70,18 @@ setup(props) {
             linksWidth += li.clientWidth;
             if (linksWidth > blockWidth) {
                 dropdownArr.push(props.sectionsInHeader[i]);
+            } else {
+                dotsLeft.value = linksWidth;
+                console.log(linksWidth);
             }
         });
         sectionsInDropdown.value = dropdownArr;
     };
+
+    // watch(dotsLeft, (newVal) => {
+    //     document.querySelector('.menu-with-dropdown__block').style.left = newVal + 'px';
+    // });
+
     const closeDropdown = (e) => {
         if (!ulBlock.value.contains(e.target)) {
             isDropdownShow.value = false;
@@ -87,16 +100,33 @@ setup(props) {
         ulBlock,
         sectionsInDropdown,
         isDropdownShow,
+        dotsLeft,
     }
 }
 };
 </script>
 
 <style scoped>
+
 @media (min-width: 992px) {
     .menu {
         height: 44px;
         overflow:hidden;
     }
+}
+.menu-with-dropdown__toggle {
+    margin-left:-10px;
+}
+.menu-with-dropdown__block {
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    background-color: #fff;
+}
+.menu li {
+    overflow: hidden
+}
+.menu li A {
+    overflow: hidden
 }
 </style>
