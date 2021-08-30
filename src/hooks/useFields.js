@@ -1,4 +1,6 @@
 import enumsService from '@/services/enums.service';
+import sectionsService from '@/services/sections.service';
+
 import {useField} from 'vee-validate';
 import * as yup from 'yup';
 yup.setLocale({
@@ -21,7 +23,7 @@ function validateString({required, max}) {
     return f;
 }
 
-function createFieldValidation(field, value = '', options) {
+function createFieldValidation(field, value = '') {
     const {
         value: model,
         errorMessage: error,
@@ -33,7 +35,9 @@ function createFieldValidation(field, value = '', options) {
             min: field.type?.min,
             max: field.type?.max,
         }),
-        options
+        {
+            validateOnValueUpdate: false,
+        }
     );
 
     model.value = value;
@@ -41,20 +45,26 @@ function createFieldValidation(field, value = '', options) {
     return {model, error, handleChange};
 }
 
-const isRequiredList = required => value => {
+const isRequiredList = (required) => (value) => {
     if (required) {
         if (value && Object.keys(value).length) {
             return true;
         }
 
-        return 'Выберете элемент из списка.'
+        return 'Выберете элемент из списка.';
     }
 
     return true;
-}
+};
 
-function createFieldListValidation(field, value, options) {
-    const {value: model, errorMessage: error, handleChange} = useField(field.id, isRequiredList(field.required), options);
+function createFieldListValidation(field, value) {
+    const {
+        value: model,
+        errorMessage: error,
+        handleChange,
+    } = useField(field.id, isRequiredList(field.required), {
+        validateOnValueUpdate: false,
+    });
 
     model.value = value;
 
@@ -76,9 +86,7 @@ export default async function useFields(fields, materials) {
     const fieldsDictionary = {
         Boolean: ({field, value = false}) => fieldCreate({type: 'Boolean', value: !!value, field}),
         Date: ({value, field}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value && new Date(value), {
-                validateOnValueUpdate: false,
-            });
+            const {model, error, handleChange} = createFieldValidation(field, value && new Date(value));
 
             return fieldCreate({
                 field,
@@ -93,9 +101,7 @@ export default async function useFields(fields, materials) {
             });
         },
         String: ({field, value}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value, {
-                validateOnValueUpdate: false,
-            });
+            const {model, error, handleChange} = createFieldValidation(field, value);
 
             return fieldCreate({
                 field,
@@ -110,9 +116,7 @@ export default async function useFields(fields, materials) {
             });
         },
         Wiki: ({field, value}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value, {
-                validateOnValueUpdate: false,
-            });
+            const {model, error, handleChange} = createFieldValidation(field, value);
 
             return fieldCreate({
                 field,
@@ -127,9 +131,7 @@ export default async function useFields(fields, materials) {
             });
         },
         Text: ({field, value}) => {
-            const {model, error, handleChange} = createFieldValidation(field, value, {
-                validateOnValueUpdate: false,
-            });
+            const {model, error, handleChange} = createFieldValidation(field, value);
 
             return fieldCreate({
                 field,
@@ -163,16 +165,50 @@ export default async function useFields(fields, materials) {
                 name: x.title,
             }));
 
-            
-
-            const {model, error, handleChange} = createFieldListValidation(field, values, {
-                validateOnValueUpdate: false,
-            });
+            const {model, error, handleChange} = createFieldListValidation(field, values);
 
             return fieldCreate({
                 field,
                 ofType,
                 type,
+                value: values,
+                props: {
+                    options,
+                    placeholder: field.description,
+                    multiple,
+                    error,
+                    onSelect: handleChange,
+                    onBlur: () => handleChange(model.value),
+                },
+                validate: () => handleChange(model.value),
+            });
+        },
+        Dictionary: async ({type = 'Dictionary', field, value, multiple, ofType}) => {
+            const of = ofType ? field.type.of.of : field.type.of;
+            const values =
+                value &&
+                (ofType
+                    ? value.map((x) => ({
+                          name: x.name,
+                          key: x.id,
+                      }))
+                    : {
+                          key: value.id,
+                          name: value.name,
+                      });
+            const materials = await sectionsService.getSectionMaterials(of);
+
+            const options = materials.data.map((x) => ({
+                key: x.id,
+                name: x.name,
+            }));
+
+            const {model, error, handleChange} = createFieldListValidation(field, values);
+
+            return fieldCreate({
+                field,
+                type,
+                ofType,
                 value: values,
                 props: {
                     options,
@@ -204,10 +240,8 @@ export default async function useFields(fields, materials) {
                           name: value,
                       });
 
-            const {model, error, handleChange} = createFieldListValidation(field, values, {
-                validateOnValueUpdate: false,
-            });
-        
+            const {model, error, handleChange} = createFieldListValidation(field, values);
+
             return fieldCreate({
                 field,
                 type,

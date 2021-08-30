@@ -225,7 +225,7 @@ export default {
 
             const fieldList = sectionObject.fields.filter((f) => !isFiles(f));
 
-            const f = await useFields(fieldList, materials);
+            const f = await useFields(fieldList, materials, sectionValue.value || sectionId);
 
             fields.value = f;
         };
@@ -310,15 +310,14 @@ export default {
                 const fieldsSubmit = {};
                 for (const field of fields.value) {
                     if (field.type == 'List') {
-                        console.log(field);
                         if (field.value) {
-                            if (field.ofType == 'Enum') {
+                            if (field.ofType == 'Enum' || field.ofType == 'Dictionary') {
                                 fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
                             } else {
                                 fieldsSubmit[field.id] = field.value.map((x) => x.name);
                             }
                         }
-                    } else if (field.type == 'Enum') {
+                    } else if (field.type == 'Enum' || field.type == 'Dictionary') {
                         if (field.value) {
                             fieldsSubmit[field.id] = {id: field.value.key};
                         }
@@ -396,6 +395,7 @@ export default {
             Text: VText,
             Enum: VSelect,
             List: VSelect,
+            Dictionary: VSelect,
             Select: VSelect,
             Date: VDatePicker,
             Wiki: VTextEditor,

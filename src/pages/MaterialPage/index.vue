@@ -28,14 +28,16 @@
                             </div>
                             <div class="sCardHead__head">
                                 <div class="row">
-                                    <div v-for="(block, i) of topBlocks" :key="i" class="col-sm-6">
-                                        <div class="sCardHead__head-panel">
-                                            <div class="row">
-                                                <div class="col text-dark small">{{ block.title }}</div>
-                                                <div class="col-auto fw-500">{{ block.value }}</div>
+                                    <template v-for="(block, i) of topBlocks" :key="i" >
+                                        <div v-if="block.isActive" class="col-sm-6">
+                                            <div class="sCardHead__head-panel">
+                                                <div class="row">
+                                                    <div class="col text-dark small">{{ block.title }}</div>
+                                                    <div class="col-auto fw-500">{{ block.value }}</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </template>
                                 </div>
                             </div>
                             <div class="sCardHead__body">
@@ -74,7 +76,15 @@
                                         <div class="strong">{{ el.title }}</div>
                                         <ul v-if="el.value">
                                             <li v-for="(v, x) of el.value" :key="x">
-                                                {{ el.type == 'List' ? (el.ofType == 'Enum' ? v.title : v) : el.type == 'Enum' ? v.title : v }}
+                                                {{
+                                                    el.type == 'List'
+                                                        ? el.ofType == 'Enum'
+                                                            ? v.title
+                                                            : v
+                                                        : el.type == 'Enum'
+                                                        ? v.title
+                                                        : v
+                                                }}
                                             </li>
                                         </ul>
                                     </template>
@@ -87,7 +97,7 @@
         </div>
         <!-- end sCardHead-->
         <!-- start sCardDocs-->
-        <FilesContainer v-if="files.length" :files="files" />
+        <FilesContainer v-if="files && files.length" :files="files" />
         <!-- end sCardDocs-->
         <ModalWindow v-model="isShow" maxWidth="24rem">
             <div class="form-wrap">
@@ -139,88 +149,123 @@ export default {
 
         const store = useStore();
         const canUpdate = computed(() => {
-            const user = store.getters['user/getUser']
+            const user = store.getters['user/getUser'];
             return user?.role === 'admin' || user?.role === 'moderator';
         });
 
-        const getData = async () => {
+        const getData = async (sectionId, materialId, materials) => {
             const section = await sectionsService.getSectionObject(sectionId);
-            const material = await materialService.getMaterial(sectionId, materialId);
+            const material = materials || (await materialService.getMaterial(sectionId, materialId));
 
-            breadcrumbs.value = [
-                ...breadcrumbs.value,
-                {
-                    name: section.title,
-                    link: `/search/${sectionId}`,
-                },
-                {
-                    name: material.name,
-                },
-            ];
+            if (!materials) {
+                breadcrumbs.value = [
+                    {
+                        link: '/',
+                        name: 'Главная',
+                    },
+                    {
+                        name: section.title,
+                        link: `/search/${sectionId}`,
+                    },
+                    {
+                        name: material.name,
+                    },
+                ];
+
+                title.value = material.name;
+            }
 
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
-            const allFields = section.fields.filter((f) => !isFiles(f)).sort((a, b) => a.sort_index - b.sort_index);
+            const idDictionary = (f) =>
+                f.type.name == 'Dictionary' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'Dictionary');
 
-            fields.value = allFields
-                .filter((x) => x.type.name == 'Text' || x.type.name == 'Wiki' || x.type.name == 'String')
-                .map((x) => ({
-                    ...x,
-                    value: material[x.id],
-                    type: x.type.name,
-                }));
+            const allFields = section.fields
+                .filter((f) => !idDictionary(f) && !isFiles(f))
+                .sort((a, b) => a.sort_index - b.sort_index);
 
-            lists.value = allFields
-                .filter(
-                    (x) =>
-                        x.type.name == 'List' ||
-                        x.type.name == 'Select' ||
-                        x.type.name == 'Dictionary' ||
-                        x.type.name == 'Enum'
-                )
-                .map((x) => ({
-                    ...x,
-                    value: material[x.id] ? (Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]]) : [],
-                    type: x.type.name,
-                    ofType: x.type.of.name,
-                }));
+            fields.value = [
+                ...fields.value,
+                ...allFields
+                    .filter((x) => x.type.name == 'Text' || x.type.name == 'Wiki' || x.type.name == 'String')
+                    .map((x) => ({
+                        ...x,
+                        value: material[x.id],
+                        type: x.type.name,
+                    })),
+            ];
 
-            topBlocks.value = allFields
-                .filter((x) => x.type.name == 'Date' || x.type.name == 'Boolean')
-                .map((x) => {
-                    if (x.type.name == 'Boolean') {
-                        return {
-                            ...x,
-                            value: material[x.id] ? 'Да' : 'Нет',
-                            title: x.title,
-                        };
-                    } else {
-                        return {
-                            ...x,
-                            value: format(new Date(material[x.id]), 'dd.MM.yyyy'),
-                            title: x.title,
-                        };
-                    }
-                });
+            lists.value = [
+                ...lists.value,
+                ...allFields
+                    .filter((x) => x.type.name == 'List' || x.type.name == 'Select' || x.type.name == 'Enum')
+                    .map((x) => ({
+                        ...x,
+                        value: material[x.id]
+                            ? Array.isArray(material[x.id])
+                                ? material[x.id]
+                                : [material[x.id]]
+                            : [],
+                        type: x.type.name,
+                        ofType: x.type.of.name,
+                    })),
+            ];
 
-            files.value = section.fields.filter(isFiles).map((f, i) => ({
-                type: 'File',
-                title: f.title,
-                isActive: !i,
-                size: f.size,
-                value: material[f.id],
-            }));
+            topBlocks.value = [
+                ...topBlocks.value,
+                ...allFields
+                    .filter((x) => x.type.name == 'Date' || x.type.name == 'Boolean')
+                    .map((x) => {
+                        if (x.type.name == 'Boolean') {
+                            return {
+                                ...x,
+                                value: material[x.id] ? 'Да' : 'Нет',
+                                title: x.title,
+                                type: x.type.name,
+                                isActive: true,
+                            };
+                        } else {
+                            return {
+                                ...x,
+                                value: material[x.id] && format(new Date(material[x.id]), 'dd.MM.yyyy'),
+                                title: x.title,
+                                type: x.type.name,
+                                isActive: !!material[x.id],
+                            };
+                        }
+                    }),
+            ];
 
-            title.value = material.name;
+            files.value = [
+                ...files.value,
+                ...section.fields.filter(isFiles).map((f) => ({
+                    type: 'File',
+                    title: f.title,
+                    isActive: false,
+                    size: f.size,
+                    value: material[f.id],
+                })),
+            ];
+
+            if(files.value && files.value[0]) {
+                files.value[0].isActive = true;
+            }
+
+            const dictionary = section.fields.filter(idDictionary);
+
+            for (const d of dictionary) {
+                const sectionId = d.type.name == 'List' ? d.type.of.of : d.type.of;
+                const materials = d.type.name == 'List' ? material[d.id] : [material[d.id]];
+                for (const m of materials) {
+                    await getData(sectionId, d.id, m);
+                }
+            }
+
+            
         };
 
-        getData();
-
-        const setActive = (file) => {
-            files.value.map((x) => (x.isActive = false));
-            file.isActive = true;
-        };
+        getData(sectionId, materialId);
 
         const deleteMaterial = async () => {
             await materialService.removeMaterial(sectionId, materialId);
@@ -236,7 +281,6 @@ export default {
             isShow,
             breadcrumbs,
             deleteMaterial,
-            setActive,
             title,
             fields,
             lists,
@@ -249,10 +293,6 @@ export default {
 </script>
 
 <style scoped>
-.nav-item {
-    cursor: pointer;
-}
-
 .main-block {
     display: flex;
     flex-flow: column;
