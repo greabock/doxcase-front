@@ -10,7 +10,8 @@
                 :key="section?.id">
                 <router-link
                     :class="{active: `/search/${section.id}` === $route.path}"
-                    :to="'/search/' + section?.id">
+                    :to="`/search/${section.id}`"
+                >
                     {{ section?.title }}
                 </router-link>
             </li>
@@ -46,6 +47,7 @@
 
 <script>
 import {onMounted, onUnmounted, ref} from 'vue';
+import { debounce } from 'lodash';
 
 export default {
 props: {
@@ -61,22 +63,22 @@ setup(props) {
     const isDropdownShow = ref(false);
     const dotsLeft = ref(0);
 
-    const linksHandler = () => {
-        const blockWidth = ulBlock.value.clientWidth;
+    const linksHandler = debounce(() => {
+        const blockWidth = ulBlock.value.getBoundingClientRect().width;
         let dropdownArr = [];
         let linksWidth = 0;
 
         ulBlock.value.children.forEach((li, i) => {
-            linksWidth += li.clientWidth;
+            linksWidth += li.getBoundingClientRect().width;
+
             if (linksWidth > blockWidth) {
                 dropdownArr.push(props.sectionsInHeader[i]);
             } else {
                 dotsLeft.value = linksWidth;
-                console.log(linksWidth);
             }
         });
         sectionsInDropdown.value = dropdownArr;
-    };
+    }, 500);
 
     // watch(dotsLeft, (newVal) => {
     //     document.querySelector('.menu-with-dropdown__block').style.left = newVal + 'px';
@@ -107,6 +109,9 @@ setup(props) {
 </script>
 
 <style scoped>
+.menu {
+    margin: 0;
+}
 
 @media (min-width: 992px) {
     .menu {
@@ -114,9 +119,11 @@ setup(props) {
         overflow:hidden;
     }
 }
-.menu-with-dropdown__toggle {
-    margin-left:-10px;
+
+.menu-with-dropdown {
+    padding-right: 1.2rem;
 }
+
 .menu-with-dropdown__block {
     z-index: 10;
     position: absolute;
