@@ -20,54 +20,18 @@
                         <ErrorMessage name="password" class="error-feedback" />
                     </div>
                     <!-- +e.input-wrap-->
-                    <button class="btn btn-primary w-100" :disabled="loading">
+                    <v-button :disabled="loading" class="w-100">
                         <span v-show="loading" class="spinner-border spinner-border-sm"></span>
-                        <span>Login</span>
-                    </button>
+                        <span>Войти</span>
+                    </v-button>
                 </Form>
-                <button class="btn btn-outline-white w-100">Войти с помощью Azure</button>
+                <v-button outline="true" color="white" class="w-100"> Войти с помощью Azure </v-button>
             </div>
-        </div>
-        <!-- end sLogin-->
-    </div>
-    <!--  start modals-->
-    <div class="modal-win" id="modal-call" style="display: none">
-        <div class="form-wrap">
-            <form>
-                <div class="text-center">
-                    <div class="form-wrap__title form-data h3 ttu">Обратный звонок</div>
-                    <p class="after-headline">
-                        Заполните заявку и&nbsp;мы&nbsp;с&nbsp;Вами свяжемся в&nbsp;течение 15&nbsp;минут
-                    </p>
-                </div>
-                <div class="form-wrap__input-wrap form-group">
-                    <input
-                        class="form-wrap__input form-control"
-                        name="text"
-                        type="text"
-                        placeholder="Ваше Имя"
-                        required="required"
-                    />
-                </div>
-                <!-- +e.input-wrap-->
-                <button class="form-wrap__btn btn" type="submit"></button>
-                <div class="form-wrap__policy">
-                    <label class="custom-input form-check"
-                        ><input
-                            class="custom-input__input form-check-input"
-                            name="checkbox"
-                            type="checkbox"
-                            checked="checked"
-                        /><small class="custom-input__text text-secondary"
-                            >Согласен на обработку и хранение моих персональных данных в соответствии с условиями</small
-                        >
-                    </label>
-                </div>
-            </form>
         </div>
     </div>
 </template>
 <script>
+import VButton from '@/ui/VButton';
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
@@ -80,6 +44,7 @@ export default {
         Field,
         ErrorMessage,
         LogoIcon,
+        VButton,
     },
     setup() {
         const schema = yup.object().shape({

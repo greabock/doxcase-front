@@ -4,12 +4,10 @@
         <router-link to="/auth">Login</router-link>
         <router-link to="/profile">Profile</router-link>
         <router-link to="/search">Search</router-link>
-        <router-link to="/edit">Edit (admin)</router-link>
         <router-link to="/material-creation">Material creation</router-link>
-        <router-link to="/chapter-list">Chapter list</router-link>
-        <router-link to="/chapter-creation">Chapter creation</router-link>
+        <router-link to="/sections">Sections</router-link>
+        <router-link to="/section-creation">Section creation</router-link>
         <router-link to="/material/someId">Material id=someId</router-link>
-        <router-link to="/"></router-link>
     </div>
 </template>
 

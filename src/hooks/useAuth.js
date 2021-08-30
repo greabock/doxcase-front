@@ -1,5 +1,5 @@
 import {useRouter} from 'vue-router';
-import AuthService from '../services/auth.service';
+import AuthService from '@/services/auth.service';
 import {ref} from 'vue';
 import {useStore} from 'vuex';
 
@@ -15,6 +15,8 @@ export function useAuth() {
             const token = await AuthService.getToken({login, password});
             localStorage.setItem('token', token);
             await store.dispatch('user/fetchUserData');
+            const user = store.getters['user/getUser'];
+            localStorage.setItem('role', user.role);
             await router.push('/');
         } catch (e) {
             loading.value = false;

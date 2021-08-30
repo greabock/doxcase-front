@@ -2,16 +2,14 @@
     <div class="topLine section" id="topLine">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-auto">
-                    <router-link to="/" class="topLine__link-back">
-                        <svg class="icon icon-arrow-left">
-                            <use xlink:href="img/svg/sprite.svg#arrow-left"></use>
-                        </svg>
-                    </router-link>
-                </div>
+
                 <div class="col-auto d-lg-none">
                     <div class="topLine__toggle-wrap">
-                        <div class="toggle-menu-mobile toggle-menu-mobile--js"><span></span></div>
+                        <div
+                            @click='toggleMenuMobileActive'
+                            class="toggle-menu-mobile toggle-menu-mobile--js"
+                            :class="{'on': isMenuMobileActive}"
+                        ><span></span></div>
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
@@ -25,34 +23,46 @@
                     </router-link>
                 </div>
                 <div class="col-lg order-lg-0 order-last">
-                    <div class="menu-mobile menu-mobile--js d-lg-block">
+                    <div
+                        class="menu-mobile menu-mobile--js d-lg-block"
+                        :class="{'active': isMenuMobileActive}"
+                    >
                         <div class="row">
                             <div class="col-lg-auto">
                                 <div class="menu-mobile__btn-wrap">
-                                    <router-link to="/" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
+                                    <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
-                                            <use xlink:href="img/svg/sprite.svg#setting"></use>
+                                            <use xlink:href="/img/svg/sprite.svg#setting"></use>
                                         </svg>
                                         <span class="topLine__btn-text d-lg-none">Настроить разделы</span>
                                     </router-link>
                                 </div>
                             </div>
                             <div class="col-lg">
-                                <ul class="menu">
-                                    <li><router-link to="/">О сервисе</router-link></li>
-                                </ul>
+<!-- Section links in header -->
+
+                                <top-menu
+                                    v-if="sectionsInHeader?.length"
+                                    :sectionsInHeader="sectionsInHeader"
+                                ></top-menu>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-auto">
+                <div
+                    v-if="user?.role === 'admin' ||  user?.role === 'moderator'"
+                    class="col-auto">
                     <router-link
-                        to="/chapter-creation"
+                        to="/material-creation"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>
                 <div class="col-auto">
-                    <div class="avatar-block bg-wrap"><img class="img-bg" :src="userAvatar" alt="" /></div>
+                    <div class="avatar-block bg-wrap">
+                        <router-link to="/profile">
+                            <img class="img-bg" :src="userAvatar" alt="" />
+                        </router-link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -60,29 +70,54 @@
 </template>
 
 <script>
-import {computed, onMounted} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
-import LogoIconSmall from '../assets/LogoIconSmall';
+import LogoIconSmall from '@/assets/LogoIconSmall';
+import TopMenu from '@/components/TopMenu';
 
 export default {
     components: {
         LogoIcon,
         LogoIconSmall,
+        TopMenu,
     },
     setup() {
         const store = useStore();
 
-        onMounted(async () => {
-            if (store.state.user.user === null) {
-                await store.dispatch('user/fetchUserData');
+        const sectionsInHeader = computed(() => {
+            const sections = store.getters['sections/getSections'];
+            if (sections?.length) {
+                return sections.filter(item => item.is_navigation)
+                    .sort((a, b) => a.sort_index - b.sort_index)
             }
+            return []
+        });
+
+        const isMenuMobileActive = ref(false);
+        const toggleMenuMobileActive = () => {
+            isMenuMobileActive.value = !isMenuMobileActive.value;
+        };
+
+        onMounted(async () => {
+             await store.dispatch('user/fetchUserData');
+             await store.dispatch('sections/fetchSections');
         });
 
         return {
-            user: computed(() => store.state.user.user),
+            user: computed(() => store.getters['user/getUser']),
             userAvatar: computed(() => store.getters['user/getUserAvatar']),
+            sectionsInHeader,
+            toggleMenuMobileActive,
+            isMenuMobileActive,
         };
     },
 };
 </script>
+
+<style scoped>
+.topLine {
+    z-index: 1;
+}
+
+</style>
