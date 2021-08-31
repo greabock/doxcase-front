@@ -6,7 +6,7 @@
         <div class="sSections__center-empty">
             <div class="sSections__title-empty h1">Ничего не найдено
             </div>
-            <p>Обновите ваш поиск</p>
+            <p>Уточните ваш запрос</p>
         </div>
     </div>
 
