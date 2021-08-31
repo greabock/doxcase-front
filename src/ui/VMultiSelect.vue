@@ -5,6 +5,7 @@
                 'form-control select__element',
                 {select__element_bordered: bordered},
                 {select__element_shadow: shadow},
+                {select__element_active: isActive},
                 {'is-invalid': error},
             ]"
             @click="isActive = !isActive"
@@ -158,7 +159,7 @@ $blue: #1d47ce;
     background: #fff;
     border-radius: 5px;
     border: 1px solid transparent;
-    // padding: 0.8125rem 1.0625rem;
+    cursor: pointer;
 }
 
 .select__element_border {
@@ -263,4 +264,8 @@ $blue: #1d47ce;
 .is-invalid {
     border-color: #eb5757;
 }
+
+.select__element_active{
+    box-shadow: 0 0 0 0.25rem rgba(29, 71, 206, 0.25)
+};
 </style>
