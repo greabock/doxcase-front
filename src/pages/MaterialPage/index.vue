@@ -28,7 +28,7 @@
                             </div>
                             <div class="sCardHead__head">
                                 <div class="row">
-                                    <template v-for="(block, i) of topBlocks" :key="i" >
+                                    <template v-for="(block, i) of topBlocks" :key="i">
                                         <div v-if="block.isActive" class="col-sm-6">
                                             <div class="sCardHead__head-panel">
                                                 <div class="row">
@@ -70,26 +70,7 @@
                             >
                                 Удалить материал
                             </button>
-                            <ul>
-                                <li v-for="(el, i) of lists" :key="i">
-                                    <template v-if="el.value && el.value.length">
-                                        <div class="strong">{{ el.title }}</div>
-                                        <ul v-if="el.value">
-                                            <li v-for="(v, x) of el.value" :key="x">
-                                                {{
-                                                    el.type == 'List'
-                                                        ? el.ofType == 'Enum'
-                                                            ? v.title
-                                                            : v
-                                                        : el.type == 'Enum'
-                                                        ? v.title
-                                                        : v
-                                                }}
-                                            </li>
-                                        </ul>
-                                    </template>
-                                </li>
-                            </ul>
+                            <ListContainer :lists="lists" />
                         </div>
                     </div>
                 </div>
@@ -123,12 +104,14 @@ import sectionsService from '@/services/sections.service';
 import ModalWindow from '@/components/ModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import FilesContainer from './FilesContainer';
+import ListContainer from './ListContainer';
 
 export default {
     components: {
         VBreadcrumb,
         ModalWindow,
         FilesContainer,
+        ListContainer,
     },
     setup() {
         const route = useRoute();
@@ -153,27 +136,25 @@ export default {
             return user?.role === 'admin' || user?.role === 'moderator';
         });
 
-        const getData = async (sectionId, materialId, materials) => {
+        const getData = async (sectionId, materialId) => {
             const section = await sectionsService.getSectionObject(sectionId);
-            const material = materials || (await materialService.getMaterial(sectionId, materialId));
+            const material = await materialService.getMaterial(sectionId, materialId);
 
-            if (!materials) {
-                breadcrumbs.value = [
-                    {
-                        link: '/',
-                        name: 'Главная',
-                    },
-                    {
-                        name: section.title,
-                        link: `/search/${sectionId}`,
-                    },
-                    {
-                        name: material.name,
-                    },
-                ];
+            breadcrumbs.value = [
+                {
+                    link: '/',
+                    name: 'Главная',
+                },
+                {
+                    name: section.title,
+                    link: `/search/${sectionId}`,
+                },
+                {
+                    name: material.name,
+                },
+            ];
 
-                title.value = material.name;
-            }
+            title.value = material.name;
 
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
@@ -181,9 +162,7 @@ export default {
             const idDictionary = (f) =>
                 f.type.name == 'Dictionary' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'Dictionary');
 
-            const allFields = section.fields
-                .filter((f) => !idDictionary(f) && !isFiles(f))
-                .sort((a, b) => a.sort_index - b.sort_index);
+            const allFields = section.fields.filter((f) => !isFiles(f)).sort((a, b) => a.sort_index - b.sort_index);
 
             fields.value = [
                 ...fields.value,
@@ -199,17 +178,39 @@ export default {
             lists.value = [
                 ...lists.value,
                 ...allFields
-                    .filter((x) => x.type.name == 'List' || x.type.name == 'Select' || x.type.name == 'Enum')
-                    .map((x) => ({
-                        ...x,
-                        value: material[x.id]
-                            ? Array.isArray(material[x.id])
-                                ? material[x.id]
-                                : [material[x.id]]
-                            : [],
-                        type: x.type.name,
-                        ofType: x.type.of.name,
-                    })),
+                    .filter(
+                        (x) =>
+                            x.type.name == 'List' ||
+                            x.type.name == 'Select' ||
+                            x.type.name == 'Enum' ||
+                            x.type.name == 'Dictionary'
+                    )
+                    .map((d) => {
+                        if (idDictionary(d)) {
+                            const sectionId = d.type.name == 'List' ? d.type.of.of : d.type.of;
+                            const materials = d.type.name == 'List' ? material[d.id] : [material[d.id]];
+                            return {
+                                title: d.title,
+                                value: materials.map((x) => ({
+                                    title: x.name,
+                                    link: `/sections/${sectionId}/material/${x.id}`,
+                                })),
+                                type: d.type.name,
+                                ofType: d.type.of.name,
+                            };
+                        }
+
+                        return {
+                            ...d,
+                            value: material[d.id]
+                                ? Array.isArray(material[d.id])
+                                    ? material[d.id]
+                                    : [material[d.id]]
+                                : [],
+                            type: d.type.name,
+                            ofType: d.type.of.name,
+                        };
+                    }),
             ];
 
             topBlocks.value = [
@@ -248,21 +249,9 @@ export default {
                 })),
             ];
 
-            if(files.value && files.value[0]) {
+            if (files.value && files.value[0]) {
                 files.value[0].isActive = true;
             }
-
-            const dictionary = section.fields.filter(idDictionary);
-
-            for (const d of dictionary) {
-                const sectionId = d.type.name == 'List' ? d.type.of.of : d.type.of;
-                const materials = d.type.name == 'List' ? material[d.id] : [material[d.id]];
-                for (const m of materials) {
-                    await getData(sectionId, d.id, m);
-                }
-            }
-
-            
         };
 
         getData(sectionId, materialId);
