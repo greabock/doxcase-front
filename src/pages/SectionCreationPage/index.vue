@@ -216,7 +216,7 @@ export default {
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: '/img/@1x/avatar-2.png',
+            image: '/img/empty.png',
             sort_index: 0,
             fields: [],
         };

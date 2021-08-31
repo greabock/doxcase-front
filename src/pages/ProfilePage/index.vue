@@ -37,14 +37,16 @@
                                     </span>
                                 </li>
                             </ul>
-                            <div v-show="pageContent === 'enums'" class="sCabinetMain__body">
-                                <!-- Enums block -->
-                                <enums-tab></enums-tab>
-                            </div>
-                            <div v-show="pageContent === 'users'" class="sCabinetMain__body">
-                                <!-- Users block -->
-                                <users-tab></users-tab>
-                            </div>
+                                <div v-show="pageContent === 'enums'" class="sCabinetMain__body">
+                                    <!-- Enums block -->
+                                    <enums-tab></enums-tab>
+                                </div>
+                                <div v-if="user?.role === 'admin'">
+                                    <div v-show="pageContent === 'users'" class="sCabinetMain__body">
+                                        <!-- Users block -->
+                                        <users-tab></users-tab>
+                                    </div>
+                                </div>
                         </div>
                         <!-- end sCabinetMain-->
                     </div>
