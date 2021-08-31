@@ -1,4 +1,15 @@
 <template>
+    <div
+        v-if="!(materialsSnippetsArr.length ||  filesArr.length)"
+        class="section pt-5"
+    >
+        <div class="sSections__center-empty">
+            <div class="sSections__title-empty h1">Ничего не найдено
+            </div>
+            <p>Обновите ваш поиск</p>
+        </div>
+    </div>
+
     <div class="sSearchResult__items">
         <div
             v-for="snippet in materialsSnippetsArr"
