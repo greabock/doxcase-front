@@ -131,9 +131,9 @@
                 </div>
 
                 <!-- Sections loader -->
-                <div v-if="isSectionsLoading" class="content-loader__wrapper">
-                    <div class="content-loader__cont">Loading...</div>
-                </div>
+                <loader
+                    v-if="isSectionsLoading"
+                ></loader>
             </div>
         </div>
 
@@ -166,12 +166,14 @@ import {useStore} from 'vuex';
 import VButton from '@/ui/VButton';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import ModalWindow from '@/components/ModalWindow';
+import Loader from '@/components/Loader';
 
 export default {
     components: {
         VButton,
         VBreadcrumb,
         ModalWindow,
+        Loader,
     },
     setup() {
         const store = useStore();
@@ -270,20 +272,4 @@ export default {
 </script>
 
 <style scoped>
-.content-loader__wrapper {
-    position: fixed;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.5);
-}
-.content-loader__cont {
-    font-size: 26px;
-    color: #1d47ce;
-}
 </style>

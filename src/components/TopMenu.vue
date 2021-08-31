@@ -72,7 +72,6 @@ setup(props) {
                 dropdownArr.push(props.sectionsInHeader[i]);
             } else {
                 dotsLeft.value = linksWidth;
-                console.log(linksWidth);
             }
         });
         sectionsInDropdown.value = dropdownArr;
