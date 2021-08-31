@@ -441,6 +441,7 @@ export default {
             }
         };
         watch(() => store.getters['search/getAtFirst'], () => {
+            searchObj.value = '';
             currentSectionId.value = '';
             isAtFirst.value = true;
         })
