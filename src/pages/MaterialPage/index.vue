@@ -45,7 +45,7 @@
                                     <template v-if="field.value">
                                         <h6>{{ field.title }}</h6>
                                         <p v-if="field.type !== 'Wiki'">{{ field.value }}</p>
-                                        <p v-else v-html="field.value" />
+                                        <div class="html-data" v-else v-html="field.value" />
                                         <br />
                                     </template>
                                 </template>
@@ -290,5 +290,9 @@ export default {
 
 .btn-primary {
     color: #fff;
+}
+
+.html-data >>> * {
+    max-width: 100%;
 }
 </style>
