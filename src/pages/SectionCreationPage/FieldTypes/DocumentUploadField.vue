@@ -38,7 +38,8 @@
                                 v-model='maxFileSizeValue'
                                 class="form-wrap__input form-control input-max-size"
                                 name="maxFileSize"
-                                type="text"
+                                type="number"
+                                min="1"
                                 placeholder=""
                             />
                             <span class="mb-placeholder"
@@ -92,7 +93,7 @@ export default {
         const schema = yup.object({
             title: yup.string().required(),
             fileExtensions: yup.array().min(1),
-            maxFileSize: yup.string().required(),
+            maxFileSize: yup.number().required().positive().integer(),
         });
 
         const {
