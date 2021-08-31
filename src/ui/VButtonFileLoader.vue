@@ -18,8 +18,13 @@ export default {
         const files = ref([]);
 
         function onDrop(acceptFiles, rejectReasons) {
-            ctx.emit('upload', acceptFiles);
-            ctx.emit('reject', rejectReasons);
+            if (acceptFiles.length) {    
+                ctx.emit('upload', acceptFiles);
+            }
+
+            if (rejectReasons.length) {    
+                ctx.emit('reject', rejectReasons);
+            }
         }
 
         const {getRootProps, getInputProps, ...rest} = useDropzone({onDrop, accept: props.accept});

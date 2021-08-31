@@ -26,16 +26,13 @@ props: {
         type: String,
         default: null
     }
-},
-setup(props) {
-    console.log(props.section);
 }
-
 };
 </script>
 
 <style scoped>
 .search-radio__label {
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 </style>

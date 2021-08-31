@@ -36,7 +36,8 @@
                                 v-model="maxLengthValue"
                                 class="form-wrap__input form-control"
                                 name="maxLength"
-                                type="text"
+                                type="number"
+                                min="1"
                                 placeholder="Заполните поле"
                             />
                         </label>
@@ -108,7 +109,7 @@ export default {
         const schema = yup.object({
             title: yup.string().required(),
             description: yup.string().required(),
-            maxLength: yup.number().required(),
+            maxLength: yup.number().required().positive().integer(),
             is_present_in_card: yup.boolean(),
             required: yup.boolean()
         });

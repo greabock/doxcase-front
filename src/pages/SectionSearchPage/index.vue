@@ -32,6 +32,7 @@
                                         <!-- +e.input-wrap-->
                                         <button
                                             @click.prevent="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
+                                            @keyup.enter="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
                                             class="search-block__btn">
                                             <svg class="icon icon-search ">
                                                 <use xlink:href="/img/svg/sprite.svg#search"></use>
@@ -304,14 +305,10 @@ export default {
                fields: [...section.value.fields]
            };
            selectorsObj.value = [];
+           searchObj.value = '';
         };
         const showResetSelectors = computed(() => {
-            const bool = section.value.fields?.filter( field => !!field.filter_sort_index)
-            .filter(field => field.type.name === 'Enum' ||  field.type.name === 'Dictionary' ||
-                field.type.name === 'Select' || field.type.name === 'List').length;
-            console.log(bool);
-            console.log(section.value.fields);
-            return bool
+            return !!(Object.keys(selectorsObj.value).length || searchObj.value);
         });
 
         const queryObject = computed(() => {
@@ -399,7 +396,7 @@ export default {
                 section.value = await sectionsService.getSectionObject(id);
                 resetSelectors();
                 resetFilters();
-
+                bcTitle.value = section.value.title;
 
             } catch(e) {
                 console.log(e)
@@ -415,8 +412,10 @@ export default {
         },  {deep: true}
         );
 
-        watch( router.currentRoute, async () => {
-            await updateSearchPage(router.currentRoute.value.params.id);
+        watch( router.currentRoute, async (newVal) => {
+            if (newVal.params.id) {
+                await updateSearchPage(router.currentRoute.value.params.id);
+            }
         });
         onMounted(async () => {
             try {

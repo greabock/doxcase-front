@@ -149,7 +149,6 @@ export default {
                         newSelectors[item.id] = item.selectValue.map((item) => item.key);
                     }
                 });
-                console.log(newSelectors);
                 emit('updateSelectors', newSelectors);
             },
             {deep: true}

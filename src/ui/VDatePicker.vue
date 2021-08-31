@@ -40,7 +40,7 @@ export default {
     },
     directives: {maska},
     props: {
-        modelValue: Date,
+        modelValue: [Date, String],
         placeholder: String,
         error: String,
     },
@@ -94,9 +94,15 @@ export default {
         };
 
         const hide = (event) => {
+            if (!isActive.value) {
+                return 
+            }
+            
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
             }
+
+            ctx.emit('blur', date.value);
         };
 
         onMounted(() => {

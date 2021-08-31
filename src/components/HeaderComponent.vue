@@ -13,14 +13,34 @@
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
-                    <router-link to="/">
-                        <div class="d-sm-none">
-                            <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
+                    <template
+                        v-if="$route.path === '/'"
+                    >
+                        <div
+                            class="logo-div"
+                            @click="changeAtFirst"
+                        >
+                            <div class="d-sm-none">
+                                <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
+                            </div>
+                            <div class="d-none d-sm-block">
+                                <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                            </div>
                         </div>
-                        <div class="d-none d-sm-block">
-                            <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
-                        </div>
-                    </router-link>
+                    </template>
+                    <template
+                        v-else
+                    >
+                        <router-link to="/">
+                            <div class="d-sm-none">
+                                <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
+                            </div>
+                            <div class="d-none d-sm-block">
+                                <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                            </div>
+                        </router-link>
+                    </template>
+
                 </div>
                 <div class="col-lg order-lg-0 order-last">
                     <div
@@ -40,17 +60,11 @@
                             </div>
                             <div class="col-lg">
 <!-- Section links in header -->
-                                <div class="header-sections-wrapper">
-                                    <ul v-if='sectionsInHeader?.length' class="menu header-sections">
-                                        <li v-for="section in sectionsInHeader" :key="section?.id">
-                                            <router-link
-                                                :class="{active: section.id === $route.params.id}"
-                                                :to="'/search/' + section?.id">
-                                                {{ section?.title }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
+
+                                <top-menu
+                                    v-if="sectionsInHeader?.length"
+                                    :sectionsInHeader="sectionsInHeader"
+                                ></top-menu>
                             </div>
                         </div>
                     </div>
@@ -80,15 +94,17 @@ import {ref, computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
+import TopMenu from '@/components/TopMenu';
 
 export default {
     components: {
         LogoIcon,
         LogoIconSmall,
+        TopMenu,
     },
     setup() {
         const store = useStore();
-
+        const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
             const sections = store.getters['sections/getSections'];
             if (sections?.length) {
@@ -114,13 +130,17 @@ export default {
             sectionsInHeader,
             toggleMenuMobileActive,
             isMenuMobileActive,
+            changeAtFirst,
         };
     },
 };
 </script>
+
 <style scoped>
 .topLine {
     z-index: 1;
 }
-
+.logo-div {
+    cursor:pointer;
+}
 </style>

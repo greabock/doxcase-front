@@ -11617,7 +11617,7 @@ input:checked ~ .dropdown-custom-input__circle {
     .menu-with-dropdown__toggle {
         cursor: pointer;
         color: #1d47ce;
-        margin-left: 2.0625rem;
+        /* margin-left: 2.0625rem; */
         padding-top: 10px;
         padding-bottom: 10px;
     }

@@ -38,7 +38,8 @@
                                 v-model='maxFileSizeValue'
                                 class="form-wrap__input form-control input-max-size"
                                 name="maxFileSize"
-                                type="text"
+                                type="number"
+                                min="1"
                                 placeholder=""
                             />
                             <span class="mb-placeholder"
@@ -92,7 +93,7 @@ export default {
         const schema = yup.object({
             title: yup.string().required(),
             fileExtensions: yup.array().min(1),
-            maxFileSize: yup.string().required(),
+            maxFileSize: yup.number().required().positive().integer(),
         });
 
         const {
@@ -114,7 +115,7 @@ export default {
             setValues({
                 title: props.fieldToChange.title,
                 fileExtensions: props.fieldToChange.type?.of?.extensions,
-                maxFileSize: props.fieldToChange.type?.of?.max,
+                maxFileSize: Number(props.fieldToChange.type?.of?.max) / 1024,
             });
         }
 
@@ -126,7 +127,7 @@ export default {
                     name: 'List',
                     of: {
                         name: 'File',
-                        max: maxFileSize,
+                        max: Number(maxFileSize) * 1024,
                         extensions: fileExtensions
                     }
                 }
