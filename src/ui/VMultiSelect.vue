@@ -65,6 +65,7 @@ export default {
         options: Array,
         title: String,
         shadow: Boolean,
+        bordered: Boolean,
         disabled: Boolean,
         placeholder: String,
         multiple: {

@@ -17,6 +17,7 @@
     "date-fns": "^2.23.0",
     "lodash": "^4.17.21",
     "maska": "^1.4.5",
+    "quill-image-uploader": "^1.2.2",
     "reactivity": "^2.4.1",
     "uuid": "^8.3.2",
     "vee-validate": "^4.4.9",

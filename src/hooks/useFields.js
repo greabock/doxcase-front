@@ -1,5 +1,6 @@
 import enumsService from '@/services/enums.service';
 import sectionsService from '@/services/sections.service';
+import fileService from '@/services/files.service';
 
 import {useField} from 'vee-validate';
 import * as yup from 'yup';
@@ -117,12 +118,20 @@ export default async function useFields(fields, materials) {
         },
         Wiki: ({field, value}) => {
             const {model, error, handleChange} = createFieldValidation(field, value);
+            const upload = async (file) =>  {
+                const bodyFormData = new FormData();
+                bodyFormData.append('files[]', file);
+                const data = await fileService.uploadFiles(bodyFormData);
+                const [img] = data
+                return img.url
+            }
 
             return fieldCreate({
                 field,
                 type: 'Wiki',
                 value: model,
                 props: {
+                    upload,
                     placeholder: field.description,
                     error,
                     onBlur: handleChange,
