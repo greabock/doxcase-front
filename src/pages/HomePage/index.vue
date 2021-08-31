@@ -28,7 +28,7 @@
                                         </div>
                                         <!-- +e.input-wrap-->
                                         <button
-                                            @click.prevent="updateMaterialsAndFiles( currentSectionId, queryObject)"
+                                            @click.prevent="handleSearch"
                                             @keyup.enter="updateMaterialsAndFiles( currentSectionId, queryObject)"
                                             class="search-block__btn">
                                             <svg class="icon icon-search ">
@@ -289,7 +289,7 @@
                 </div>
                 <!-- +e.input-wrap-->
                 <button
-                    @click.prevent="updateMaterialsAndFiles( currentSectionId, queryObject)"
+                    @click.prevent="handleSearch"
                     @keyup.enter="updateMaterialsAndFiles( currentSectionId, queryObject)"
                     class="search-block__btn" type="submit">
                     <svg class="icon icon-search">
@@ -301,7 +301,7 @@
     </main>
 </template>
 <script>
-import {onMounted, ref, computed, watch} from 'vue';
+import {onMounted, ref, computed, watch } from 'vue';
 import Loader from '@/components/Loader';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -414,10 +414,8 @@ export default {
 
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (id, queryObject) => {
-            isAtFirst.value = false;
             try {
                 isLoading.value = true;
-
                 const materialsAndFiles = await searchService.searchSectionPost(id, queryObject);
                 materials.value = materialsAndFiles.materials;
                 files.value = materialsAndFiles.files;
@@ -442,13 +440,13 @@ export default {
                 isLoading.value = false;
             }
         };
-        watch(() => store.getters['search/getAtFirst'], async () => {
-            await resetSelectors();
+        watch(() => store.getters['search/getAtFirst'], () => {
+            currentSectionId.value = '';
             isAtFirst.value = true;
         })
-        watch( queryObject, (newVal, oldVal) => {
+        watch( queryObject, async (newVal, oldVal) => {
                 if (newVal.search === oldVal.search) {
-                    updateMaterialsAndFiles(currentSectionId.value, newVal)
+                    await updateMaterialsAndFiles(currentSectionId.value, newVal);
                 }
             },  {deep: true}
         );
@@ -465,6 +463,11 @@ export default {
                 isLoading.value = false;
             }
         });
+
+        const handleSearch = async () => {
+            await updateMaterialsAndFiles(currentSectionId.value, queryObject.value);
+            isAtFirst.value = false;
+        }
 
         return {
             isAtFirst,
@@ -490,10 +493,11 @@ export default {
             resetSelectors,
             showResetSelectors,
             currentSectionId,
-            changeSectionHandler
+            changeSectionHandler,
+            handleSearch,
         }
     },
-}
+};
 </script>
 
 <style scoped>

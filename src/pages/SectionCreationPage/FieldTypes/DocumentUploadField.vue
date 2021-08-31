@@ -38,7 +38,8 @@
                                 v-model='maxFileSizeValue'
                                 class="form-wrap__input form-control input-max-size"
                                 name="maxFileSize"
-                                type="text"
+                                type="number"
+                                min="1"
                                 placeholder=""
                             />
                             <span class="mb-placeholder"

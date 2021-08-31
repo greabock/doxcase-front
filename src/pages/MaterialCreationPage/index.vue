@@ -33,7 +33,7 @@
                     <div v-if="sectionValue || !isNew" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">Название материала</div>
+                                <div class="input-line__title">Наименование</div>
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
@@ -41,7 +41,7 @@
                                         @blur="handleChange"
                                         v-model="name"
                                         class="input-line__input"
-                                        placeholder="Введите"
+                                        placeholder="Введите текст"
                                         :error="error"
                                     />
                                 </div>
