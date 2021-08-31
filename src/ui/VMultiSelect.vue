@@ -1,47 +1,50 @@
 <template>
     <div ref="root" class="select__container">
-        <VInput
-            v-model="selected"
-            :placeholder="placeholder"
-            :classInput="classInput"
-            :bordered="bordered"
-            :shadow="shadow"
-            :disabled="disabled"
-            :readonly="readonly"
-            :size="size"
-            :error="error"
-            @focus="isActive = true"
-            @input="search"
+        <div
+            :class="[
+                'form-control select__element',
+                {select__element_bordered: bordered},
+                {select__element_shadow: shadow},
+                {'is-invalid': error},
+            ]"
+            @click="isActive = !isActive"
         >
-            <template #right>
+            <div v-if="title" class="select__title">
+                {{ title }}
+            </div>
+            <div class="select__input">
+                <div v-if="privateValue">
+                    {{ privateValue }}
+                </div>
+                <div v-else class="select__input-placeholder">
+                    {{ placeholder }}
+                </div>
                 <div @click="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
                     <ArrowDown class="select__icon" />
                 </div>
-            </template>
-        </VInput>
+            </div>
+        </div>
+        <div class="input-message invalid-feedback" v-if="error">{{ error }}</div>
+
         <ul class="select-list__container" v-if="isActive">
             <li
                 v-for="(item, i) of privateOptions"
                 :key="i"
-                :class="['select-list__item', {'select-list__item_active': isActiveItem(item)}]"
+                :class="['select-list__item', {'select-list__item_active': isActiveElement(item)}]"
                 @click="select(item)"
             >
                 <slot name="option" :item="item">
                     {{ item.name }}
                 </slot>
             </li>
-            <li class="select-list__not-data" v-if="!privateOptions.length">Нет данных</li>
         </ul>
     </div>
 </template>
 
 <script>
 import {ref} from 'vue';
-
-import VInput from './VInput.vue';
-import ArrowDown from './icons/arrow-down.svg.vue';
-
 import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
+import ArrowDown from './icons/arrow-down.svg.vue';
 
 function outsideSub(fn) {
     global.addEventListener('focusin', fn);
@@ -55,53 +58,44 @@ function outsideUnsub(fn) {
 
 export default {
     components: {
-        VInput,
         ArrowDown,
     },
     props: {
-        modelValue: [Object, Array],
+        modelValue: Array,
         options: Array,
-        placeholder: String,
-        classInput: String,
-        bordered: Boolean,
+        title: String,
         shadow: Boolean,
         disabled: Boolean,
-        readonly: Boolean,
-        size: String,
-        multiple: Boolean,
+        placeholder: String,
+        multiple: {
+            type: Boolean,
+            default: true,
+        },
         error: String,
     },
     setup(props, ctx) {
         const root = ref(null);
         const isActive = ref(false);
 
-        const privateValue = ref(null);
-        const privateOptions = computed(() =>
-            props.options.filter((str) => {
-                if (privateValue.value) {
-                    return str.name.toString().toLowerCase().includes(privateValue.value.toLowerCase());
-                }
-                return props.options;
-            })
-        );
-
-        const search = (e) => {
-            const value = e.target.value;
-            privateValue.value = value;
-        };
-
-        const multiSelect = Array.isArray(props.modelValue) ? props.modelValue : [];
-        const multipleSelect = ref(multiSelect);
-
-        const selected = computed(() => {
-            if (privateValue.value == null) {
-                if (props.multiple) {
-                    return props.modelValue && props.modelValue.map((x) => x.name.toString()).join(', ');
-                }
-                return props.modelValue?.name || '';
+        const isActiveElement = (item) => {
+            if (props.modelValue && props.modelValue.length) {
+                return props.modelValue.findIndex((x) => x.key === item.key) >= 0;
             }
 
-            return privateValue.value;
+            return false;
+        };
+
+        const privateOptions = computed(() => {
+            const options = [...props.options];
+            return options.sort((x, y) => isActiveElement(y) - isActiveElement(x));
+        });
+
+        const privateValue = computed(() => {
+            if (props.modelValue && props.modelValue.length) {
+                return `Выбрано: ${props.modelValue.length}`;
+            }
+
+            return '';
         });
 
         const hide = (event) => {
@@ -111,7 +105,6 @@ export default {
 
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
-                privateValue.value = null;
             }
 
             ctx.emit('blur', props.modelValue);
@@ -127,42 +120,62 @@ export default {
 
         const select = (item) => {
             if (props.multiple) {
-                const index = multipleSelect.value.findIndex((x) => x.key === item.key);
+                let multipleSelect = Array.isArray(props.modelValue) ? props.modelValue : [];
 
-                if (multipleSelect.value[index]) {
-                    multipleSelect.value.splice(index, 1);
+                const index = multipleSelect.findIndex((x) => x.key === item.key);
+
+                if (multipleSelect[index]) {
+                    multipleSelect.splice(index, 1);
                 } else {
-                    multipleSelect.value = [...multipleSelect.value, item];
+                    multipleSelect = [...multipleSelect, item];
                 }
-                ctx.emit('update:modelValue', multipleSelect.value);
-                ctx.emit('select', multipleSelect.value);
+                ctx.emit('update:modelValue', multipleSelect);
+                ctx.emit('select', multipleSelect);
             } else {
                 isActive.value = false;
                 ctx.emit('update:modelValue', item);
                 ctx.emit('select', item);
             }
-
-            privateValue.value = null;
         };
 
-        const isActiveItem = (item) => {
-            if (props.modelValue && props.modelValue.length) {
-                return props.modelValue.findIndex((x) => x.key === item.key) >= 0;
-            } else {
-                return props.modelValue && item.key === props.modelValue.key;
-            }
-        };
-
-        return {isActiveItem, isActive, root, select, selected, privateOptions, search, privateValue};
+        return {isActive, root, select, privateValue, privateOptions, isActiveElement};
     },
 };
 </script>
 
 <style lang="scss" scoped>
-@import './scss/variable';
+// @import './scss/variable';
+$blue: #1d47ce;
 
 .select__container {
     position: relative;
+    margin-bottom: 1rem;
+}
+
+.select__element {
+    width: 100%;
+    background: #fff;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    // padding: 0.8125rem 1.0625rem;
+}
+
+.select__element_border {
+    border-color: #d6d6d6;
+}
+
+.select__element_shadow {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+}
+
+.select__input-placeholder {
+    color: #d6d6d6;
+}
+
+.select__input {
+    display: flex;
+    justify-content: space-between;
+    // color: var(--bs-primary);
 }
 
 .select__arrow {
@@ -172,7 +185,7 @@ export default {
     transition: 0.3s;
     height: 100%;
     cursor: pointer;
-    width: 3rem;
+    // width: 3rem;
 }
 
 .select__arrow_up {
@@ -231,5 +244,22 @@ export default {
 
 .select-list__item_active {
     font-weight: 500;
+}
+
+.select__title {
+    color: #6e6e6e;
+    margin-bottom: 0.1rem;
+}
+
+.input-message {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+    padding: 5px 1rem;
+}
+
+.is-invalid {
+    border-color: #eb5757;
 }
 </style>

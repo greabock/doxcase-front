@@ -116,6 +116,7 @@ import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
+import VMultiSelect from '@/ui/VMultiSelect';
 import VInput from '@/ui/VInput';
 import VCheckbox from '@/ui/VCheckbox';
 import VDatePicker from '@/ui/VDatePicker';
@@ -394,7 +395,7 @@ export default {
             Boolean: VCheckbox,
             Text: VText,
             Enum: VSelect,
-            List: VSelect,
+            List: VMultiSelect,
             Dictionary: VSelect,
             Select: VSelect,
             Date: VDatePicker,
