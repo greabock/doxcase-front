@@ -311,6 +311,7 @@ import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import SectionSearchRadio from "@/components/SearchSectionRadio";
+import {useStore} from 'vuex';
 
 export default {
     components: {Loader, VBreadcrumb, FilesTypes,  SectionSearchSelectors, CheckboxFilters, SearchResults, SectionSearchRadio},
@@ -322,6 +323,7 @@ export default {
         const currentSectionId = ref('');
         const allSections = ref([]);
         const bcTitle = ref('');
+        const store = useStore();
 
         const changeSectionHandler = (id) => {
             currentSectionId.value = id;
@@ -345,10 +347,17 @@ export default {
             extensionsObj.value = [];
         };
         const resetSelectors = () => {
-            section.value = {
-                ...section.value,
-                fields: [...section.value.fields]
-            };
+            if (section.value.fields) {
+                section.value = {
+                    ...section.value,
+                    fields: [...section.value.fields]
+                };
+            } else {
+                section.value = {
+                    ...section.value
+                };
+            }
+
             selectorsObj.value = [];
             searchObj.value = '';
         };
@@ -427,13 +436,16 @@ export default {
                 resetSelectors();
                 resetFilters();
 
-
             } catch(e) {
                 console.log(e)
             } finally {
                 isLoading.value = false;
             }
         };
+        watch(() => store.getters['search/getAtFirst'], async () => {
+            await resetSelectors();
+            isAtFirst.value = true;
+        })
         watch( queryObject, (newVal, oldVal) => {
                 if (newVal.search === oldVal.search) {
                     updateMaterialsAndFiles(currentSectionId.value, newVal)
