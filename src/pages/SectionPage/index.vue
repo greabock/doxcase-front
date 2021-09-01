@@ -102,7 +102,11 @@
                                         >
                                             Сохранить <span class="d-none d-lg-inline">раздел</span>
                                         </button>
-                                        <button @click="resetForm" class="btn btn-outline-primary">Отмена</button>
+                                        <button
+                                            @click="resetForm"
+                                            class="btn btn-outline-primary"
+                                        >Отмена
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -119,9 +123,8 @@
                                     <div class="btn-add"
                                          @click.stop="setFieldToChange({}); setFieldModalVisible(true)">
                                         <div class="btn-add__plus"></div>
-                                        <div
-                                            class="btn-add__text"
-                                        >Добавить</div>
+                                        <div class="btn-add__text">Добавить
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -152,8 +155,19 @@
                                     </div>
                                 </div>
                                 <div class="sSectionAside__footer">
-                                    <button class="btn btn-primary">Сохранить раздел</button>
-                                    <button class="btn btn-outline-primary ms-2">Отмена</button>
+                                    <button
+                                        @click="updateSection"
+                                        :class="{disabled: section.title === ''}"
+                                        class="btn btn-primary"
+                                    >
+                                        Сохранить раздел
+                                    </button>
+                                    <button
+                                        @click="resetForm"
+                                        class="btn btn-outline-primary ms-2"
+                                    >
+                                        Отмена
+                                    </button>
                                 </div>
                             </div>
                         </section>

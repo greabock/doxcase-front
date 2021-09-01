@@ -7,7 +7,9 @@
         >
             <li
                 v-for="section in sectionsInHeader"
-                :key="section?.id">
+                :key="section?.id"
+                @click="$emit('toggleIsMobileActive')"
+            >
                 <router-link
                     :class="{active: `/search/${section.id}` === $route.path}"
                     :to="`/search/${section.id}`"
@@ -33,7 +35,8 @@
                 class="menu-with-dropdown__dropdown">
                 <li
                     v-for="section in sectionsInDropdown"
-                    :key="section?.id">
+                    :key="section?.id"
+                >
                     <router-link
                         :class="{active: `/search/${section?.id}` === $route.path}"
                         :to="'/search/' + section?.id">
@@ -119,7 +122,6 @@ setup(props) {
         overflow:hidden;
     }
 }
-
 .menu-with-dropdown {
     padding-right: 1.2rem;
 }
