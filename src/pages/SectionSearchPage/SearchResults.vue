@@ -18,7 +18,10 @@
             <div class="row">
                 <div class="col-auto">
                     <div class="search-item__icon-wrap">
-                        <img alt='' :src="snippet.image" />
+                        <img
+                            v-if="snippet.image"
+                            alt='' :src="snippet.image"
+                        />
                     </div>
                 </div>
                 <div class="col">
