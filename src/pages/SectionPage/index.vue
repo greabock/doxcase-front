@@ -71,6 +71,7 @@
                                     >
                                     </label>
                                 </div>
+
                                 <div class="d-lg-none mb-3">
                                     <button
                                         @click="setMobFiltersShow(!isMobFiltersShow)"
@@ -85,28 +86,41 @@
                                     class="form-wrap__modal-win"
                                     :class="{'mobile-filters-show': isMobFiltersShow}"
                                 >
-                                    <p class="fw-500">Фильтры для раздела</p>
-
-                                    <fields-to-filter @click.stop
-                                                      :fieldsArr="sortedFields"
-                                                      :isFiltersOpen="isFiltersOpen"
-                                                      @update-is-open="setFiltersOpen"
-                                                      @update-filter-sort="UpdateFilters"
-                                    ></fields-to-filter>
-
-                                    <div class="form-wrap__footer">
+                                    <div class="form-wrap__modal-win-cont">
                                         <button
-                                            @click="updateSection"
-                                            :class="{disabled: section.title === ''}"
-                                            class="btn btn-primary"
+                                            class="carousel__button is-close"
+                                            @click="setMobFiltersShow(false)"
                                         >
-                                            Сохранить <span class="d-none d-lg-inline">раздел</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 viewBox="0 0 24 24"
+                                                 tabindex="-1">
+                                                <path d="M20 20L4 4m16 0L4 20"></path>
+                                            </svg>
                                         </button>
-                                        <button
-                                            @click="resetForm"
-                                            class="btn btn-outline-primary"
-                                        >Отмена
-                                        </button>
+
+                                        <p class="fw-500 mob-filters-title">Фильтры для раздела</p>
+                                        <p class="mob-filters-text">Выберите допустимые для фильтрации поля из добавленных</p>
+
+                                        <fields-to-filter @click.stop
+                                                          :fieldsArr="sortedFields"
+                                                          :isFiltersOpen="isFiltersOpen"
+                                                          @update-is-open="setFiltersOpen"
+                                                          @update-filter-sort="UpdateFilters"
+                                        ></fields-to-filter>
+
+                                        <div class="form-wrap__footer">
+                                            <button
+                                                @click="updateSection"
+                                                :class="{disabled: section.title === ''}"
+                                                class="btn btn-primary"
+                                            >
+                                                Сохранить <span class="d-none d-lg-inline">раздел</span>
+                                            </button>
+                                            <button
+                                                @click="resetForm"
+                                                class="btn btn-outline-primary"
+                                            >Отмена</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -393,5 +407,46 @@ export default {
 .content-loader__cont {
     font-size: 26px;
     color: #1d47ce;
+}
+.mobile-filters-show {
+    display:block !important;
+}
+.mob-filters-text {
+    display: none;
+}
+@media (max-width: 991px) {
+    .sSectionAside.section {
+        padding-bottom: 20px;
+    }
+    .sSectionMain {
+        padding-top: 20px;
+    }
+    .mobile-filters-show {
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0,0,0, .5);
+    }
+    .form-wrap__modal-win-cont {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        padding: 40px 20px 20px;
+        background-color: #fff;
+    }
+    .mob-filters-title {
+        font-size:20px;
+    }
+    .mob-filters-text {
+        display: block;
+    }
+}
+.carousel__button svg {
+    filter:none;
 }
 </style>
