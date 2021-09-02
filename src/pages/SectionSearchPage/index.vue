@@ -94,6 +94,12 @@
                             v-intersection="addSearch"
                             class="observer"
                         ></div>
+                        <div
+                            v-show="isPreloaderShown"
+                            class="search-results-preloader"
+                        >
+                            <span class="spinner-border"></span>
+                        </div>
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
                         <div class="sSearchResult__aside">
@@ -288,6 +294,7 @@ export default {
 
         const currentPage = ref(1);
         const totalPages = ref(1);
+        const isPreloaderShown = ref(false);
 
 // Выдача поиска_______________
         const materials = ref([]);
@@ -391,7 +398,7 @@ export default {
                 materials.value = materialsAndFiles.data.materials;
                 files.value = materialsAndFiles.data.files;
                 currentPage.value = materialsAndFiles.current_page;
-                totalPages.value = materialsAndFiles.total;
+                totalPages.value = materialsAndFiles.last_page;
             } catch(e) {
                 console.log(e);
             } finally {
@@ -442,7 +449,7 @@ export default {
 // Подгрузка при скролле__________________________________________________
         const addSearch = async () => {
             console.log('intersected');
-
+            isPreloaderShown.value = true;
             if (currentPage.value < totalPages.value) {
                 try {
                     const materialsAndFiles = await searchService
@@ -450,9 +457,11 @@ export default {
                     materials.value = [...materials.value, ...materialsAndFiles.data.materials];
                     files.value = [...files.value, ...materialsAndFiles.data.files];
                     currentPage.value = materialsAndFiles.current_page;
-                    totalPages.value = materialsAndFiles.total;
+                    totalPages.value = materialsAndFiles.last_page;
                 } catch(e) {
                     console.log(e);
+                } finally {
+                    isPreloaderShown.value = false;
                 }
             }
         };
@@ -483,6 +492,7 @@ export default {
             addSearch,
             totalPages,
             currentPage,
+            isPreloaderShown,
         }
     },
 }
@@ -497,5 +507,11 @@ export default {
 }
 .sSearchResult__aside-head {
     margin-bottom: 0.6rem;
+}
+.search-results-preloader {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 10px;
+    color: #1d47d5;
 }
 </style>
