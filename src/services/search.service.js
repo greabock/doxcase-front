@@ -11,7 +11,7 @@ class SearchService {
     searchSectionPost = async (id, body) => {
         const res = await axiosInstance.post(`/search/${id}`, body);
         if (res.data.data) {
-            return res.data.data;
+            return res.data;
         } else throw new Error('Error fetching Search page');
     };
 }

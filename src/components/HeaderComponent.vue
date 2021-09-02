@@ -49,7 +49,10 @@
                     >
                         <div class="row">
                             <div class="col-lg-auto">
-                                <div class="menu-mobile__btn-wrap">
+                                <div
+                                    @click="toggleMenuMobileActive"
+                                    class="menu-mobile__btn-wrap"
+                                >
                                     <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
                                             <use xlink:href="/img/svg/sprite.svg#setting"></use>
@@ -64,6 +67,7 @@
                                 <top-menu
                                     v-if="sectionsInHeader?.length"
                                     :sectionsInHeader="sectionsInHeader"
+                                    @toggleIsMobileActive="toggleMenuMobileActive"
                                 ></top-menu>
                             </div>
                         </div>
@@ -140,7 +144,16 @@ export default {
 .topLine {
     z-index: 1;
 }
+@media (max-width: 575px) {
+    #topLine {
+        padding-top: 10px;
+        padding-bottom:10px;
+    }
+}
 .logo-div {
     cursor:pointer;
+}
+.topLine__btn:hover .topLine__btn-text {
+    color: #000 !important;
 }
 </style>

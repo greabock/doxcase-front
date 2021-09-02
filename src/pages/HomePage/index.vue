@@ -104,7 +104,17 @@
                             :materialsArr="materials"
                             :filesArr="files"
                         ></search-results>
-
+                        <div
+                            v-if="totalPages > 1 && currentPage !== totalPages"
+                            v-intersection="addSearch"
+                            class="observer"
+                        ></div>
+                        <div
+                            v-show="isPreloaderShown"
+                            class="search-results-preloader"
+                        >
+                            <span class="spinner-border"></span>
+                        </div>
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
                         <div class="sSearchResult__aside">
@@ -325,6 +335,10 @@ export default {
         const bcTitle = ref('');
         const store = useStore();
 
+        const currentPage = ref(1);
+        const totalPages = ref(1);
+        const isPreloaderShown = ref(false);
+
         const changeSectionHandler = (id) => {
             currentSectionId.value = id;
         }
@@ -417,8 +431,10 @@ export default {
             try {
                 isLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(id, queryObject);
-                materials.value = materialsAndFiles.materials;
-                files.value = materialsAndFiles.files;
+                materials.value = materialsAndFiles.data.materials;
+                files.value = materialsAndFiles.data.files;
+                currentPage.value = materialsAndFiles.current_page;
+                totalPages.value = materialsAndFiles.last_page;
 
             } catch(e) {
                 console.log(e);
@@ -470,6 +486,26 @@ export default {
             isAtFirst.value = false;
         }
 
+        // Подгрузка при скролле__________________________________________________
+        const addSearch = async () => {
+            console.log('intersected');
+            isPreloaderShown.value = true;
+            if (currentPage.value < totalPages.value) {
+                try {
+                    const materialsAndFiles = await searchService
+                        .searchSectionPost(`${currentSectionId.value}/?page=${currentPage.value + 1}`, queryObject);
+                    materials.value = [...materials.value, ...materialsAndFiles.data.materials];
+                    files.value = [...files.value, ...materialsAndFiles.data.files];
+                    currentPage.value = materialsAndFiles.current_page;
+                    totalPages.value = materialsAndFiles.last_page;
+                } catch(e) {
+                    console.log(e);
+                } finally {
+                    isPreloaderShown.value = false;
+                }
+            }
+        };
+
         return {
             isAtFirst,
             isLoading,
@@ -496,6 +532,10 @@ export default {
             currentSectionId,
             changeSectionHandler,
             handleSearch,
+            addSearch,
+            totalPages,
+            currentPage,
+            isPreloaderShown,
         }
     },
 };
@@ -510,5 +550,11 @@ export default {
 }
 .sSearchResult__aside-head {
     margin-bottom: 0.6rem;
+}
+.search-results-preloader {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 10px;
+    color: #1d47d5;
 }
 </style>
