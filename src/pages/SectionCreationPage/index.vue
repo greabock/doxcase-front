@@ -36,6 +36,7 @@
                                             class="form-wrap__input form-control"
                                             type="text"
                                             placeholder="Заполнить"
+                                            maxLength="50"
                                         />
                                     </label>
                                 </div>
@@ -119,29 +120,6 @@
                             <div class="sSectionMain__body">
 
                                 <!-- Поле Название раздела -->
-                                <div class="sSectionMain__item disabled">
-                                    <div class="row">
-                                        <div class="col-lg-auto col order-first">
-                                            <div class="sSectionMain__count"></div>
-                                        </div>
-                                        <div class="sSectionMain__col-title col-lg-auto">
-                                            <div class="text-dark small">Заголовок</div>
-                                            <div class="fw-500 text-primary">Название материала</div>
-                                        </div>
-                                        <div class="sSectionMain__col-content col-lg">
-                                            <div class="text-dark small">Содержание</div>
-                                            <div class="sSectionMain__content">Введите название материала</div>
-                                        </div>
-                                        <div class="sSectionMain__col-cut col-auto order-first order-lg-0">
-                                            <div class="text-dark small d-none d-lg-block">Тип поля</div>
-                                            <div class="sSectionMain__content">Короткое текстовое поле</div>
-                                        </div>
-                                        <div class="col-12 d-lg-none pb-3"></div>
-                                        <div class="col-lg-auto">
-                                            <div class="sSectionMain__btn-control"></div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <fields-list
                                     @change-field="setFieldToChange"
@@ -238,7 +216,7 @@ export default {
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: '/img/@1x/avatar-2.png',
+            image: '/img/empty.png',
             sort_index: 0,
             fields: [],
         };

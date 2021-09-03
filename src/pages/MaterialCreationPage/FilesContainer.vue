@@ -1,7 +1,7 @@
 <template>
     <div class="sAddDocs__body bg-white pt-3 pb-4">
         <div class="container-fluid pb-3">
-            <VButtonFileLoader :accept="accept" @upload="loadFiles">
+            <VButtonFileLoader :accept="accept" @upload="loadFiles" @reject="reject">
                 <div class="btn-add">
                     <div class="btn-add__plus"></div>
                     <div class="btn-add__text">Добавить документ</div>
@@ -31,6 +31,8 @@ import VButtonFileLoader from '@/ui/VButtonFileLoader';
 
 import ItemEdit from './ItemEdit';
 import ItemFile from './ItemFile';
+
+import {notify} from '@kyvg/vue3-notification';
 
 const getFileData = (file) => {
     const {size, name, type} = file;
@@ -84,18 +86,28 @@ export default {
         };
 
         const loadFiles = ([file]) => {
-            listFiles.value.map((item) => (item.isEdit = false));
-            listFiles.value.push({
-                key: new Date(),
-                isEdit: true,
-                file,
-                data: getFileData(file),
-            });
+            if (file) {
+                listFiles.value.map((item) => (item.isEdit = false));
+                listFiles.value.push({
+                    key: new Date(),
+                    isEdit: true,
+                    file,
+                    data: getFileData(file),
+                });
 
-            emit('update', listFiles);
+                emit('update', listFiles);
+            }
         };
 
         const listReverse = computed(() => listFiles.value.reverse());
+
+        const reject = () => {
+            notify({
+                title: 'Ошибка загрузки файла',
+                text: `Допустимы файлы с расширением: ${props.accept.join(' ')}`,
+                type: 'warn',
+            });
+        };
 
         return {
             listReverse,
@@ -105,6 +117,7 @@ export default {
             editFile,
             deleteFile,
             loadFiles,
+            reject,
         };
     },
 };

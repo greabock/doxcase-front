@@ -19,30 +19,31 @@
                 <div class="col--main">
                     <template v-for="(file, i) of files" :key="i">
                         <div v-if="file.isActive" class="row">
-                            <div v-if="!file.value.length" class="sCardDocs__empty-text">
+                            <template v-if="file.value && file.value.length">
+                                <div v-for="(el, i) of file.value" :key="i" class="col-4">
+                                    <a class="sCardDocs__item" :href="el.url">
+                                        <span class="sCardDocs__type">
+                                            <FileIcon class="icon icon-doc" />
+                                            {{ el.extension }}
+                                        </span>
+                                        <div class="row w-100">
+
+                                        <span class="sCardDocs__title col-12">
+                                            {{ el.name }}
+                                        </span>
+                                            <span class="sCardDocs__size col d-inline-flex align-items-center">
+                                                {{ sizeFormat(el.size) }}
+                                            </span>
+                                            <span class="sCardDocs__download col">
+                                                <DownloadIcon class="icon icon-download" />
+                                                Скачать
+                                            </span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </template>
+                             <div v-else class="sCardDocs__empty-text">
                                 Пока нет добавленных документов
-                            </div>
-
-                            <div v-for="(el, i) of file.value" :key="i" class="col-4">
-                                <a class="sCardDocs__item" :href="el.url">
-                                    <span class="sCardDocs__type">
-                                        <FileIcon class="icon icon-doc" />
-                                        {{ el.extension }}
-                                    </span>
-                                    <div class="row w-100">
-
-                                    <span class="sCardDocs__title col-12">
-                                        {{ el.name }}
-                                    </span>
-                                        <span class="sCardDocs__size col d-inline-flex align-items-center">
-                                            {{ sizeFormat(el.size) }}
-                                        </span>
-                                        <span class="sCardDocs__download col">
-                                            <DownloadIcon class="icon icon-download" />
-                                            Скачать
-                                        </span>
-                                    </div>
-                                </a>
                             </div>
                         </div>
                     </template>
@@ -66,10 +67,24 @@ export default {
     props: {
         files: Array,
     },
-    setup() {
+    setup(props) {
+        const setActive = (file) => {
+            if(props.files) {
+                props.files.map((x) => (x.isActive = false));
+                file.isActive = true;
+            }
+        };
+
         return {
-            sizeFormat
+            sizeFormat,
+            setActive
         }
     },
 };
 </script>
+
+<style scoped>
+.nav-item {
+    cursor: pointer;
+}
+</style>

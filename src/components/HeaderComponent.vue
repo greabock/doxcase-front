@@ -13,14 +13,34 @@
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
-                    <router-link to="/">
-                        <div class="d-sm-none">
-                            <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
+                    <template
+                        v-if="$route.path === '/'"
+                    >
+                        <div
+                            class="logo-div"
+                            @click="changeAtFirst"
+                        >
+                            <div class="d-sm-none">
+                                <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
+                            </div>
+                            <div class="d-none d-sm-block">
+                                <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                            </div>
                         </div>
-                        <div class="d-none d-sm-block">
-                            <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
-                        </div>
-                    </router-link>
+                    </template>
+                    <template
+                        v-else
+                    >
+                        <router-link to="/">
+                            <div class="d-sm-none">
+                                <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
+                            </div>
+                            <div class="d-none d-sm-block">
+                                <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                            </div>
+                        </router-link>
+                    </template>
+
                 </div>
                 <div class="col-lg order-lg-0 order-last">
                     <div
@@ -84,7 +104,7 @@ export default {
     },
     setup() {
         const store = useStore();
-
+        const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
             const sections = store.getters['sections/getSections'];
             if (sections?.length) {
@@ -110,6 +130,7 @@ export default {
             sectionsInHeader,
             toggleMenuMobileActive,
             isMenuMobileActive,
+            changeAtFirst,
         };
     },
 };
@@ -119,5 +140,7 @@ export default {
 .topLine {
     z-index: 1;
 }
-
+.logo-div {
+    cursor:pointer;
+}
 </style>

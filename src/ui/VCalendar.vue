@@ -70,7 +70,7 @@ export default {
         this.currDateCursor = this.modelValue || new Date();
     },
     props: {
-        modelValue: Date,
+        modelValue: [Date, String],
         displayDaysOtherMonth: {
             type: Boolean,
             default: false,
@@ -133,7 +133,7 @@ export default {
                 date,
                 isCurrentMonth: isSameMonth(cursorDate, date),
                 isToday: isToday(date),
-                isSelected: isSameDay(this.modelValue, date),
+                isSelected: isSameDay(new Date(this.modelValue), date),
             }));
         },
     },
@@ -170,7 +170,7 @@ export default {
     },
     watch: {
         modelValue(date) {
-            this.currDateCursor = date;
+            this.currDateCursor = date ? new Date(date) : new Date();
         },
     },
 };

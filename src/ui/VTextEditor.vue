@@ -1,18 +1,23 @@
 <template>
-    <div class="text-editor__container">
+    <div :class="['text-editor__container', {'error-text-editor': error}]">
         <quill-editor
             class="text-editor"
             v-model:value="state.content"
             :options="state.editorOption"
             @change="onEditorChange($event)"
+            @blur="$emit('blur', modelValue)"
         />
         <div class="input-message invalid-feedback" v-if="error">{{ error }}</div>
     </div>
 </template>
 
 <script>
-import {quillEditor} from 'vue3-quill';
+import {quillEditor, Quill} from 'vue3-quill';
 import {reactive} from '@vue/reactivity';
+
+import ImageUploader from 'quill-image-uploader';
+
+Quill.register('modules/imageUploader', ImageUploader);
 
 export default {
     components: {
@@ -24,6 +29,20 @@ export default {
         width: String,
         height: String,
         error: String,
+        upload: {
+            type: Function,
+            default: (file) => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+
+                    reader.onloadend = function () {
+                        const base64data = reader.result;
+                        resolve(base64data);
+                    };
+                });
+            },
+        },
     },
     setup(props, {emit}) {
         const state = reactive({
@@ -34,19 +53,18 @@ export default {
                     toolbar: [
                         ['bold', 'italic', 'underline', 'strike'],
                         ['blockquote', 'code-block'],
-                        // [{ header: 1 }, { header: 2 }, { header: 3 }, { header: 4 }, { header: 5 }, { header: 6 }],
                         [{list: 'ordered'}, {list: 'bullet'}],
                         [{script: 'sub'}, {script: 'super'}],
                         [{indent: '-1'}, {indent: '+1'}],
                         [{direction: 'rtl'}],
-                        // [{ size: ['small', false, 'large', 'huge'] }],
                         [{header: [1, 2, 3, 4, 5, 6, false]}],
-                        // [{ color: [] }, { background: [] }],
-                        // [{ font: [] }],
                         [{align: []}],
                         ['clean'],
                         ['link', 'image'],
                     ],
+                    imageUploader: {
+                        upload: props.upload,
+                    },
                 },
             },
         });
@@ -78,5 +96,10 @@ export default {
     bottom: 0;
     transform: translateY(100%);
     padding: 5px 1rem;
+}
+
+.text-editor__container.error-text-editor >>> .ql-container.ql-snow,
+.text-editor__container.error-text-editor >>> .ql-toolbar.ql-snow {
+    border-color: #eb5757;
 }
 </style>

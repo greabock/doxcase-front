@@ -26,11 +26,7 @@ props: {
         type: String,
         default: null
     }
-},
-setup(props) {
-    console.log(props.section);
 }
-
 };
 </script>
 

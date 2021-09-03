@@ -1,4 +1,15 @@
 <template>
+    <div
+        v-if="!(materialsSnippetsArr.length ||  filesArr.length)"
+        class="section pt-5"
+    >
+        <div class="sSections__center-empty">
+            <div class="sSections__title-empty h1">Ничего не найдено
+            </div>
+            <p>Уточните ваш запрос</p>
+        </div>
+    </div>
+
     <div class="sSearchResult__items">
         <div
             v-for="snippet in materialsSnippetsArr"
@@ -24,8 +35,10 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-auto align-self-center d-none d-sm-block">
-                    <div class="text-dark small">Документов {{ snippet.files_count }}</div>
+                <div
+                    v-if="snippet.files_count"
+                    class="col-auto align-self-center d-none d-sm-block">
+                    <div class="text-dark small">Документов: {{ snippet.files_count }}</div>
                 </div>
                 <div class="col-auto align-self-sm-center">
                     <div

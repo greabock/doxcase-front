@@ -1,13 +1,14 @@
 <template>
     <div class="text__container">
         <textarea
-            class="input-line__input form-control"
+            :class="['input-line__input form-control', {'is-invalid': error}]"
             name="textarea"
             :placeholder="placeholder"
             :value="modelValue"
             @input="(e) => $emit('update:modelValue', e.target.value)"
+            @blur="(e) => $emit('blur', e.target.value)"
         />
-        <div class="input-message invalid-feedback" v-if="error"> {{ error }} </div>
+        <div class="input-message invalid-feedback" v-if="error">{{ error }}</div>
     </div>
 </template>
 
@@ -16,6 +17,7 @@ export default {
     props: {
         modelValue: String,
         error: String,
+        placeholder: String,
     },
     setup() {},
 };

@@ -28,14 +28,16 @@
                             </div>
                             <div class="sCardHead__head">
                                 <div class="row">
-                                    <div v-for="(block, i) of topBlocks" :key="i" class="col-sm-6">
-                                        <div class="sCardHead__head-panel">
-                                            <div class="row">
-                                                <div class="col text-dark small">{{ block.title }}</div>
-                                                <div class="col-auto fw-500">{{ block.value }}</div>
+                                    <template v-for="(block, i) of topBlocks" :key="i">
+                                        <div v-if="block.isActive" class="col-sm-6">
+                                            <div class="sCardHead__head-panel">
+                                                <div class="row">
+                                                    <div class="col text-dark small">{{ block.title }}</div>
+                                                    <div class="col-auto fw-500">{{ block.value }}</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </template>
                                 </div>
                             </div>
                             <div class="sCardHead__body">
@@ -43,7 +45,7 @@
                                     <template v-if="field.value">
                                         <h6>{{ field.title }}</h6>
                                         <p v-if="field.type !== 'Wiki'">{{ field.value }}</p>
-                                        <p v-else v-html="field.value" />
+                                        <div class="html-data" v-else v-html="field.value" />
                                         <br />
                                     </template>
                                 </template>
@@ -68,18 +70,7 @@
                             >
                                 Удалить материал
                             </button>
-                            <ul>
-                                <li v-for="(el, i) of lists" :key="i">
-                                    <template v-if="el.value && el.value.length">
-                                        <div class="strong">{{ el.title }}</div>
-                                        <ul v-if="el.value">
-                                            <li v-for="(v, x) of el.value" :key="x">
-                                                {{ el.type == 'List' ? (el.ofType == 'Enum' ? v.title : v) : el.type == 'Enum' ? v.title : v }}
-                                            </li>
-                                        </ul>
-                                    </template>
-                                </li>
-                            </ul>
+                            <ListContainer :lists="lists" />
                         </div>
                     </div>
                 </div>
@@ -87,7 +78,7 @@
         </div>
         <!-- end sCardHead-->
         <!-- start sCardDocs-->
-        <FilesContainer v-if="files.length" :files="files" />
+        <FilesContainer v-if="files && files.length" :files="files" />
         <!-- end sCardDocs-->
         <ModalWindow v-model="isShow" maxWidth="24rem">
             <div class="form-wrap">
@@ -113,12 +104,14 @@ import sectionsService from '@/services/sections.service';
 import ModalWindow from '@/components/ModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import FilesContainer from './FilesContainer';
+import ListContainer from './ListContainer';
 
 export default {
     components: {
         VBreadcrumb,
         ModalWindow,
         FilesContainer,
+        ListContainer,
     },
     setup() {
         const route = useRoute();
@@ -139,16 +132,19 @@ export default {
 
         const store = useStore();
         const canUpdate = computed(() => {
-            const user = store.getters['user/getUser']
+            const user = store.getters['user/getUser'];
             return user?.role === 'admin' || user?.role === 'moderator';
         });
 
-        const getData = async () => {
+        const getData = async (sectionId, materialId) => {
             const section = await sectionsService.getSectionObject(sectionId);
             const material = await materialService.getMaterial(sectionId, materialId);
 
             breadcrumbs.value = [
-                ...breadcrumbs.value,
+                {
+                    link: '/',
+                    name: 'Главная',
+                },
                 {
                     name: section.title,
                     link: `/search/${sectionId}`,
@@ -158,69 +154,107 @@ export default {
                 },
             ];
 
+            title.value = material.name;
+
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
+            const idDictionary = (f) =>
+                f.type.name == 'Dictionary' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'Dictionary');
+
             const allFields = section.fields.filter((f) => !isFiles(f)).sort((a, b) => a.sort_index - b.sort_index);
 
-            fields.value = allFields
-                .filter((x) => x.type.name == 'Text' || x.type.name == 'Wiki' || x.type.name == 'String')
-                .map((x) => ({
-                    ...x,
-                    value: material[x.id],
-                    type: x.type.name,
-                }));
+            fields.value = [
+                ...fields.value,
+                ...allFields
+                    .filter((x) => x.type.name == 'Text' || x.type.name == 'Wiki' || x.type.name == 'String')
+                    .map((x) => ({
+                        ...x,
+                        value: material[x.id],
+                        type: x.type.name,
+                    })),
+            ];
 
-            lists.value = allFields
-                .filter(
-                    (x) =>
-                        x.type.name == 'List' ||
-                        x.type.name == 'Select' ||
-                        x.type.name == 'Dictionary' ||
-                        x.type.name == 'Enum'
-                )
-                .map((x) => ({
-                    ...x,
-                    value: material[x.id] ? (Array.isArray(material[x.id]) ? material[x.id] : [material[x.id]]) : [],
-                    type: x.type.name,
-                    ofType: x.type.of.name,
-                }));
+            lists.value = [
+                ...lists.value,
+                ...allFields
+                    .filter(
+                        (x) =>
+                            x.type.name == 'List' ||
+                            x.type.name == 'Select' ||
+                            x.type.name == 'Enum' ||
+                            x.type.name == 'Dictionary'
+                    )
+                    .map((d) => {
+                        if (idDictionary(d)) {
+                            const sectionId = d.type.name == 'List' ? d.type.of.of : d.type.of;
+                            const materials = d.type.name == 'List' ? material[d.id] : [material[d.id]];
+                            return {
+                                title: d.title,
+                                value: materials.map((x) => ({
+                                    title: x.name,
+                                    link: `/sections/${sectionId}/material/${x.id}`,
+                                })),
+                                type: d.type.name,
+                                ofType: d.type.of.name,
+                            };
+                        }
 
-            topBlocks.value = allFields
-                .filter((x) => x.type.name == 'Date' || x.type.name == 'Boolean')
-                .map((x) => {
-                    if (x.type.name == 'Boolean') {
                         return {
-                            ...x,
-                            value: material[x.id] ? 'Да' : 'Нет',
-                            title: x.title,
+                            ...d,
+                            value: material[d.id]
+                                ? Array.isArray(material[d.id])
+                                    ? material[d.id]
+                                    : [material[d.id]]
+                                : [],
+                            type: d.type.name,
+                            ofType: d.type.of.name,
                         };
-                    } else {
-                        return {
-                            ...x,
-                            value: format(new Date(material[x.id]), 'dd.MM.yyyy'),
-                            title: x.title,
-                        };
-                    }
-                });
+                    }),
+            ];
 
-            files.value = section.fields.filter(isFiles).map((f, i) => ({
-                type: 'File',
-                title: f.title,
-                isActive: !i,
-                size: f.size,
-                value: material[f.id],
-            }));
+            topBlocks.value = [
+                ...topBlocks.value,
+                ...allFields
+                    .filter((x) => x.type.name == 'Date' || x.type.name == 'Boolean')
+                    .map((x) => {
+                        if (x.type.name == 'Boolean') {
+                            return {
+                                ...x,
+                                value: material[x.id] ? 'Да' : 'Нет',
+                                title: x.title,
+                                type: x.type.name,
+                                isActive: true,
+                            };
+                        } else {
+                            return {
+                                ...x,
+                                value: material[x.id] && format(new Date(material[x.id]), 'dd.MM.yyyy'),
+                                title: x.title,
+                                type: x.type.name,
+                                isActive: !!material[x.id],
+                            };
+                        }
+                    }),
+            ];
 
-            title.value = material.name;
+            files.value = [
+                ...files.value,
+                ...section.fields.filter(isFiles).map((f) => ({
+                    type: 'File',
+                    title: f.title,
+                    isActive: false,
+                    size: f.size,
+                    value: material[f.id],
+                })),
+            ];
+
+            if (files.value && files.value[0]) {
+                files.value[0].isActive = true;
+            }
         };
 
-        getData();
-
-        const setActive = (file) => {
-            files.value.map((x) => (x.isActive = false));
-            file.isActive = true;
-        };
+        getData(sectionId, materialId);
 
         const deleteMaterial = async () => {
             await materialService.removeMaterial(sectionId, materialId);
@@ -236,7 +270,6 @@ export default {
             isShow,
             breadcrumbs,
             deleteMaterial,
-            setActive,
             title,
             fields,
             lists,
@@ -249,10 +282,6 @@ export default {
 </script>
 
 <style scoped>
-.nav-item {
-    cursor: pointer;
-}
-
 .main-block {
     display: flex;
     flex-flow: column;
@@ -261,5 +290,9 @@ export default {
 
 .btn-primary {
     color: #fff;
+}
+
+.html-data >>> * {
+    max-width: 100%;
 }
 </style>
