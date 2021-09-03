@@ -32,6 +32,7 @@
                                         <!-- +e.input-wrap-->
                                         <button
                                             @click.prevent="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
+                                            @keyup.enter="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
                                             class="search-block__btn">
                                             <svg class="icon icon-search ">
                                                 <use xlink:href="/img/svg/sprite.svg#search"></use>
@@ -304,11 +305,10 @@ export default {
                fields: [...section.value.fields]
            };
            selectorsObj.value = [];
+           searchObj.value = '';
         };
         const showResetSelectors = computed(() => {
-            return section.value.fields?.filter( field => !!field.filter_sort_index)
-            .filter(field => field.type.name === 'Enum' ||  field.type.name === 'Dictionary' ||
-                field.type.name === 'Select' || field.type.of?.name === 'List').length;
+            return !!(Object.keys(selectorsObj.value).length || searchObj.value);
         });
 
         const queryObject = computed(() => {

@@ -33,7 +33,7 @@
                     <div v-if="sectionValue || !isNew" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">Название материала</div>
+                                <div class="input-line__title">Наименование</div>
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
@@ -41,7 +41,7 @@
                                         @blur="handleChange"
                                         v-model="name"
                                         class="input-line__input"
-                                        placeholder="Введите"
+                                        placeholder="Введите текст"
                                         :error="error"
                                     />
                                 </div>
@@ -116,6 +116,7 @@ import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
+import VMultiSelect from '@/ui/VMultiSelect';
 import VInput from '@/ui/VInput';
 import VCheckbox from '@/ui/VCheckbox';
 import VDatePicker from '@/ui/VDatePicker';
@@ -187,7 +188,6 @@ export default {
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
             const fileList = sectionObject.fields.filter(isFiles).map((f) => {
-                console.log(f);
                 const files =
                     materials &&
                     materials[f.id] &&
@@ -226,7 +226,7 @@ export default {
 
             const fieldList = sectionObject.fields.filter((f) => !isFiles(f));
 
-            const f = await useFields(fieldList, materials);
+            const f = await useFields(fieldList, materials, sectionValue.value || sectionId);
 
             fields.value = f;
         };
@@ -281,8 +281,23 @@ export default {
         };
 
         const submit = async () => {
-            if (!name.value) {
+            const errors = [!!name.value];
+
+             if (!name.value) {
                 handleChange('');
+            }
+
+            for(const el of fields.value) {
+                if (el.validate) {
+                    const errors = []
+                    const res = await el.validate();
+                    errors.push(res.valid);
+                }
+            }
+
+            const isError = !!errors.filter(x => !x).length
+
+            if(isError) {
                 return;
             }
 
@@ -296,15 +311,14 @@ export default {
                 const fieldsSubmit = {};
                 for (const field of fields.value) {
                     if (field.type == 'List') {
-                        console.log(field);
                         if (field.value) {
-                            if (field.ofType == 'Enum') {
+                            if (field.ofType == 'Enum' || field.ofType == 'Dictionary') {
                                 fieldsSubmit[field.id] = field.value.map((x) => ({id: x.key, title: x.name}));
                             } else {
                                 fieldsSubmit[field.id] = field.value.map((x) => x.name);
                             }
                         }
-                    } else if (field.type == 'Enum') {
+                    } else if (field.type == 'Enum' || field.type == 'Dictionary') {
                         if (field.value) {
                             fieldsSubmit[field.id] = {id: field.value.key};
                         }
@@ -381,7 +395,8 @@ export default {
             Boolean: VCheckbox,
             Text: VText,
             Enum: VSelect,
-            List: VSelect,
+            List: VMultiSelect,
+            Dictionary: VSelect,
             Select: VSelect,
             Date: VDatePicker,
             Wiki: VTextEditor,

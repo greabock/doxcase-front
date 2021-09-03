@@ -36,7 +36,8 @@
                                 v-model="maxLengthValue"
                                 class="form-wrap__input form-control"
                                 name="maxLength"
-                                type="text"
+                                type="number"
+                                min="1"
                                 placeholder="Заполните поле"
                             />
                         </label>

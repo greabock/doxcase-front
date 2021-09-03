@@ -1,7 +1,11 @@
 <template>
     <div>
         <div class="row align-items-center">
-            <VButtonFileLoader @upload="uploadFile" class="col-auto mb-3">
+            <VButtonFileLoader
+                :accept="['image/*']"
+                @upload="uploadFile"
+                class="col-auto mb-3"
+            >
                 <button class="form-wrap__btn-choose">Выбрать...</button>
             </VButtonFileLoader>
             <div v-if="modelValue || preview" class="col-auto mb-3">
@@ -30,6 +34,7 @@ export default {
     props: {
         modelValue: File,
         preview: String,
+        accept: String,
     },
     setup(props, {emit}) {
         const uploadFile = ([f]) => {

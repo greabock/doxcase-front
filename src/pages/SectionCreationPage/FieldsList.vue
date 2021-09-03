@@ -1,4 +1,28 @@
 <template>
+    <div class="sSectionMain__item disabled">
+        <div class="row">
+            <div class="col-lg-auto col order-first">
+                <div class="sSectionMain__count"></div>
+            </div>
+            <div class="sSectionMain__col-title col-lg-auto">
+                <div class="text-dark small">Заголовок</div>
+                <div class="fw-500 text-primary">Наименование</div>
+            </div>
+            <div class="sSectionMain__col-content col-lg">
+                <div class="text-dark small">Содержание</div>
+                <div class="sSectionMain__content">Введите текст</div>
+            </div>
+            <div class="sSectionMain__col-cut col-auto order-first order-lg-0">
+                <div class="text-dark small d-none d-lg-block">Тип поля</div>
+                <div class="sSectionMain__content">Короткое текстовое поле</div>
+            </div>
+            <div class="col-12 d-lg-none pb-3"></div>
+            <div class="col-lg-auto">
+                <div class="sSectionMain__btn-control"></div>
+            </div>
+        </div>
+    </div>
+
     <div
         v-for="(field, i) in fieldsArr"
         :key="field?.id"
