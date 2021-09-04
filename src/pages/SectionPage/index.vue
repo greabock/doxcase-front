@@ -414,6 +414,9 @@ export default {
 .mob-filters-text {
     display: none;
 }
+.form-wrap__modal-win-cont .carousel__button{
+  display: none;
+}
 @media (max-width: 991px) {
     .sSectionAside.section {
         padding-bottom: 20px;
@@ -439,6 +442,9 @@ export default {
         padding: 40px 20px 20px;
         background-color: #fff;
     }
+  .form-wrap__modal-win-cont .carousel__button{
+    display: block;
+  }
     .mob-filters-title {
         font-size:20px;
     }
