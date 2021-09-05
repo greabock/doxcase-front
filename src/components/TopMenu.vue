@@ -83,10 +83,6 @@ setup(props) {
         sectionsInDropdown.value = dropdownArr;
     }, 500);
 
-    // watch(dotsLeft, (newVal) => {
-    //     document.querySelector('.menu-with-dropdown__block').style.left = newVal + 'px';
-    // });
-
     const closeDropdown = (e) => {
         if (!ulBlock.value.contains(e.target)) {
             isDropdownShow.value = false;

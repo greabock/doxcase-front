@@ -2,7 +2,7 @@
     <div class="sSectionMain__item disabled">
         <div class="row">
             <div class="col-lg-auto col order-first">
-                <div class="sSectionMain__count">0</div>
+                <div class="sSectionMain__count">&nbsp;</div>
             </div>
             <div class="sSectionMain__col-title col-lg-auto">
                 <div class="text-dark small">Заголовок</div>
