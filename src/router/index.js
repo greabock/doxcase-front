@@ -80,7 +80,7 @@ const routes = [
     },
     {
         path: '/material-creation',
-        name: 'MaterialCreationPageRoute',
+        name: 'MaterialSectionCreationPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
         meta: {title:'База знаний'}
     },
