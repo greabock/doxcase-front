@@ -117,15 +117,6 @@ export const router = createRouter({
     routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//     const token = localStorage.getItem('token');
-//     if ((to.path !== '/auth' && !token) || (to.path !== '/oauth/login')) {
-//         next('/auth');
-//     } else {
-//         next();
-//     }
-// });
-
 router.beforeEach((to, from, next) => {
     document.title = to.meta.title
     next()
