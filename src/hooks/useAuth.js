@@ -44,5 +44,6 @@ export function useAuth() {
         loading,
         error,
         router,
+        store,
     };
 }

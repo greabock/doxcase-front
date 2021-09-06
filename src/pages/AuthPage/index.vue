@@ -25,17 +25,26 @@
                         <span>Войти</span>
                     </v-button>
                 </Form>
-                <v-button outline="true" color="white" class="w-100"> Войти с помощью Azure </v-button>
+                <v-button
+                    @click="azureHandler"
+                    :outline=true
+                    color="white"
+                    class="w-100"
+                > Войти с помощью Azure
+                </v-button>
             </div>
         </div>
     </div>
 </template>
 <script>
+import {onMounted} from 'vue';
 import VButton from '@/ui/VButton';
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
 import LogoIcon from '@/assets/LogoIcon';
+import azureService from '@/services/azure.service';
+import {useRouter} from 'vue-router';
 
 export default {
     name: 'AuthPage',
@@ -51,7 +60,35 @@ export default {
             login: yup.string().required('Введите логин'),
             password: yup.string().required('Введите пароль'),
         });
-        const {handleLogin, handleLogout, loading, error, authCheck} = useAuth();
+        const {handleLogin, handleLogout, loading, error, authCheck, store} = useAuth();
+
+        const router = useRouter();
+
+        const azureHandler = async() => {
+          try {
+            const res = await azureService.getAzure();
+            window.location.href = (res.data.data.url);
+          } catch(e) {
+            console.log(e);
+          }
+        }
+
+        onMounted(async () => {
+          const queryParams = router.currentRoute.value.query;
+          if (Object.keys(queryParams).length !== 0) {
+            try {
+              const token = await azureService.postAzure(queryParams);
+              localStorage.setItem('token', token);
+              await store.dispatch('user/fetchUserData');
+              const user = store.getters['user/getUser'];
+              localStorage.setItem('role', user.role);
+              await router.push('/');
+            } catch (e) {
+              console.log(e);
+            }
+
+          }
+        })
 
         return {
             schema,
@@ -60,6 +97,7 @@ export default {
             authCheck,
             loading,
             error,
+            azureHandler,
         };
     },
 };
