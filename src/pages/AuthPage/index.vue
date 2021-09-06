@@ -37,14 +37,12 @@
     </div>
 </template>
 <script>
-import {onMounted} from 'vue';
 import VButton from '@/ui/VButton';
 import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
 import LogoIcon from '@/assets/LogoIcon';
 import azureService from '@/services/azure.service';
-import {useRouter} from 'vue-router';
 
 export default {
     name: 'AuthPage',
@@ -60,9 +58,7 @@ export default {
             login: yup.string().required('Введите логин'),
             password: yup.string().required('Введите пароль'),
         });
-        const {handleLogin, handleLogout, loading, error, authCheck, store} = useAuth();
-
-        const router = useRouter();
+        const {handleLogin, handleLogout, loading, error, authCheck} = useAuth();
 
         const azureHandler = async() => {
           try {
@@ -72,23 +68,6 @@ export default {
             console.log(e);
           }
         }
-
-        onMounted(async () => {
-          const queryParams = router.currentRoute.value.query;
-          if (Object.keys(queryParams).length !== 0) {
-            try {
-              const token = await azureService.postAzure(queryParams);
-              localStorage.setItem('token', token);
-              await store.dispatch('user/fetchUserData');
-              const user = store.getters['user/getUser'];
-              localStorage.setItem('role', user.role);
-              await router.push('/');
-            } catch (e) {
-              console.log(e);
-            }
-
-          }
-        })
 
         return {
             schema,
