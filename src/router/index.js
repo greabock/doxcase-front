@@ -13,6 +13,7 @@ import SectionPage from '@/pages/SectionPage';
 import MaterialPage from '@/pages/MaterialPage';
 import SectionSearchPage from '@/pages/SectionSearchPage';
 import {adminGuard} from '@/guards/admin.guard';
+import AzurePage from '@/pages/AzurePage';
 
 const routes = [
     {
@@ -30,6 +31,12 @@ const routes = [
         path: '/auth',
         name: 'AuthPageRoute',
         components: {default: AuthPage},
+        meta: {title:'База знаний'}
+    },
+    {
+        path: '/oauth/login',
+        name: 'AzurePageRoute',
+        components: {default: AzurePage},
         meta: {title:'База знаний'}
     },
     {
