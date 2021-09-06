@@ -29,6 +29,16 @@
                 </tr>
             </thead>
             <tbody>
+            <tr>
+              <td colspan='2'>
+                <div class="mb-4">
+                  <div @click="isModalVisible = true" class="btn-add">
+                    <div class="btn-add__plus"></div>
+                    <div class="btn-add__text">Добавить справочник</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
                 <tr v-for="user in searchedUsersList" :key="user?.id">
                     <td class="fw-500">{{ user.name }}</td>
                     <td>
@@ -55,13 +65,22 @@
             <button class="btn btn-danger" @click="skipError">Продолжить</button>
         </div>
     </div>
+  <modal-window
+    v-model="isModalVisible"
+    @close="isModalVisible = false"
+  >
+  </modal-window>
 </template>
 
 <script>
 import {computed, onMounted, ref} from 'vue';
 import usersService from '@/services/users.service';
+import ModalWindow from "@/components/ModalWindow";
 
 export default {
+  components: {
+    ModalWindow
+  },
     setup() {
         const usersList = ref([]);
         const loading = ref(false);
@@ -90,6 +109,7 @@ export default {
                 loading.value = false;
             }
         };
+        const isModalVisible = ref(false);
 
         const skipError = () => {
             fetchUsers();
@@ -108,6 +128,7 @@ export default {
             loading,
             error,
             skipError,
+            isModalVisible,
         };
     },
 };
