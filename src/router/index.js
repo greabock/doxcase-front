@@ -78,6 +78,12 @@ const routes = [
         meta: {title:'База знаний'}
     },
     {
+        path: '/material-creation/:sectionId',
+        name: 'MaterialCreationPageRoute',
+        components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
+        meta: {title:'База знаний'}
+    },
+    {
         path: '/material-edit/:sectionId/:materialId',
         name: 'MaterialEditPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},

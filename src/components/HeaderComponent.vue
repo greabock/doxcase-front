@@ -77,7 +77,7 @@
                     v-if="user?.role === 'admin' ||  user?.role === 'moderator'"
                     class="col-auto">
                     <router-link
-                        to="/material-creation"
+                        :to="materialCreationLink"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>
@@ -96,6 +96,7 @@
 <script>
 import {ref, computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
+import {useRoute} from 'vue-router';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
@@ -108,6 +109,7 @@ export default {
     },
     setup() {
         const store = useStore();
+        const route = useRoute();
         const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
             const sections = store.getters['sections/getSections'];
@@ -117,6 +119,16 @@ export default {
             }
             return []
         });
+
+        const materialCreationLink = computed(() => {
+            const {id} = route.params;
+            if (route.name === 'SectionSearchPage' && id) {
+                return `/material-creation/${id}`;
+            }
+
+            return '/material-creation';
+
+        })        
 
         const isMenuMobileActive = ref(false);
         const toggleMenuMobileActive = () => {
@@ -129,6 +141,7 @@ export default {
         });
 
         return {
+            materialCreationLink,
             user: computed(() => store.getters['user/getUser']),
             userAvatar: computed(() => store.getters['user/getUserAvatar']),
             sectionsInHeader,

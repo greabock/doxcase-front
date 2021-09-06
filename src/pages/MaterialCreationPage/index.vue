@@ -116,7 +116,7 @@ import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
-import VMultiSelect from '@/ui/VMultiSelect';
+// import VMultiSelect from '@/ui/VMultiSelect';
 import VInput from '@/ui/VInput';
 import VCheckbox from '@/ui/VCheckbox';
 import VDatePicker from '@/ui/VDatePicker';
@@ -234,8 +234,9 @@ export default {
         const getData = async () => {
             if (sectionId && materialId) {
                 isNew.value = false;
-                const sectionObject = await sectionsService.getSectionObject(sectionId);
                 const material = await materialService.getMaterial(sectionId, materialId);
+                const sectionObject = await sectionsService.getSectionObject(sectionId);
+
                 breadcrumb.value = [
                     {
                         name: 'Главная',
@@ -260,6 +261,31 @@ export default {
                     key: s.id,
                     name: s.title,
                 }));
+
+                if (sectionId) {
+                    const sectionObject = await sectionsService.getSectionObject(sectionId);
+
+                    breadcrumb.value = [
+                        {
+                            name: 'Главная',
+                            link: '/',
+                        },
+                        {
+                            name: sectionObject.title,
+                            link: `/search/${sectionId}`,
+                        },
+                        {
+                            name: 'Создать новый материал',
+                        },
+                    ];
+
+                    sectionValue.value = {
+                        key: sectionObject.id,
+                        name: sectionObject.title,
+                    }
+                    
+                    setFields(sectionObject);
+                }
             }
         };
 
@@ -283,21 +309,21 @@ export default {
         const submit = async () => {
             const errors = [!!name.value];
 
-             if (!name.value) {
+            if (!name.value) {
                 handleChange('');
             }
 
-            for(const el of fields.value) {
+            for (const el of fields.value) {
                 if (el.validate) {
-                    const errors = []
+                    const errors = [];
                     const res = await el.validate();
                     errors.push(res.valid);
                 }
             }
 
-            const isError = !!errors.filter(x => !x).length
+            const isError = !!errors.filter((x) => !x).length;
 
-            if(isError) {
+            if (isError) {
                 return;
             }
 
@@ -395,7 +421,7 @@ export default {
             Boolean: VCheckbox,
             Text: VText,
             Enum: VSelect,
-            List: VMultiSelect,
+            List: VSelect,
             Dictionary: VSelect,
             Select: VSelect,
             Date: VDatePicker,
