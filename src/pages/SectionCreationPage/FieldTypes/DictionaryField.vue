@@ -16,7 +16,7 @@
                 </div>
                 <!-- +e.input-wrap-->
                 <div class="form-wrap__input-wrap form-group">
-                    <label><span class="form-wrap__input-title">Выберите раздел</span>
+                    <label><span class="form-wrap__input-title">Выберите раздел</span></label>
                         <v-select
                             class="mb-3"
                             name="selectedObj"
@@ -25,7 +25,6 @@
                             bordered
                         >
                         </v-select>
-                    </label>
                 </div>
 
                 <label class="custom-input form-check">

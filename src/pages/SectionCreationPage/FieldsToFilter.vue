@@ -172,7 +172,6 @@ export default {
             }
         };
         onMounted(() => {
-            console.log('added');
             global.addEventListener('click', closeModal);
         });
         onUnmounted(() => {

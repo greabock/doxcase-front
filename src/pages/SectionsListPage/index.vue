@@ -272,4 +272,7 @@ export default {
 </script>
 
 <style scoped>
+.sSections__col {
+    padding-bottom:0;
+}
 </style>

@@ -10,6 +10,7 @@
             :readonly="readonly"
             :size="size"
             :error="error"
+            :title="title"
             @focus="isActive = true"
             @input="search"
         >
@@ -70,6 +71,7 @@ export default {
         size: String,
         multiple: Boolean,
         error: String,
+        title: String,
     },
     setup(props, ctx) {
         const root = ref(null);
@@ -96,7 +98,11 @@ export default {
         const selected = computed(() => {
             if (privateValue.value == null) {
                 if (props.multiple) {
-                    return props.modelValue && props.modelValue.map((x) => x.name.toString()).join(', ');
+                    if  (props.modelValue.length > 3) {
+                        return `Выбрано: ${props.modelValue.length}`;
+                    } else {
+                        return props.modelValue.map((x) => x.name.toString()).join(', ');
+                    }
                 }
                 return props.modelValue?.name || '';
             }
@@ -231,5 +237,11 @@ export default {
 
 .select-list__item_active {
     font-weight: 500;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='11' height='8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.088 4.817l2.396 2.397L9.912.786' stroke='%231D47CE'/%3E%3C/svg%3E");
+    
+    background-color: #f8f8f8;
+    background-size: 1rem;
+    background-position: calc(100% - 1rem);
+    background-repeat: no-repeat;
 }
 </style>
