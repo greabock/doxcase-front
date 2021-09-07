@@ -147,7 +147,8 @@ export default {
         }
 
         const userResp = await addNewUser(values, photoUrl.value);
-        console.log('NewUser: ', userResp);
+        console.log('NewUser: ', userResp.data);
+        emit('addNewUser', userResp.data);
       } catch (e) {
         console.log(e);
       } finally {
