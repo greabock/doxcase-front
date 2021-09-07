@@ -34,7 +34,7 @@
                 <div class="mb-4">
                   <div @click="isModalVisible = true" class="btn-add">
                     <div class="btn-add__plus"></div>
-                    <div class="btn-add__text">Добавить справочник</div>
+                    <div class="btn-add__text">Добавить пользователя</div>
                   </div>
                 </div>
               </td>
@@ -67,8 +67,11 @@
     </div>
   <modal-window
     v-model="isModalVisible"
-    @close="isModalVisible = false"
   >
+    <add-user-form
+      @addNewUser="addNewUserHandle"
+      @closeModal="isModalVisible = false"
+    ></add-user-form>
   </modal-window>
 </template>
 
@@ -76,10 +79,12 @@
 import {computed, onMounted, ref} from 'vue';
 import usersService from '@/services/users.service';
 import ModalWindow from "@/components/ModalWindow";
+import AddUserForm from '@/pages/ProfilePage/AddUserForm';
 
 export default {
   components: {
-    ModalWindow
+    ModalWindow,
+    AddUserForm,
   },
     setup() {
         const usersList = ref([]);
@@ -110,6 +115,9 @@ export default {
             }
         };
         const isModalVisible = ref(false);
+        const setModalVisible = (bool) => {
+          isModalVisible.value = bool;
+        }
 
         const skipError = () => {
             fetchUsers();
@@ -117,6 +125,11 @@ export default {
         };
 
         onMounted(fetchUsers);
+
+        const addNewUserHandle = (user) => {
+          usersList.value = [...usersList.value, user];
+        }
+
         return {
             searchedUsersList: computed(() => {
                 return [...usersList.value].filter((user) =>
@@ -129,6 +142,8 @@ export default {
             error,
             skipError,
             isModalVisible,
+            setModalVisible,
+            addNewUserHandle,
         };
     },
 };
