@@ -4,11 +4,13 @@
             <div class="row">
                 <div v-for="item of selectorOptionsArr" :key="item?.id" class="col-auto">
                     <div v-if="item" class="customs-select__input-wrap form-group">
-                        <FilterSelect
+                        <VSelect
                             class="mb-3"
                             :title="item?.title"
                             v-model="item.selectValue"
                             :options="item.options"
+                            placeholder="Все"
+                            multiple
                         />
                     </div>
                 </div>
@@ -20,11 +22,11 @@
 import {ref, computed, watch} from 'vue';
 import enumsService from '@/services/enums.service';
 import sectionsService from '@/services/sections.service';
-import FilterSelect from '@/components/FilterSelect';
+import VSelect from '@/ui/VSelect';
 
 export default {
     components: {
-        FilterSelect,
+        VSelect,
     },
     props: {
         fieldsArray: {
