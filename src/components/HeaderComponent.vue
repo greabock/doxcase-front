@@ -109,7 +109,6 @@ export default {
     },
     setup() {
         const store = useStore();
-        const route = useRoute();
         const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
             const sections = store.getters['sections/getSections'];
@@ -157,16 +156,7 @@ export default {
 .topLine {
     z-index: 1;
 }
-@media (max-width: 575px) {
-    #topLine {
-        padding-top: 10px;
-        padding-bottom:10px;
-    }
-}
 .logo-div {
     cursor:pointer;
-}
-.topLine__btn:hover .topLine__btn-text {
-    color: #000 !important;
 }
 </style>

@@ -335,10 +335,6 @@ export default {
         const bcTitle = ref('');
         const store = useStore();
 
-        const currentPage = ref(1);
-        const totalPages = ref(1);
-        const isPreloaderShown = ref(false);
-
         const changeSectionHandler = (id) => {
             currentSectionId.value = id;
         }
@@ -486,26 +482,6 @@ export default {
             isAtFirst.value = false;
         }
 
-        // Подгрузка при скролле__________________________________________________
-        const addSearch = async () => {
-            console.log('intersected');
-            isPreloaderShown.value = true;
-            if (currentPage.value < totalPages.value) {
-                try {
-                    const materialsAndFiles = await searchService
-                        .searchSectionPost(`${currentSectionId.value}/?page=${currentPage.value + 1}`, queryObject);
-                    materials.value = [...materials.value, ...materialsAndFiles.data.materials];
-                    files.value = [...files.value, ...materialsAndFiles.data.files];
-                    currentPage.value = materialsAndFiles.current_page;
-                    totalPages.value = materialsAndFiles.last_page;
-                } catch(e) {
-                    console.log(e);
-                } finally {
-                    isPreloaderShown.value = false;
-                }
-            }
-        };
-
         return {
             isAtFirst,
             isLoading,
@@ -532,10 +508,6 @@ export default {
             currentSectionId,
             changeSectionHandler,
             handleSearch,
-            addSearch,
-            totalPages,
-            currentPage,
-            isPreloaderShown,
         }
     },
 };

@@ -20,7 +20,7 @@
                     <template v-for="(file, i) of files" :key="i">
                         <div v-if="file.isActive" class="row">
                             <template v-if="file.value && file.value.length">
-                                <div v-for="(el, i) of file.value" :key="i" class="col-12 col-md-4">
+                                <div v-for="(el, i) of file.value" :key="i" class="col-4">
                                     <a class="sCardDocs__item" :href="el.url">
                                         <span class="sCardDocs__type">
                                             <FileIcon class="icon icon-doc" />

@@ -116,7 +116,7 @@ import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
-// import VMultiSelect from '@/ui/VMultiSelect';
+import VMultiSelect from '@/ui/VMultiSelect';
 import VInput from '@/ui/VInput';
 import VCheckbox from '@/ui/VCheckbox';
 import VDatePicker from '@/ui/VDatePicker';
@@ -309,21 +309,21 @@ export default {
         const submit = async () => {
             const errors = [!!name.value];
 
-            if (!name.value) {
+             if (!name.value) {
                 handleChange('');
             }
 
-            for (const el of fields.value) {
+            for(const el of fields.value) {
                 if (el.validate) {
-                    const errors = [];
+                    const errors = []
                     const res = await el.validate();
                     errors.push(res.valid);
                 }
             }
 
-            const isError = !!errors.filter((x) => !x).length;
+            const isError = !!errors.filter(x => !x).length
 
-            if (isError) {
+            if(isError) {
                 return;
             }
 
@@ -421,7 +421,7 @@ export default {
             Boolean: VCheckbox,
             Text: VText,
             Enum: VSelect,
-            List: VSelect,
+            List: VMultiSelect,
             Dictionary: VSelect,
             Select: VSelect,
             Date: VDatePicker,

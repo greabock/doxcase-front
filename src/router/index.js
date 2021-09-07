@@ -19,14 +19,12 @@ const routes = [
     {
         path: '/:pathMatch(.*)*',
         components: {default: NotFoundPage},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
     {
         path: '/',
         name: 'HomePageRoute',
         components: {default: HomePage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
     {
@@ -36,51 +34,42 @@ const routes = [
         meta: {title:'База знаний'}
     },
     {
-        path: '/oauth/login',
-        name: 'AzurePageRoute',
-        components: {default: AzurePage},
-        meta: {title:'База знаний'}
-    },
-    {
         path: '/profile',
         name: 'ProfilePageRoute',
         components: {default: ProfilePage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
     {
         path: '/search',
         name: 'SearchPageRoute',
         components: {default: SearchPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
     {
         path: '/search/:id',
         name: 'SectionSearchPage',
         components: {default: SectionSearchPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
     {
         path: '/sections',
         name: 'SectionListPageRoute',
         components: {default: SectionsListPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [adminGuard, authGuard],
+        beforeEnter: adminGuard,
         meta: {title:'База знаний'}
     },
     {
         path: '/section-creation',
         name: 'SectionCreationPageRoute',
         components: {default: SectionCreationPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [adminGuard, authGuard],
+        beforeEnter: adminGuard,
         meta: {title:'База знаний'}
     },
     {
         path: '/sections/:id',
         name: 'SectionPageRoute',
         components: {default: SectionPage, header: HeaderComponent, footer: FooterComponent,},
-        beforeEnter: [adminGuard, authGuard],
+        beforeEnter: adminGuard,
         meta: {title:'База знаний'}
     },
     {
@@ -100,14 +89,12 @@ const routes = [
         path: '/material-edit/:sectionId/:materialId',
         name: 'MaterialEditPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
     {
         path: '/sections/:sectionId/material/:materialId',
         name: 'MaterialItemPageRoute',
         components: {default: MaterialPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: [authGuard],
         meta: {title:'База знаний'}
     },
 ];
@@ -115,6 +102,15 @@ const routes = [
 export const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('token');
+    if (to.path !== '/auth' && !token) {
+        next('/auth');
+    } else {
+        next();
+    }
 });
 
 router.beforeEach((to, from, next) => {

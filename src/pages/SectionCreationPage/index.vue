@@ -240,7 +240,7 @@ export default {
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: null,
+            image: '/img/empty.png',
             sort_index: 0,
             fields: [],
         };

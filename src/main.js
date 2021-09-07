@@ -7,6 +7,8 @@ import VIntersection from '@/directives/VIntersection';
 
 import Notifications from '@kyvg/vue3-notification'
 
+import Notifications from '@kyvg/vue3-notification'
+
 const app = createApp({
     render: () => h(App),
 });
