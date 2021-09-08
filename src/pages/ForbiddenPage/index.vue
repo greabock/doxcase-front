@@ -3,10 +3,10 @@
       class="main-block d-flex align-items-center">
     <div class="search-block search-block--mx">
       <div class="sSections__center-empty">
-        <div class="not-found-logo">
-          <img src="/img/404.svg">
+        <div class="sSections__title-empty h1">
+          Недостаточно прав доступа для просмотра страницы или раздела
         </div>
-        <p>К сожалению такой страницы не существует. </p>
+        <p>Обратитесь к администратору</p>
         <router-link to="/">На главную</router-link>
       </div>
     </div>
@@ -15,13 +15,10 @@
 
 <script>
 export default {
-    name: 'NotFoundPage',
-    components: {},
-};
+
+}
 </script>
 
 <style scoped>
-.not-found-logo {
-  margin-bottom: 40px;
-}
+
 </style>

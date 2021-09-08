@@ -1,6 +1,13 @@
 <template>
     <div ref="root" class="datepicker__container">
-        <VInput v-model="privateDate" @focus="isActive = true" v-maska="'##.##.####'" :placeholder="placeholder" :error="error">
+        <VInput
+            v-model="privateDate"
+            @focus="isActive = true"
+            v-maska="'##.##.####'"
+            :placeholder="placeholder"
+            :error="error"
+            :bordered="true"
+        >
             <template #right>
                 <div @click="isActive = !isActive">
                     <div class="date__icon">

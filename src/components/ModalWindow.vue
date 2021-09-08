@@ -1,5 +1,9 @@
 <template>
-    <div v-if="modelValue" class="modal-window__wrapper">
+    <div
+        v-if="modelValue" class="modal-window__wrapper"
+        ref="wrapper"
+        @click="wrapperClickHandler"
+    >
         <div
             class="modal-window__cont fancybox__content"
             :style="{
@@ -15,6 +19,7 @@
     </div>
 </template>
 <script>
+import {ref} from 'vue';
 
 export default {
     props: {
@@ -24,12 +29,23 @@ export default {
         },
         modelValue: Boolean,
     },
+  emits: ['close', 'update:modelValue'],
     setup(props, ctx) {
+      const wrapper = ref(null);
+      const wrapperClickHandler = (e) => {
+        if (e.target === wrapper.value) {
+          ctx.emit('close');
+        }
+      }
         const close = () => {
             ctx.emit('update:modelValue', false);
             ctx.emit('close');
         };
-        return {close};
+        return {
+          close,
+          wrapper,
+          wrapperClickHandler,
+        };
     },
 };
 </script>
