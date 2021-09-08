@@ -259,7 +259,11 @@
                                     v-model="checkboxesObj"
                                 >
                                 </checkbox-filters>
-
+<!--                                <data-filters-->
+<!--                                    :fieldsArray="section.fields"-->
+<!--                                    v-model="dataFiltersObj"-->
+<!--                                >-->
+<!--                                </data-filters>-->
                             </div>
                         </div>
                     </div>
@@ -281,9 +285,17 @@ import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelec
 import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
+// import DataFilters from "@/pages/SectionSearchPage/DataFilters";
 
 export default {
-    components: {Loader, VBreadcrumb, FilesTypes,  SectionSearchSelectors, CheckboxFilters, SearchResults},
+    components: {
+      Loader,
+      VBreadcrumb,
+      FilesTypes,
+      SectionSearchSelectors,
+      CheckboxFilters,
+      SearchResults
+    },
     setup() {
 
         const router = useRouter();
@@ -305,14 +317,35 @@ export default {
             field: 'created_at',
             direction: 'asc',
         });
+
+        const initDataModelValue = computed(() => {
+          if (!Object.keys(section.value).length) {
+            return [];
+          }
+          return section.value.fields.filter((field) => {
+            return field.type.name === 'Date'
+          }).map((field) => {
+            return {
+              [field.id]: {
+                "from": null,
+                "to": null
+              }
+            }
+          })
+        });
+
         const searchObj = ref('');
         const extensionsObj = ref([]);
         const checkboxesObj = ref([]);
         const selectorsObj = ref([]);
+        const dataFiltersObj = ref(initDataModelValue.value);
+
         const resetFilters = () => {
             checkboxesObj.value = [];
             extensionsObj.value = [];
+            dataFiltersObj.value =[];
         };
+
         const resetSelectors = () => {
            section.value = {
                ...section.value,
@@ -332,6 +365,7 @@ export default {
             for (let val of iterCheckboxes) {
                 checkboxes = {...checkboxes, ...val};
             }
+
             return {
                 search: searchObj.value,
                 sort: sortObj.value,
@@ -493,6 +527,7 @@ export default {
             totalPages,
             currentPage,
             isPreloaderShown,
+            dataFiltersObj
         }
     },
 }

@@ -37,10 +37,14 @@
           </label>
         </div>
 
-        <uploader-image
-            v-model="fileInput"
-            @click.stop.prevent
-        ></uploader-image>
+        <div>
+          <span class="form-wrap__input-title">Аватар</span
+            >
+          <uploader-image
+              v-model="fileInput"
+              @click.stop.prevent
+          ></uploader-image>
+        </div>
 
         <div class="form-wrap__input-wrap form-group">
           <label
@@ -100,15 +104,17 @@ export default {
 
     const isLoading = ref(false);
 
+    const englishLettersRegex = /^[A-Za-z]+$/;
+
     const schema = yup.object({
       name: yup.string().required(),
       role: yup.object().required(),
-      email: yup.string().required(),
-      login: yup.string().required(),
+      email: yup.string().email().required(),
+      login: yup.string().matches(englishLettersRegex).required(),
       password: yup.string().required()
     });
 
-    const {handleSubmit, meta: formMeta} = useForm({
+    const {handleSubmit, meta: formMeta, setValues} = useForm({
       validationSchema: schema
     });
 
@@ -121,7 +127,11 @@ export default {
       {key: 'admin', name: "Администратор"},
       {key: 'moderator', name: "Модератор"},
       {key: 'user', name: "Пользователь"},
-    ]
+    ];
+
+    setValues({
+      role: {key: 'user', name: "Пользователь"}
+    });
 
     const fileInput = ref(null);
     const photoUrl = ref(null);

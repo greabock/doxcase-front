@@ -94,6 +94,7 @@ export default {
         const root = ref(null);
         const sortedFieldsArr = computed(() => {
             return props.fieldsArr.filter(a =>
+                a.type.name === 'Date' ||
                 a.type.name === 'Boolean' ||
                 a.type.name === 'Select' ||
                 a.type.name === 'Enum' ||
