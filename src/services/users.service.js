@@ -7,6 +7,14 @@ class usersService {
             return res.data.data;
         } else throw new Error('Error fetching users');
     };
+    addUser = async (user) => {
+        try {
+            const res = await axiosInstance.post('/users', user);
+            return res.data;
+        } catch(e) {
+           throw new Error('Ошибка добавления пользователя');
+        }
+    };
     setNewRole = async (newRole, user) => {
         try {
             const newUser = {
