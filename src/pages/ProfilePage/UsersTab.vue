@@ -29,6 +29,16 @@
                 </tr>
             </thead>
             <tbody>
+            <tr>
+              <td colspan='2'>
+                <div class="mb-4">
+                  <div @click="isModalVisible = true" class="btn-add">
+                    <div class="btn-add__plus"></div>
+                    <div class="btn-add__text">Добавить пользователя</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
                 <tr v-for="user in searchedUsersList" :key="user?.id">
                     <td class="fw-500">{{ user.name }}</td>
                     <td>
@@ -55,13 +65,27 @@
             <button class="btn btn-danger" @click="skipError">Продолжить</button>
         </div>
     </div>
+  <modal-window
+    v-model="isModalVisible"
+  >
+    <add-user-form
+      @addNewUser="addNewUserHandle"
+      @closeModal="isModalVisible = false"
+    ></add-user-form>
+  </modal-window>
 </template>
 
 <script>
 import {computed, onMounted, ref} from 'vue';
 import usersService from '@/services/users.service';
+import ModalWindow from "@/components/ModalWindow";
+import AddUserForm from '@/pages/ProfilePage/AddUserForm';
 
 export default {
+  components: {
+    ModalWindow,
+    AddUserForm,
+  },
     setup() {
         const usersList = ref([]);
         const loading = ref(false);
@@ -90,6 +114,10 @@ export default {
                 loading.value = false;
             }
         };
+        const isModalVisible = ref(false);
+        const setModalVisible = (bool) => {
+          isModalVisible.value = bool;
+        }
 
         const skipError = () => {
             fetchUsers();
@@ -97,6 +125,11 @@ export default {
         };
 
         onMounted(fetchUsers);
+
+        const addNewUserHandle = (user) => {
+          usersList.value = [...usersList.value, user];
+        }
+
         return {
             searchedUsersList: computed(() => {
                 return [...usersList.value].filter((user) =>
@@ -108,6 +141,9 @@ export default {
             loading,
             error,
             skipError,
+            isModalVisible,
+            setModalVisible,
+            addNewUserHandle,
         };
     },
 };

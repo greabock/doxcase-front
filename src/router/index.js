@@ -12,7 +12,9 @@ import SectionCreationPage from '@/pages/SectionCreationPage';
 import SectionPage from '@/pages/SectionPage';
 import MaterialPage from '@/pages/MaterialPage';
 import SectionSearchPage from '@/pages/SectionSearchPage';
-import {adminGuard} from '@/guards/admin.guard';
+import {adminGuard, authGuard} from '@/guards/admin.guard';
+import AzurePage from '@/pages/AzurePage';
+import ForbiddenPage from '@/pages/ForbiddenPage';
 
 const routes = [
     {
@@ -73,6 +75,13 @@ const routes = [
     },
     {
         path: '/material-creation',
+        name: 'MaterialSectionCreationPageRoute',
+        components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
+        beforeEnter: [authGuard],
+        meta: {title:'База знаний'}
+    },
+    {
+        path: '/material-creation/:sectionId',
         name: 'MaterialCreationPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
         meta: {title:'База знаний'}
@@ -89,12 +98,20 @@ const routes = [
         components: {default: MaterialPage, header: HeaderComponent, footer: FooterComponent},
         meta: {title:'База знаний'}
     },
+    {
+        path: '/forbidden',
+        name: 'MaterialItemPageRoute',
+        components: {default: ForbiddenPage, header: HeaderComponent, footer: FooterComponent},
+        beforeEnter: [authGuard],
+        meta: {title:'База знаний'}
+    }
 ];
 
 export const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
 
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('token');

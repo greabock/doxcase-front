@@ -1,8 +1,11 @@
 <template>
     <div class="input__container">
+        <div v-if="title" class="input__title">
+            {{ title }}
+        </div>
         <div
             v-if="$slots.left"
-            class="input__left-icon"
+            :class="['input__left-icon', {input__left_title: title}]"
             :style="{
                 width: offsetLeft || offset,
             }"
@@ -17,6 +20,7 @@
                 {'input__right-offset': $slots.right},
                 {input_shadow: shadow},
                 {input_bordered: bordered},
+                {input_title: title},
                 {'is-invalid': error},
                 classInput,
             ]"
@@ -34,7 +38,7 @@
         <div class="input-message invalid-feedback" v-if="error">{{ error }}</div>
         <div
             v-if="$slots.right"
-            class="input__right-icon"
+            :class="['input__right-icon', {input__right_title: title}]"
             :style="{
                 width: offsetRight || offset,
             }"
@@ -62,6 +66,7 @@ export default {
         offsetRight: String,
         offsetLeft: String,
         error: String,
+        title: String,
     },
     setup(props, ctx) {
         const inputListeners = computed(() => ({
@@ -140,5 +145,22 @@ export default {
     bottom: 0;
     transform: translateY(100%);
     padding: 5px 1rem;
+}
+
+.input__title {
+    color: #6e6e6e;
+    margin-bottom: 0.1rem;
+    font-size: 14px;
+    position: absolute;
+    padding: 0.5rem 1rem;
+}
+
+.input_title {
+    padding-top: 2rem;
+}
+
+.input__right_title,
+.input__left_title {
+    padding-top: 1rem;
 }
 </style>

@@ -49,7 +49,10 @@
                     >
                         <div class="row">
                             <div class="col-lg-auto">
-                                <div class="menu-mobile__btn-wrap">
+                                <div
+                                    @click="toggleMenuMobileActive"
+                                    class="menu-mobile__btn-wrap"
+                                >
                                     <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
                                         <svg class="icon icon-setting">
                                             <use xlink:href="/img/svg/sprite.svg#setting"></use>
@@ -64,6 +67,7 @@
                                 <top-menu
                                     v-if="sectionsInHeader?.length"
                                     :sectionsInHeader="sectionsInHeader"
+                                    @toggleIsMobileActive="toggleMenuMobileActive"
                                 ></top-menu>
                             </div>
                         </div>
@@ -73,7 +77,7 @@
                     v-if="user?.role === 'admin' ||  user?.role === 'moderator'"
                     class="col-auto">
                     <router-link
-                        to="/material-creation"
+                        :to="materialCreationLink"
                         class="topLine__btn topLine__btn--plus btn-primary"
                     ></router-link>
                 </div>
@@ -92,6 +96,7 @@
 <script>
 import {ref, computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
+import {useRoute} from 'vue-router';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
@@ -114,6 +119,16 @@ export default {
             return []
         });
 
+        const materialCreationLink = computed(() => {
+            const {id} = route.params;
+            if (route.name === 'SectionSearchPage' && id) {
+                return `/material-creation/${id}`;
+            }
+
+            return '/material-creation';
+
+        })        
+
         const isMenuMobileActive = ref(false);
         const toggleMenuMobileActive = () => {
             isMenuMobileActive.value = !isMenuMobileActive.value;
@@ -125,6 +140,7 @@ export default {
         });
 
         return {
+            materialCreationLink,
             user: computed(() => store.getters['user/getUser']),
             userAvatar: computed(() => store.getters['user/getUserAvatar']),
             sectionsInHeader,

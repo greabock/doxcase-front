@@ -25,7 +25,13 @@
                         <span>Войти</span>
                     </v-button>
                 </Form>
-                <v-button outline="true" color="white" class="w-100"> Войти с помощью Azure </v-button>
+                <v-button
+                    @click="azureHandler"
+                    :outline=true
+                    color="white"
+                    class="w-100"
+                > Войти с помощью Azure
+                </v-button>
             </div>
         </div>
     </div>
@@ -36,6 +42,7 @@ import {Form, Field, ErrorMessage} from 'vee-validate';
 import * as yup from 'yup';
 import {useAuth} from '@/hooks/useAuth';
 import LogoIcon from '@/assets/LogoIcon';
+import azureService from '@/services/azure.service';
 
 export default {
     name: 'AuthPage',
@@ -53,6 +60,15 @@ export default {
         });
         const {handleLogin, handleLogout, loading, error, authCheck} = useAuth();
 
+        const azureHandler = async() => {
+          try {
+            const res = await azureService.getAzure();
+            window.location.href = (res.data.data.url);
+          } catch(e) {
+            console.log(e);
+          }
+        }
+
         return {
             schema,
             handleLogin,
@@ -60,6 +76,7 @@ export default {
             authCheck,
             loading,
             error,
+            azureHandler,
         };
     },
 };

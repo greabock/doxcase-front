@@ -10,6 +10,7 @@
             :readonly="readonly"
             :size="size"
             :error="error"
+            :title="title"
             @focus="isActive = true"
             @input="search"
         >
@@ -70,6 +71,7 @@ export default {
         size: String,
         multiple: Boolean,
         error: String,
+        title: String,
     },
     setup(props, ctx) {
         const root = ref(null);

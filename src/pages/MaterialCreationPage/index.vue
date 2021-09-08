@@ -234,8 +234,9 @@ export default {
         const getData = async () => {
             if (sectionId && materialId) {
                 isNew.value = false;
-                const sectionObject = await sectionsService.getSectionObject(sectionId);
                 const material = await materialService.getMaterial(sectionId, materialId);
+                const sectionObject = await sectionsService.getSectionObject(sectionId);
+
                 breadcrumb.value = [
                     {
                         name: 'Главная',
@@ -260,6 +261,31 @@ export default {
                     key: s.id,
                     name: s.title,
                 }));
+
+                if (sectionId) {
+                    const sectionObject = await sectionsService.getSectionObject(sectionId);
+
+                    breadcrumb.value = [
+                        {
+                            name: 'Главная',
+                            link: '/',
+                        },
+                        {
+                            name: sectionObject.title,
+                            link: `/search/${sectionId}`,
+                        },
+                        {
+                            name: 'Создать новый материал',
+                        },
+                    ];
+
+                    sectionValue.value = {
+                        key: sectionObject.id,
+                        name: sectionObject.title,
+                    }
+                    
+                    setFields(sectionObject);
+                }
             }
         };
 
