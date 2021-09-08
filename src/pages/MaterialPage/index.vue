@@ -12,7 +12,12 @@
                             <div class="d-lg-none pt-1">
                                 <div class="row">
                                     <div class="col">
-                                        <button class="sCardHead__aside-btn btn-outline-primary" type="button">
+                                        <button
+                                            v-if="canUpdate"
+                                            @click="edit"
+                                            class="sCardHead__aside-btn btn-outline-primary"
+                                            type="button"
+                                        >
                                             Редактировать материал
                                         </button>
                                     </div>
