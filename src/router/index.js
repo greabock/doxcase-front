@@ -106,7 +106,7 @@ const routes = [
     },
     {
         path: '/forbidden',
-        name: 'MaterialItemPageRoute',
+        name: 'ForbiddenPageRoute',
         components: {default: ForbiddenPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: [authGuard],
         meta: {title:'База знаний'}
