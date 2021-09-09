@@ -35,6 +35,12 @@ const routes = [
         meta: {title:'База знаний'}
     },
     {
+        path: '/oauth/login',
+        name: 'AzurePageRoute',
+        components: {default: AzurePage},
+        meta: {title:'База знаний'}
+    },
+    {
         path: '/profile',
         name: 'ProfilePageRoute',
         components: {default: ProfilePage, header: HeaderComponent, footer: FooterComponent},
@@ -100,7 +106,7 @@ const routes = [
     },
     {
         path: '/forbidden',
-        name: 'MaterialItemPageRoute',
+        name: 'ForbiddenPageRoute',
         components: {default: ForbiddenPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: [authGuard],
         meta: {title:'База знаний'}

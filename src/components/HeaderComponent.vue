@@ -109,6 +109,8 @@ export default {
     },
     setup() {
         const store = useStore();
+        const route = useRoute();
+
         const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
             const sections = store.getters['sections/getSections'];
