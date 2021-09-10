@@ -61,3 +61,8 @@ export default {
     },
 };
 </script>
+<style scoped>
+.sCabinetAside__img-wrap {
+  margin-bottom: 30px;
+}
+</style>
