@@ -30,7 +30,7 @@ export default {
           localStorage.setItem('role', user.role);
           await router.push('/');
         } catch (e) {
-          await router.push('/auth');
+          // await router.push('/auth');
           console.log(e);
         }
       }
