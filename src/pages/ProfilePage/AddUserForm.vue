@@ -12,6 +12,7 @@
               placeholder="Введите ФИО"
           />
           </label>
+          <span class="validation-error">{{nameError}}</span>
         </div>
         <!-- +e.input-wrap-->
         <div class="form-wrap__input-wrap form-group">
@@ -107,7 +108,7 @@ export default {
     const englishLettersRegex = /^[A-Za-z]+$/;
 
     const schema = yup.object({
-      name: yup.string().required(),
+      name: yup.string().required('Заполните поле Имя'),
       role: yup.object().required(),
       email: yup.string().email().required(),
       login: yup.string().matches(englishLettersRegex).required(),
@@ -118,7 +119,7 @@ export default {
       validationSchema: schema
     });
 
-    const {value: nameValue} = useField('name');
+    const {value: nameValue, errorMessage: nameError, dirty: nameDirty} = useField('name');
     const {value: roleValue} = useField('role');
     const {value: emailValue} = useField('email');
     const {value: loginValue} = useField('login');
@@ -179,10 +180,16 @@ export default {
       roleOptions,
       isLoading,
       fileInput,
+      nameError,
+      nameDirty,
     };
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.validation-error{
+  color:#ff0000;
+}
+</style>
 
