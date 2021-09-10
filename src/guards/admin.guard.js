@@ -10,7 +10,7 @@ export function adminGuard(to, from, next) {
 export function authGuard(to, from, next) {
     const token = localStorage.getItem('token');
     if (!token) {
-        next('/auth');
+        next();
     } else {
         next();
     }
