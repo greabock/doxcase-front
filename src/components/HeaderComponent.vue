@@ -84,7 +84,7 @@
                 <div class="col-auto">
                     <div class="avatar-block bg-wrap">
                         <router-link to="/profile">
-                            <img class="img-bg" :src="userAvatar" alt="" />
+                            <img class="img-bg" :src="user?.photo" alt="" />
                         </router-link>
                     </div>
                 </div>
@@ -144,7 +144,6 @@ export default {
         return {
             materialCreationLink,
             user: computed(() => store.getters['user/getUser']),
-            userAvatar: computed(() => store.getters['user/getUserAvatar']),
             sectionsInHeader,
             toggleMenuMobileActive,
             isMenuMobileActive,

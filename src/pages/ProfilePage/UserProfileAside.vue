@@ -15,9 +15,9 @@
                 <div class="sCabinetAside__img-wrap bg-wrap">
                     <!-- picture-->
                     <picture class="picture-bg">
-                        <source type="image/png" :srcset="defaultAvatar" media="(min-width:576px)" />
-                        <source type="image/png" :srcset="defaultAvatar" />
-                        <img class="object-fit-js" :src="defaultAvatar" alt="" />
+                        <source type="image/png" :srcset="user?.photo" media="(min-width:576px)" />
+                        <source type="image/png" :srcset="user?.photo" />
+                        <img class="object-fit-js" :src="user?.photo" alt="" />
                     </picture>
                     <!-- /picture-->
                 </div>
@@ -50,8 +50,9 @@ export default {
     setup(props) {
         const {handleLogout} = useAuth();
         const defaultAvatar = ref('img/@1x/avatar-2.png');
-        if (props.user?.avatar) {
-            defaultAvatar.value = ref(props.user.avatar);
+        if (props.user?.photo) {
+          console.log(props.user?.photo)
+            defaultAvatar.value = ref(props.user.photo);
         }
         return {
             handleLogout,
@@ -60,3 +61,8 @@ export default {
     },
 };
 </script>
+<style scoped>
+.sCabinetAside__img-wrap {
+  margin-bottom: 30px;
+}
+</style>
