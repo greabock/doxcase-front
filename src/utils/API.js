@@ -13,24 +13,24 @@ axiosInstance.interceptors.request.use((request) => {
     }
     return request;
 });
-
-axiosInstance.interceptors.response.use(
-    (r) => r,
-    (error) => {
-      if (error.response.status === 403) {
-        window.location.replace('/forbidden')
-      }
-
-      throw error
-    }
-  )
-axiosInstance.interceptors.response.use(
-    (r) => r,
-    (error) => {
-        if (error.response.status === 401) {
-            window.location.replace('/auth')
-        }
-
-        throw error
-    }
-)
+//
+// axiosInstance.interceptors.response.use(
+//     (r) => r,
+//     (error) => {
+//       if (error.response.status === 403) {
+//         window.location.replace('/forbidden')
+//       }
+//
+//       throw error
+//     }
+//   )
+// axiosInstance.interceptors.response.use(
+//     (r) => r,
+//     (error) => {
+//         if (error.response.status === 401) {
+//             window.location.replace('/auth')
+//         }
+//
+//         throw error
+//     }
+// )

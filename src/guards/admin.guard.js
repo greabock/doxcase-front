@@ -11,6 +11,7 @@ export function authGuard(to, from, next) {
     const token = localStorage.getItem('token');
     if (!token) {
         next('/auth');
+        // next('/auth');
     } else {
         next();
     }
