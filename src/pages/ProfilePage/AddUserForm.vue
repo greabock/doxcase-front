@@ -73,7 +73,9 @@
                 class="pass-show-toggler"
                 @click="isShowPass = !isShowPass"
             ><img
-                :src="isShowPass ? '/img/showpass.svg' : '/img/showpass.svg'"
+                width="20"
+                height="20"
+                :src="isShowPass ? '/img/svg/invisible.svg' : '/img/svg/visibility.svg'"
             >
             </span>
             <input
@@ -227,7 +229,7 @@ export default {
 .pass-show-toggler{
   z-index: 10;
   position: absolute;
-  top: 40px;
+  top: 39px;
   right: 10px;
 }
 .validation-error {
