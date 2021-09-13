@@ -134,15 +134,12 @@ export default {
     const isLoading = ref(false);
     const isShowPass = ref(false);
 
-    const englishLettersRegex = /^[A-Za-z]+$/;
-
     const schema = yup.object({
       name: yup.string().required('Поле обязательно для заполнения'),
       role: yup.object().required('Поле обязательно для заполнения'),
       email: yup.string().email( 'Пожалуйста, введите корректный email-адрес')
           .required('Поле обязательно для заполнения'),
-      login: yup.string().matches(englishLettersRegex, 'Логин может содержать только латинские буквы')
-          .required('Поле обязательно лдоя заполнения'),
+      login: yup.string().required('Поле обязательно лдоя заполнения'),
       password: yup.string()
           .min(6, "Длина пароля не менее 6 символов")
           .required('Поле обязательно для заполнения')
