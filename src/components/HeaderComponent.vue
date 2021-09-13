@@ -84,7 +84,7 @@
                 <div class="col-auto">
                     <div class="avatar-block bg-wrap">
                         <router-link to="/profile">
-                            <img class="img-bg" :src="user?.photo" alt="" />
+                            <img class="img-bg" :src="avatar" alt="" />
                         </router-link>
                     </div>
                 </div>
@@ -126,15 +126,23 @@ export default {
             if (route.name === 'SectionSearchPage' && id) {
                 return `/material-creation/${id}`;
             }
-
             return '/material-creation';
-
         })        
 
         const isMenuMobileActive = ref(false);
         const toggleMenuMobileActive = () => {
             isMenuMobileActive.value = !isMenuMobileActive.value;
         };
+
+        const user = computed(() => store.getters['user/getUser']);
+        const avatar = computed(() => {
+                if (user.value?.photo !== null ) {
+                return user.value?.photo;
+            } else {
+                return 'img/@1x/avatar-2.png'
+            }
+        }
+    );
 
         onMounted(async () => {
              await store.dispatch('user/fetchUserData');
@@ -143,7 +151,8 @@ export default {
 
         return {
             materialCreationLink,
-            user: computed(() => store.getters['user/getUser']),
+            user,
+            avatar,
             sectionsInHeader,
             toggleMenuMobileActive,
             isMenuMobileActive,
