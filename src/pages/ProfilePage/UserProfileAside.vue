@@ -15,9 +15,9 @@
                 <div class="sCabinetAside__img-wrap bg-wrap">
                     <!-- picture-->
                     <picture class="picture-bg">
-                        <source type="image/png" :srcset="defaultAvatar" media="(min-width:576px)" />
-                        <source type="image/png" :srcset="defaultAvatar" />
-                        <img class="object-fit-js" :src="defaultAvatar" alt="" />
+                        <source type="image/png" :srcset="avatar" media="(min-width:576px)" />
+                        <source type="image/png" :srcset="avatar" />
+                        <img class="object-fit-js" :src="avatar" alt="" />
                     </picture>
                     <!-- /picture-->
                 </div>
@@ -39,7 +39,7 @@
 
 <script>
 import {useAuth} from '@/hooks/useAuth';
-import {ref} from 'vue';
+import {computed} from 'vue';
 
 export default {
     props: {
@@ -49,14 +49,23 @@ export default {
     },
     setup(props) {
         const {handleLogout} = useAuth();
-        const defaultAvatar = ref('img/@1x/avatar-2.png');
-        if (props.user?.avatar) {
-            defaultAvatar.value = ref(props.user.avatar);
-        }
+        const avatar = computed(() => {
+            if (props.user?.photo !== null ) {
+                return props.user?.photo;
+            } else {
+                return 'img/@1x/avatar-2.png'
+            }
+        });
+
         return {
             handleLogout,
-            defaultAvatar,
+            avatar,
         };
     },
 };
 </script>
+<style scoped>
+.sCabinetAside__img-wrap {
+  margin-bottom: 30px;
+}
+</style>

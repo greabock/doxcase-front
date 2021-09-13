@@ -36,17 +36,34 @@
                                         >Пользователи
                                     </span>
                                 </li>
+                                <li v-if="user?.role === 'admin'" class="nav-item">
+                                    <span
+                                        @click.prevent="switchPageContent('groups')"
+                                        class="nav-link"
+                                        :class="{active: pageContent === 'groups'}"
+                                    >Управление группами
+                                    </span>
+                                </li>
                             </ul>
                                 <div v-show="pageContent === 'enums'" class="sCabinetMain__body">
                                     <!-- Enums block -->
                                     <enums-tab></enums-tab>
                                 </div>
+
+
                                 <div v-if="user?.role === 'admin'">
                                     <div v-show="pageContent === 'users'" class="sCabinetMain__body">
                                         <!-- Users block -->
                                         <users-tab></users-tab>
                                     </div>
                                 </div>
+
+                            <div v-if="user?.role === 'admin'">
+                                <div v-show="pageContent === 'groups'" class="sCabinetMain__body">
+                                    <!-- Users block -->
+                                    <groups-tab></groups-tab>
+                                </div>
+                            </div>
                         </div>
                         <!-- end sCabinetMain-->
                     </div>
@@ -64,6 +81,7 @@ import UsersTab from '@/pages/ProfilePage/UsersTab';
 import {useStore} from 'vuex';
 import {useAuth} from '@/hooks/useAuth';
 import UserProfileAside from '@/pages/ProfilePage/UserProfileAside';
+import GroupsTab from '@/pages/ProfilePage/GroupsTab';
 
 export default {
     name: 'ProfilePage',
@@ -71,6 +89,7 @@ export default {
         EnumsTab,
         UsersTab,
         UserProfileAside,
+        GroupsTab,
     },
     setup() {
         const pageContent = ref('enums');
