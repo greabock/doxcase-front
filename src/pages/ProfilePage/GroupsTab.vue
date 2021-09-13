@@ -43,8 +43,44 @@
             <h3>Выберите пользователей</h3>
         </div>
 
+        <div class="search-block">
+            <div class="search-block__input-wrap form-group">
+                <input
+                    v-model="searchUser"
+                    class="search-block__input form-control"
+                    name="text"
+                    type="text"
+                    placeholder="Введите фамилию"
+                />
+            </div>
+            <!-- +e.input-wrap-->
+            <button
+                @click.prevent
+                class="search-block__btn"
+            >
+                <svg class="icon icon-search">
+                    <use xlink:href="/img/svg/sprite.svg#search"></use>
+                </svg>
+            </button>
+        </div>
 
-
+        <div
+            v-if='mockUsers.length > 0'
+            class="sSections__col col-lg-auto col-md"
+        >
+            <label
+                v-for='user in mockUsers'
+                :key='user.id'
+                class="groups-users-list__item custom-input form-check"
+            ><input
+                class="custom-input__input form-check-input"
+                type="checkbox"
+                v-model="user.is"
+            /><span class="custom-input__text form-check-label"
+            >{{ user.name }}</span
+            >
+            </label>
+        </div>
     </modal-window>
 
 
@@ -74,15 +110,16 @@ export default {
             { id: 3, title: 'Музыканты'},
             { id: 4, title: 'Директоры'},
         ]
-
+//Выбор группы________________________
         const allGroups = ref(mockGroups);
         const currentGroupId = ref(null);
         const setCurrentGroupId = (id) => {
             currentGroupId.value = id;
         }
-
+// Добавление группы__________________
         const isAddModalVisible = ref(false);
 
+// Удаление группы____________________
         const isRemoveModalVisible = ref(false);
         const groupToRemove = ref(null);
         const setGroupToRemove = (group) => {
@@ -93,6 +130,16 @@ export default {
             allGroups.value = allGroups.value.filter(group => group.id !== id);
             isRemoveModalVisible.value = false;
         }
+
+// Поиск пользователей_________________
+        const searchUser = ref('');
+    const mockUsers = [
+        {name: 'Анатолий Вассел', id: 1, is: true},
+        {name: 'Елена Шмара', id: 2, is: false},
+        {name: 'Сергей Шляхов', id: 3, is: false},
+        {name: 'Анатолий Вассел', id: 4, is: true}
+    ]
+
         return {
             currentGroupId,
             allGroups,
@@ -102,10 +149,37 @@ export default {
             groupToRemove,
             setGroupToRemove,
             removeGroup,
+            searchUser,
+            mockUsers
         }
     }
 };
 </script>
 
 <style scoped>
+.search-block {
+    position: relative;
+    margin-bottom: 20px;
+}
+.search-block__input {
+    height: 2.7rem;
+    padding-left: 1rem;
+    padding-right: 2.7rem;
+    font-size: 0.95rem;
+}
+.search-block__btn {
+    padding: 11px 10px;
+}
+.search-block__btn svg {
+    font-size: 1.2rem;
+}
+.groups-users-list__item {
+
+}
+.groups-users-list__item .form-check-input {
+    width: 1.4em;
+    height: 1.4em;
+    margin-top: 0;
+    margin-right: 10px;
+}
 </style>
