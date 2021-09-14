@@ -541,6 +541,7 @@ export default {
             changeSectionHandler,
             handleSearch,
             filteredSectionFields,
+            dateFilters,
         };
     },
 };
