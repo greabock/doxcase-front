@@ -13,7 +13,6 @@ axiosInstance.interceptors.request.use((request) => {
     }
     return request;
 });
-
 axiosInstance.interceptors.response.use(
     (r) => r,
     (error) => {

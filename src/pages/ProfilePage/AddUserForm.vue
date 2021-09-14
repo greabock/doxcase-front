@@ -2,6 +2,15 @@
   <div id="modal-add-field-not-required">
     <div class="form-wrap">
       <form @submit="submitHandle">
+        <div>
+          <span class="form-wrap__input-title">Изображение профиля</span
+          >
+          <uploader-image
+              v-model="fileInput"
+              @click.stop.prevent
+          ></uploader-image>
+        </div>
+
         <div class="form-wrap__input-wrap form-group">
           <label
           ><span class="form-wrap__input-title">Фамилия Имя Отчество</span
@@ -12,6 +21,7 @@
               placeholder="Введите ФИО"
           />
           </label>
+          <span class="validation-error">{{nameError}}</span>
         </div>
         <!-- +e.input-wrap-->
         <div class="form-wrap__input-wrap form-group">
@@ -35,15 +45,7 @@
               placeholder="Введите e-mail"
           />
           </label>
-        </div>
-
-        <div>
-          <span class="form-wrap__input-title">Аватар</span
-            >
-          <uploader-image
-              v-model="fileInput"
-              @click.stop.prevent
-          ></uploader-image>
+          <span class="validation-error">{{emailError}}</span>
         </div>
 
         <div class="form-wrap__input-wrap form-group">
@@ -56,21 +58,48 @@
               name="newUserLogin"
               placeholder="Введите"
               autocomplete="off"
+              maxLength="30"
           />
           </label>
+          <span class="validation-error">{{loginError}}</span>
         </div>
         <div class="form-wrap__input-wrap form-group">
-          <label
-          ><span class="form-wrap__input-title">Пароль</span
-          ><input
+          <label>
+            <span
+                class="form-wrap__input-title"
+            >Пароль
+            </span>
+            <span
+                class="pass-show-toggler"
+                @click="isShowPass = !isShowPass"
+            ><img
+                width="20"
+                height="20"
+                :src="isShowPass ? '/img/svg/invisible.svg' : '/img/svg/visibility.svg'"
+            >
+            </span>
+            <input
+              v-show="!isShowPass"
               v-model="passwordValue"
               class="form-wrap__input form-control"
               type="password"
               name="newUserPassword"
               placeholder="Введите"
               autocomplete="off"
+              maxLength="30"
           />
+            <input
+                v-show="isShowPass"
+                v-model="passwordValue"
+                class="form-wrap__input form-control"
+                type="text"
+                name="newUserPassword"
+                placeholder="Введите"
+                autocomplete="off"
+                maxLength="30"
+            />
           </label>
+            <span class="validation-error">{{passwordError}}</span>
         </div>
         <button
             :disabled="!formMeta.valid"
@@ -103,35 +132,36 @@ export default {
   setup(props, {emit}) {
 
     const isLoading = ref(false);
-
-    const englishLettersRegex = /^[A-Za-z]+$/;
+    const isShowPass = ref(false);
 
     const schema = yup.object({
-      name: yup.string().required(),
-      role: yup.object().required(),
-      email: yup.string().email().required(),
-      login: yup.string().matches(englishLettersRegex).required(),
-      password: yup.string().required()
+      name: yup.string().required('Поле обязательно для заполнения'),
+      role: yup.object().required('Поле обязательно для заполнения'),
+      email: yup.string().email( 'Пожалуйста, введите корректный email-адрес')
+          .required('Поле обязательно для заполнения'),
+      login: yup.string().required('Поле обязательно для заполнения'),
+      password: yup.string()
+          .min(6, "Длина пароля не менее 6 символов")
+          .required('Поле обязательно для заполнения')
     });
 
-    const {handleSubmit, meta: formMeta, setValues} = useForm({
-      validationSchema: schema
+    const {handleSubmit, meta: formMeta} = useForm({
+      validationSchema: schema,
+      initialValues: {
+        role: {key: 'user', name: "Пользователь"}
+      }
     });
 
-    const {value: nameValue} = useField('name');
+    const {value: nameValue, errorMessage: nameError} = useField('name');
     const {value: roleValue} = useField('role');
-    const {value: emailValue} = useField('email');
-    const {value: loginValue} = useField('login');
-    const {value: passwordValue} = useField('password');
+    const {value: emailValue, errorMessage: emailError} = useField('email');
+    const {value: loginValue, errorMessage: loginError} = useField('login');
+    const {value: passwordValue, errorMessage: passwordError} = useField('password');
     const roleOptions = [
       {key: 'admin', name: "Администратор"},
       {key: 'moderator', name: "Модератор"},
       {key: 'user', name: "Пользователь"},
     ];
-
-    setValues({
-      role: {key: 'user', name: "Пользователь"}
-    });
 
     const fileInput = ref(null);
     const photoUrl = ref(null);
@@ -179,10 +209,29 @@ export default {
       roleOptions,
       isLoading,
       fileInput,
+      nameError,
+      emailError,
+      passwordError,
+      loginError,
+      isShowPass,
     };
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.validation-error{
+  color:#ff0000;
+}
+.pass-show-toggler{
+  z-index: 10;
+  position: absolute;
+  top: 39px;
+  right: 10px;
+}
+.validation-error {
+  display: block;
+  margin-top: 5px;
+}
+</style>
 

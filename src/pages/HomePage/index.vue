@@ -73,7 +73,7 @@
                                 <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
-                                    :fieldsArray="section.fields"
+                                    :fieldsArray="filteredSectionFields"
                                     @updateSelectors="updateSelectorHandler"
                                 ></section-search-selectors>
                             </div>
@@ -249,8 +249,15 @@
                                 <files-types v-model="extensionsObj"> </files-types>
 
                                 <!-- Чекбоксы -->
-                                <checkbox-filters :fieldsArray="section.fields" v-model="checkboxesObj">
+                                <checkbox-filters
+                                    :fieldsArray="filteredSectionFields"
+                                    v-model="checkboxesObj"
+                                >
                                 </checkbox-filters>
+                                <date-filters
+                                    :fieldsArray="filteredSectionFields"
+                                    v-model="dateFilters"
+                                />
                             </div>
                         </div>
                     </div>
@@ -299,6 +306,7 @@ import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import SectionSearchRadio from '@/components/SearchSectionRadio';
 import {useStore} from 'vuex';
+import DateFilters from "@/pages/SectionSearchPage/DateFilters";
 
 export default {
     components: {
@@ -309,11 +317,20 @@ export default {
         CheckboxFilters,
         SearchResults,
         SectionSearchRadio,
+        DateFilters,
     },
     setup() {
         const isLoading = ref(false);
         const isAtFirst = ref(true); // При первом открытии старницы
         const section = ref({}); // если идет поиск по секции или {}
+        const filteredSectionFields = computed(() => {
+            if (section.value.fields) {
+                return section.value.fields.filter((field) => !!field.filter_sort_index);
+            } else {
+                return []
+            }
+        })
+
         const currentSectionId = ref('');
         const allSections = ref([]);
         const bcTitle = ref('');
@@ -339,9 +356,12 @@ export default {
         const extensionsObj = ref([]);
         const checkboxesObj = ref([]);
         const selectorsObj = ref([]);
+        const dateFilters = ref({});
+
         const resetFilters = () => {
             checkboxesObj.value = [];
             extensionsObj.value = [];
+            dateFilters.value = {};
         };
         const resetSelectors = () => {
             if (section.value.fields) {
@@ -378,6 +398,7 @@ export default {
                 filter: {
                     ...checkboxes,
                     ...selectorsObj.value,
+                    ...dateFilters.value
                 },
             };
         });
@@ -519,6 +540,8 @@ export default {
             currentSectionId,
             changeSectionHandler,
             handleSearch,
+            filteredSectionFields,
+            dateFilters,
         };
     },
 };

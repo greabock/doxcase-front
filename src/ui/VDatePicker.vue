@@ -6,7 +6,7 @@
             v-maska="'##.##.####'"
             :placeholder="placeholder"
             :error="error"
-            :bordered="true"
+            bordered
         >
             <template #right>
                 <div @click="isActive = !isActive">
@@ -16,13 +16,21 @@
                 </div>
             </template>
         </VInput>
-        <VCalendar @selected="selectedDate" v-model="date" v-if="isActive" class="datepicker__calendar" />
+        <VCalendar
+            :style="{
+                width: size || 'auto',
+            }"
+            :modelValue="modelValue"
+            @selected="selectedDate"
+            v-if="isActive"
+            class="datepicker__calendar"
+        />
     </div>
 </template>
 
 <script>
 import {ref} from '@vue/reactivity';
-import VCalendar from './VCalendar'
+import VCalendar from './VCalendar';
 import VInput from './VInput';
 import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
 import DateIcon from './icons/date.svg.vue';
@@ -47,6 +55,7 @@ export default {
     },
     directives: {maska},
     props: {
+        size: String,
         modelValue: [Date, String],
         placeholder: String,
         error: String,
@@ -54,12 +63,11 @@ export default {
     setup(props, ctx) {
         const root = ref(null);
         const isActive = ref(false);
-        const date = ref(props.modelValue);
 
         const privateDate = computed({
             get: () => {
-                if (date.value) {
-                    const d = new Date(date.value);
+                if (props.modelValue) {
+                    const d = new Date(props.modelValue);
                     const day = d.getDate() > 9 ? d.getDate() : '0' + d.getDate();
                     const month = d.getMonth() + 1;
                     const monthFormat = month > 9 ? month : '0' + month;
@@ -73,7 +81,7 @@ export default {
             set: debounce((val) => {
                 if (val) {
                     const [day, month, year] = val.split('.');
-                    const newDate = new Date(date.value);
+                    const newDate = new Date(props.modelValue);
                     if (day) {
                         newDate.setDate(day);
                     }
@@ -84,32 +92,31 @@ export default {
 
                     if (year) {
                         newDate.setFullYear(year);
-                        date.value = newDate;
                         ctx.emit('update:modelValue', newDate);
+                        ctx.emit('update', newDate);
                     }
                 } else {
-                    date.value = null;
-
                     ctx.emit('update:modelValue', null);
+                    ctx.emit('update', null);
                 }
             }, 500),
         });
 
         const selectedDate = (e) => {
-            date.value = e;
             ctx.emit('update:modelValue', e);
+            ctx.emit('update', e);
         };
 
         const hide = (event) => {
             if (!isActive.value) {
-                return 
+                return;
             }
-            
+
             if (!root.value.contains(event.target)) {
                 isActive.value = false;
             }
 
-            ctx.emit('blur', date.value);
+            ctx.emit('blur', props.modelValue);
         };
 
         onMounted(() => {
@@ -124,7 +131,6 @@ export default {
             isActive,
             hide,
             root,
-            date,
             privateDate,
             selectedDate,
         };
@@ -140,7 +146,7 @@ export default {
 .datepicker__calendar {
     position: absolute;
     bottom: -10px;
-    left: 0;
+    right: 0;
     transform: translateY(100%);
     z-index: 20;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
