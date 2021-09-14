@@ -65,7 +65,7 @@
  <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
-                                    :fieldsArray="section.fields"
+                                    :fieldsArray="filteredSectionFields"
                                     @updateSelectors="updateSelectorHandler"
                                 ></section-search-selectors>
                             </div>
@@ -255,15 +255,14 @@
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
-                                    :fieldsArray="section.fields"
+                                    :fieldsArray="filteredSectionFields"
                                     v-model="checkboxesObj"
                                 >
                                 </checkbox-filters>
-<!--                                <data-filters-->
-<!--                                    :fieldsArray="section.fields"-->
-<!--                                    v-model="dataFiltersObj"-->
-<!--                                >-->
-<!--                                </data-filters>-->
+                               <date-filters
+                                   :fieldsArray="filteredSectionFields"
+                                   v-model="dateFilters"
+                                />
                             </div>
                         </div>
                     </div>
@@ -285,7 +284,7 @@ import SectionSearchSelectors from '@/pages/SectionSearchPage/SectionSearchSelec
 import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
-// import DataFilters from "@/pages/SectionSearchPage/DataFilters";
+import DateFilters from "@/pages/SectionSearchPage/DateFilters";
 
 export default {
     components: {
@@ -294,7 +293,8 @@ export default {
       FilesTypes,
       SectionSearchSelectors,
       CheckboxFilters,
-      SearchResults
+      SearchResults,
+      DateFilters,
     },
     setup() {
 
@@ -307,6 +307,13 @@ export default {
         const currentPage = ref(1);
         const totalPages = ref(1);
         const isPreloaderShown = ref(false);
+        const filteredSectionFields = computed(() => {
+            if (section.value.fields) {
+                return section.value.fields.filter((field) => !!field.filter_sort_index);
+            } else {
+                return []
+            }
+        })
 
 // Выдача поиска_______________
         const materials = ref([]);
@@ -318,32 +325,17 @@ export default {
             direction: 'asc',
         });
 
-        const initDataModelValue = computed(() => {
-          if (!Object.keys(section.value).length) {
-            return [];
-          }
-          return section.value.fields.filter((field) => {
-            return field.type.name === 'Date'
-          }).map((field) => {
-            return {
-              [field.id]: {
-                "from": null,
-                "to": null
-              }
-            }
-          })
-        });
 
         const searchObj = ref('');
         const extensionsObj = ref([]);
         const checkboxesObj = ref([]);
         const selectorsObj = ref([]);
-        const dataFiltersObj = ref(initDataModelValue.value);
+        const dateFilters = ref([]);
 
         const resetFilters = () => {
             checkboxesObj.value = [];
             extensionsObj.value = [];
-            dataFiltersObj.value =[];
+            dateFilters.value = [];
         };
 
         const resetSelectors = () => {
@@ -374,6 +366,7 @@ export default {
                 filter: {
                     ...checkboxes,
                     ...selectorsObj.value,
+                    ...dateFilters.value,
                 }
             }
         });
@@ -527,7 +520,8 @@ export default {
             totalPages,
             currentPage,
             isPreloaderShown,
-            dataFiltersObj
+            dateFilters,
+            filteredSectionFields,
         }
     },
 }

@@ -23,7 +23,7 @@ export default {
       if (Object.keys(queryParams).length !== 0) {
         try {
           const res = await azureService.postAzure(queryParams);
-          const token = res.data.data.token;
+          const token = res.data.data;
           localStorage.setItem('token', token);
           await store.dispatch('user/fetchUserData');
           const user = store.getters['user/getUser'];
