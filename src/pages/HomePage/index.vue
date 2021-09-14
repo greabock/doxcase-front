@@ -356,12 +356,12 @@ export default {
         const extensionsObj = ref([]);
         const checkboxesObj = ref([]);
         const selectorsObj = ref([]);
-        const dateFilters = ref([]);
+        const dateFilters = ref({});
 
         const resetFilters = () => {
             checkboxesObj.value = [];
             extensionsObj.value = [];
-            dateFilters.value = [];
+            dateFilters.value = {};
         };
         const resetSelectors = () => {
             if (section.value.fields) {
@@ -541,6 +541,7 @@ export default {
             changeSectionHandler,
             handleSearch,
             filteredSectionFields,
+            dateFilters,
         };
     },
 };

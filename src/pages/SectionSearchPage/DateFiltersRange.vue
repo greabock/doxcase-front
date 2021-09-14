@@ -24,7 +24,7 @@ export default {
     components: {VDatePicker},
     props: {
         title: String,
-        value: Array,
+        modelValue: Array,
     },
     setup(props, {emit}) {
         const dateFrom = ref();
@@ -32,16 +32,16 @@ export default {
 
         const updateDates = () => {
             if (dateFrom.value && dateTo.value) {
-                emit('update', [dateFrom.value, dateTo.value]);
+                emit('update:modelValue', [dateFrom.value, dateTo.value]);
             }
         };
 
         watch(
-            () => props.value,
+            () => props.modelValue,
             () => {
-                if (props.value.length == 2) {
-                    dateFrom.value = props.value[0];
-                    dateTo.value = props.value[1];
+                if (props.modelValue.length == 2) {
+                    dateFrom.value = props.modelValue[0];
+                    dateTo.value = props.modelValue[1];
                 } else {
                     dateFrom.value = null;
                     dateTo.value = null;

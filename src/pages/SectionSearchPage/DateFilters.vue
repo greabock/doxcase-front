@@ -1,13 +1,13 @@
 <template>
     <div v-if="filteredFields?.length">
         <div v-for="(field, index) of filteredFields" :key="index">
-            <DateFiltersRange :title="field?.title" @update="$emit('update:modelValue', $event)" :value="modelValue" />
+            <DateFiltersRange :title="field?.title" @update:modelValue="updateDates" v-model="dates[field.id]" />
         </div>
     </div>
 </template>
 
 <script>
-import {computed} from 'vue';
+import {computed, ref, watch} from 'vue';
 import DateFiltersRange from './DateFiltersRange';
 
 export default {
@@ -18,18 +18,34 @@ export default {
             default: () => [],
         },
         modelValue: {
-            type: Array,
-            default: () => [],
+            type: Object,
+            default: () => {},
         },
     },
 
-    setup(props) {
+    setup(props, {emit}) {
         const filteredFields = computed(() => {
             return props.fieldsArray.filter((field) => field.type.name === 'Date');
         });
 
+        const dates = ref({});
+
+        const updateDates = () => {
+            emit('update:modelValue', dates.value)
+        }
+
+        watch(() => props.modelValue, () => {
+            if (!Object.keys(props.modelValue).length) {
+                for(const i in dates.value) {
+                    dates.value[i] = [];
+                }
+            }
+        })
+
         return {
             filteredFields,
+            dates,
+            updateDates,
         };
     },
 };
