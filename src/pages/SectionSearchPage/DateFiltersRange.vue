@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-3 text-label">Начало периода</div>
+            <div class="col-3 text-label">Окончание периода</div>
             <div class="col">
                 <VDatePicker v-model="dateTo" @update="updateDates" size="20rem" placeholder="ДД.ММ.ГГГГ" />
             </div>

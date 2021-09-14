@@ -65,7 +65,7 @@
  <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
-                                    :fieldsArray="section.fields"
+                                    :fieldsArray="filteredSectionFields"
                                     @updateSelectors="updateSelectorHandler"
                                 ></section-search-selectors>
                             </div>
@@ -255,12 +255,12 @@
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
-                                    :fieldsArray="section.fields"
+                                    :fieldsArray="filteredSectionFields"
                                     v-model="checkboxesObj"
                                 >
                                 </checkbox-filters>
                                <date-filters
-                                   :fieldsArray="section.fields"
+                                   :fieldsArray="filteredSectionFields"
                                    v-model="dateFilters"
                                 />
                             </div>
@@ -307,6 +307,13 @@ export default {
         const currentPage = ref(1);
         const totalPages = ref(1);
         const isPreloaderShown = ref(false);
+        const filteredSectionFields = computed(() => {
+            if (section.value.fields) {
+                return section.value.fields.filter((field) => !!field.filter_sort_index);
+            } else {
+                return []
+            }
+        })
 
 // Выдача поиска_______________
         const materials = ref([]);
@@ -514,6 +521,7 @@ export default {
             currentPage,
             isPreloaderShown,
             dateFilters,
+            filteredSectionFields,
         }
     },
 }
