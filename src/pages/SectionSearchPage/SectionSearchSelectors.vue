@@ -45,7 +45,6 @@ export default {
             let fieldsToSelectors;
             if (props.fieldsArray.length) {
                 fieldsToSelectors = props.fieldsArray
-                    .filter((field) => !!field.filter_sort_index)
                     .filter(
                         (field) =>
                             field.type.name === 'Enum' ||

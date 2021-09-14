@@ -139,7 +139,7 @@ export default {
       role: yup.object().required('Поле обязательно для заполнения'),
       email: yup.string().email( 'Пожалуйста, введите корректный email-адрес')
           .required('Поле обязательно для заполнения'),
-      login: yup.string().required('Поле обязательно лдоя заполнения'),
+      login: yup.string().required('Поле обязательно для заполнения'),
       password: yup.string()
           .min(6, "Длина пароля не менее 6 символов")
           .required('Поле обязательно для заполнения')
