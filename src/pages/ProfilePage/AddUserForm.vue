@@ -3,7 +3,7 @@
     <div class="form-wrap">
       <form @submit="submitHandle">
         <div>
-          <span class="form-wrap__input-title">Аватар</span
+          <span class="form-wrap__input-title">Изображение профиля</span
           >
           <uploader-image
               v-model="fileInput"

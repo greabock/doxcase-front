@@ -398,6 +398,7 @@ export default {
                 filter: {
                     ...checkboxes,
                     ...selectorsObj.value,
+                    ...dateFilters.value
                 },
             };
         });
