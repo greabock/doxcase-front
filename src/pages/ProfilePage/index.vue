@@ -36,7 +36,7 @@
                                         >Пользователи
                                     </span>
                                 </li>
-                                <li v-if="user?.role === 'admin1'" class="nav-item">
+                                <li v-if="user?.role === 'admin'" class="nav-item">
                                     <span
                                         @click.prevent="switchPageContent('groups')"
                                         class="nav-link"
