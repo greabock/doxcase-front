@@ -29,7 +29,7 @@
             class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
         >
             <template
-                v-for='user in filteredMixedUsers'
+                v-for='user in filteredSortedGroupUsers'
                 :key='user.id'
             >
                 <label
@@ -38,7 +38,25 @@
                 ><input
                     class="custom-input__input form-check-input"
                     type="checkbox"
-                    v-model="user.is"
+                    :value="user"
+                    v-model="groupUsersList"
+                /><span class="custom-input__text form-check-label"
+                >{{ user.name }}</span
+                >
+                </label>
+            </template>
+            <template
+                v-for='user in filteredSortedUngroupUsers'
+                :key='user.id'
+            >
+                <label
+                    v-show="user.show"
+                    class="groups-users-list__item custom-input form-check"
+                ><input
+                    class="custom-input__input form-check-input"
+                    type="checkbox"
+                    :value="user"
+                    v-model="groupUsersList"
                 /><span class="custom-input__text form-check-label"
                 >{{ user.name }}</span
                 >
@@ -55,8 +73,16 @@
 </template>
 
 <script>
-import {ref, computed} from 'vue';
+import {ref, watch, computed} from 'vue';
 import VButton from '@/ui/VButton';
+
+const defineUngroupUsers = (allUsers, groupUsers) => {
+    if (groupUsers && groupUsers.length > 0) {
+        const excludeIds = groupUsers.map(user => user.id)
+        return allUsers.filter((user) => !excludeIds.includes(user.id))
+    }
+    return [];
+}
 
 export default {
     components: {
@@ -67,51 +93,86 @@ export default {
             type: Array,
             default: () => []
         },
-        currentGroup: {
+        propGroup: {
             type: Object,
             default: () => {}
         }
     },
     setup(props) {
 
+        const currentGroup = ref({...props.propGroup});
+        const groupUsersList = ref([...props.propGroup.users]);
+        const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, props.propGroup.users)]);
         const searchUsersValue = ref('');
-        const mixedUsers = computed(() => {
-            let sortedGroupUsers = [];
-            let sortedUngroupUsers = [];
 
-            if (props.currentGroup && props.currentGroup.users && props.currentGroup.users.length > 0) {
-                sortedGroupUsers = props.currentGroup.users
-                    .map(user => ({...user, is: true}))
-                    .sort((a, b) => (a.name > b.name)? 1 : -1)
+        watch(() => props.propGroup, (newVal) => {
+            currentGroup.value = newVal;
+            groupUsersList.value = newVal.users;
+            ungroupUsersList.value = defineUngroupUsers(props.allUsers, currentGroup.value.users);
+        })
+
+        const filteredSortedGroupUsers = computed(() => {
+            if (currentGroup.value.users && currentGroup.value.users.length > 0) {
+                return currentGroup.value.users
+                    .map((user) => {
+                        user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+                        return user;
+                    })
+                    .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
             }
+                return [];
+        })
 
-            if (props.allUsers.length > 0) {
-                if (sortedGroupUsers.length > 0) {
+        const filteredSortedUngroupUsers = computed(() => {
 
-                    const sortedGroupIds = sortedGroupUsers.map(user => user.id) // Массив Id-шников из Списка пользователей
-                    sortedUngroupUsers = props.allUsers
-                        .filter((user) => !sortedGroupIds.includes(user.id))
-                        .sort((a, b) => (a.name > b.name) ? 1 : -1 );
-                } else {
-                    sortedUngroupUsers = [...props.allUsers]
-                        .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 );
-                }
-            }
-            return [...sortedGroupUsers, ...sortedUngroupUsers];
-        });
-
-        const filteredMixedUsers = computed(() => {
-            return [...mixedUsers.value]
+            return ungroupUsersList.value
                 .map(user => {
-                    user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+                    user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
                     return user;
-            });
-        });
+                })
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
+        })
+
+
+
+        // const filteredMixedUsers = computed(() => {
+        //     let sortedGroupUsers = [];
+        //     let sortedUngroupUsers = [];
+        //
+        //     if (currentGroup.value && currentGroup.value.users && currentGroup.value.users.length > 0) {
+        //         sortedGroupUsers = currentGroup.value.users
+        //             .map(user => ({...user, is: true}))
+        //             .sort((a, b) => (a.name > b.name)? 1 : -1)
+        //     }
+        //
+        //     if (props.allUsers.length > 0) {
+        //
+        //         if (sortedGroupUsers.length > 0) {
+        //
+        //             const sortedGroupIds = sortedGroupUsers.map(user => user.id) // Массив Id-шников из Списка пользователей
+        //             sortedUngroupUsers = [...props.allUsers]
+        //                 .filter((user) => !sortedGroupIds.includes(user.id))
+        //                 .map((user) => ({...user, is: false}))
+        //                 .sort((a, b) => (a.name > b.name) ? 1 : -1 );
+        //         } else {
+        //             sortedUngroupUsers = [...props.allUsers]
+        //                 .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 );
+        //         }
+        //     }
+        //     return [...sortedGroupUsers, ...sortedUngroupUsers].map(user => {
+        //         user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+        //         return user;
+        //     });
+        // });
+
 
         return {
+            groupUsersList,
+            filteredSortedGroupUsers,
+            filteredSortedUngroupUsers,
             searchUsersValue,
-            mixedUsers,
-            filteredMixedUsers,
+            currentGroup,
+            ungroupUsersList,
         };
     },
 };

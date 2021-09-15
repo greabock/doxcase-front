@@ -24,7 +24,7 @@
 
     <group-users-list
         :allUsers="allUsers"
-        :currentGroup="currentGroup"
+        :propGroup="currentGroup"
         v-if="currentGroup?.id && allUsers.length > 0"
     >
     </group-users-list>
