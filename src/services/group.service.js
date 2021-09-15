@@ -6,9 +6,8 @@ class usersService {
         if (res.data?.data) {
             return res.data.data;
         } else {
-            return [];
+            throw new Error('Ошибка при получении групп пользователей');
         }
-        // } else throw new Error('Ошибка при получении групп пользователей');
     };
     getOneGroup = async (id) => {
         const res = await axiosInstance.get(`/groups/${id}`);

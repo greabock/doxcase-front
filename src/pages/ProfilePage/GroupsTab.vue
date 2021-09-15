@@ -1,6 +1,7 @@
 <template>
 
-    <div class="btns-group-sm">
+    <div
+        class="btns-group-sm">
         <button
             v-for="group in allGroups"
             @click="currentGroup = group"
@@ -21,12 +22,12 @@
         </div>
     </div>
 
-<!--    <group-users-list-->
-<!--        :allUsers="allUsers"-->
-<!--        :currentGroup="currentGroup"-->
-<!--        v-if="allUsers.length > 0"-->
-<!--    >-->
-<!--    </group-users-list>-->
+    <group-users-list
+        :allUsers="allUsers"
+        :currentGroup="currentGroup"
+        v-if="currentGroup?.id && allUsers.length > 0"
+    >
+    </group-users-list>
 
 <!-- Удаление группы -->
     <modal-window
@@ -38,7 +39,7 @@
         </div>
         <p>Вы действительно хотите удалить группу "{{ groupToRemove?.name }}"?</p>
         <div class="modal-window__buttons">
-            <v-button class="w-100" @click="removeGroup(groupToRemove)">Удалить</v-button>
+            <v-button class="w-100" @click="removeGroup()">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="isRemoveModalVisible = false">Отменить</v-button>
         </div>
     </modal-window>
@@ -123,7 +124,7 @@
 import {ref, computed, onMounted} from 'vue';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
-// import groupUsersList from '@/pages/ProfilePage/GroupUsersList';
+import GroupUsersList from '@/pages/ProfilePage/GroupUsersList';
 import * as yup from 'yup';
 import {useField, useForm} from 'vee-validate';
 import usersService from '@/services/users.service';
@@ -134,7 +135,7 @@ export default {
     components: {
         VButton,
         ModalWindow,
-        // groupUsersList
+        GroupUsersList
     },
     setup() {
 
