@@ -24,6 +24,13 @@ class usersService {
             throw new Error('Ошибка добавления группы пользователей');
         }
     };
+    removeGroup = async (id) => {
+        try {
+            return await axiosInstance.delete(`/groups/${id}`);
+        } catch(e) {
+            throw new Error('Ошибка добавления группы пользователей');
+        }
+    };
     updateGroup = async (group) => {
         try {
             return await axiosInstance.patch(`/users/${group.id}`, group);

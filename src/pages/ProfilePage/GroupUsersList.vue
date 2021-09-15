@@ -1,13 +1,13 @@
 <template>
     <div
         class="h3 mb-3"
-    >!Заголовок группы!
+    >{{currentGroup.name}}
     </div>
     <div class="search-block">
         <form>
             <div class="search-block__input-wrap form-group">
                 <input
-                    v-model="searchValue"
+                    v-model="searchUsersValue"
                     class="search-block__input form-control"
                     name="text"
                     type="text"
@@ -44,8 +44,8 @@
     </div>
     <div class="sAddDocs__footer">
         <div class="container-fluid d-flex">
-            <VButton class="btn-save" @click="submit"> Сохранить изменения</VButton>
-            <VButton class="ms-2" outline @click="back"> Отмена </VButton>
+            <VButton class="btn-save" @click="() => {}"> Сохранить изменения</VButton>
+            <VButton class="ms-2" outline @click="() => {}"> Отмена </VButton>
         </div>
     </div>
 </template>
@@ -70,8 +70,7 @@ export default {
     },
     setup(props) {
 
-        const searchValue = ref('');
-
+        const searchUsersValue = ref('');
         const mixedUsers = computed(() => {
             let sortedGroupUsers = [];
             let sortedUngroupUsers = [];
@@ -100,7 +99,7 @@ export default {
             return [...mixedUsers.value]
                 .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
                 .map(user => {
-                    user.show = user.name.toLowerCase().includes(searchValue.value.toLowerCase());
+                    user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
                     return user;
                 });
         })
@@ -108,7 +107,7 @@ export default {
 
 
         return {
-            searchValue,
+            searchUsersValue,
             mixedUsers,
             filteredMixedUsers,
         };

@@ -21,12 +21,12 @@
         </div>
     </div>
 
-    <group-users-list
-        :allUsers="allUsers"
-        :currentGroup="currentGroup"
-        v-if="allUsers.length > 0"
-    >
-    </group-users-list>
+<!--    <group-users-list-->
+<!--        :allUsers="allUsers"-->
+<!--        :currentGroup="currentGroup"-->
+<!--        v-if="allUsers.length > 0"-->
+<!--    >-->
+<!--    </group-users-list>-->
 
 <!-- Удаление группы -->
     <modal-window
@@ -123,7 +123,7 @@
 import {ref, computed, onMounted} from 'vue';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
-import groupUsersList from '@/pages/ProfilePage/GroupUsersList';
+// import groupUsersList from '@/pages/ProfilePage/GroupUsersList';
 import * as yup from 'yup';
 import {useField, useForm} from 'vee-validate';
 import usersService from '@/services/users.service';
@@ -134,7 +134,7 @@ export default {
     components: {
         VButton,
         ModalWindow,
-        groupUsersList
+        // groupUsersList
     },
     setup() {
 
@@ -195,9 +195,15 @@ export default {
             groupToRemove.value = group;
             isRemoveModalVisible.value = true;
         };
-        const removeGroup = (id) => {
-            allGroups.value = allGroups.value.filter(group => group.id !== id);
-            isRemoveModalVisible.value = false;
+        const removeGroup = async () => {
+            try {
+                await groupService.removeGroup(groupToRemove.value.id);
+                allGroups.value = allGroups.value.filter(group => group.id !== groupToRemove.value.id);
+                isRemoveModalVisible.value = false;
+            } catch(e) {
+                console.log(e);
+            }
+
         }
 
 // Поиск пользователей_________________
@@ -213,17 +219,20 @@ export default {
 
         const fetchAllGroups = async () => {
             try {
-                allGroups.value = await groupService.getAllGroups();
+                const res = await groupService.getAllGroups();
+                allGroups.value = res;
+                return res;
+
             } catch (e) {
                 console.log(e);
             }
         };
 
-        onMounted(() => {
-                fetchAllUsers();
-                fetchAllGroups();
-                if (allGroups.value.length) {
-                    currentGroup.value = allGroups.value[0];
+        onMounted(async () => {
+                await fetchAllUsers();
+                const groups = await fetchAllGroups();
+                if (groups.length) {
+                    currentGroup.value = groups[0];
                 }
         });
 
