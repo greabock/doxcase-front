@@ -84,7 +84,7 @@
             </div>
 
             <div
-                class="sSections__col col-lg-auto col-md"
+                class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
             >
                 <template
                     v-for='user in sortedFilteredAllUsers'
@@ -284,5 +284,37 @@ export default {
     display: block;
     margin-top: 5px;
     color: #ff0000;
+}
+.users-list-fom-wrapper {
+    max-height: 500px;
+    overflow-x: visible;
+    overflow-y: auto;
+    padding: 5px 0 5px 5px;
+    margin: 0 0 20px -5px;
+}
+.users-list-fom-wrapper::-webkit-scrollbar {
+    width: 4px;               /* ширина scrollbar */
+}
+.users-list-fom-wrapper::-webkit-scrollbar-track {
+    background: #c4c4c4;        /* цвет дорожки */
+}
+.users-list-fom-wrapper::-webkit-scrollbar-thumb {
+    background-color: #1D47CE;    /* цвет плашки */
+    border-radius: 3px;       /* закругления плашки */
+    border: 0;  /* padding вокруг плашки */
+}
+
+.users-list-fom-wrapper .form-check {
+    padding-left:25px;
+}
+.users-list-fom-wrapper .form-check-input {
+    width: 1.5em;
+    height: 1.5em;
+    margin-top: 0;
+}
+.users-list-fom-wrapper .form-check-input[type="checkbox"] {
+    background-size: 80%;
+    margin-right: 10px;
+    background-position-x: center;
 }
 </style>
