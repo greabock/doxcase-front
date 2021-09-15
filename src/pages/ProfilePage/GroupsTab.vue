@@ -180,9 +180,9 @@ export default {
                users: groupUsers
            }
            try {
-               await groupService.addGroup(newGroup);
-               allGroups.value.push(newGroup);
-               currentGroup.value = newGroup;
+               const res = await groupService.addGroup(newGroup);
+               allGroups.value.push(res);
+               currentGroup.value = res;
                resetForm();
                isAddModalVisible.value = false;
            } catch(e) {
@@ -201,6 +201,7 @@ export default {
             try {
                 await groupService.removeGroup(groupToRemove.value.id);
                 allGroups.value = allGroups.value.filter(group => group.id !== groupToRemove.value.id);
+                currentGroup.value = allGroups.value[0];
              } catch(e) {
                 console.log(e);
             } finally {
