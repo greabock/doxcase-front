@@ -18,7 +18,7 @@ class usersService {
     addGroup = async (group) => {
         try {
             const res = await axiosInstance.post('/groups', group);
-            return res.data;
+            return res.data.data;
         } catch(e) {
             throw new Error('Ошибка добавления группы пользователей');
         }
