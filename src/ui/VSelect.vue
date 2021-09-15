@@ -30,6 +30,7 @@
                 <slot name="option" :item="item">
                     {{ item.name }}
                 </slot>
+                <MarkIcon v-if="isActiveItem(item)" class="select__mark" />
             </li>
             <li class="select-list__not-data" v-if="!privateOptions.length">Нет данных</li>
         </ul>
@@ -41,6 +42,7 @@ import {ref} from 'vue';
 
 import VInput from './VInput.vue';
 import ArrowDown from './icons/arrow-down.svg.vue';
+import MarkIcon from './icons/mark.svg.vue';
 
 import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
 
@@ -58,6 +60,7 @@ export default {
     components: {
         VInput,
         ArrowDown,
+        MarkIcon,
     },
     props: {
         modelValue: [Object, Array],
@@ -208,9 +211,12 @@ export default {
     margin: 0;
     cursor: pointer;
     color: $blue;
-    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    padding: 0.5rem 1rem;
     position: relative;
     font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     &:hover {
         background-color: #f8f8f8;
@@ -233,5 +239,9 @@ export default {
 
 .select-list__item_active {
     font-weight: 500;
+}
+
+.select__mark {
+    height: 0.8rem;
 }
 </style>

@@ -1,12 +1,13 @@
 <template>
     <div ref="root" class="datepicker__container">
         <VInput
-            v-model="privateDate"
-            @focus="isActive = true"
+            classInput="period-from"
+            v-model="privateDate.from"
+            @focus="isActiveFrom = true"
             v-maska="'##.##.####'"
             :placeholder="placeholder"
             :error="error"
-            :bordered="bordered"
+            bordered
         >
             <template #right>
                 <div @click="isActive = !isActive">
@@ -16,21 +17,31 @@
                 </div>
             </template>
         </VInput>
-        <VCalendar
-            :style="{
-                width: size || 'auto',
-            }"
-            :modelValue="modelValue"
-            @selected="selectedDate"
-            v-if="isActive"
-            class="datepicker__calendar"
-        />
+        <VInput
+            classInput="period-to"
+            v-model="privateDate.to"
+            @focus="isActiveTo = true"
+            v-maska="'##.##.####'"
+            :placeholder="placeholder"
+            :error="error"
+            bordered
+        >
+            <template #right>
+                <div @click="isActive = !isActive">
+                    <div class="date__icon">
+                        <DateIcon />
+                    </div>
+                </div>
+            </template>
+        </VInput>
+        <VCalendar @selected="selectedDate" v-model="date.from" v-if="isActiveFrom" class="datepicker__calendar" />
+        <VCalendar @selected="selectedDate" v-model="date.to" v-if="isActiveTo" class="datepicker__calendar" />
     </div>
 </template>
 
 <script>
 import {ref} from '@vue/reactivity';
-import VCalendar from './VCalendar';
+import VCalendar from './VCalendar'
 import VInput from './VInput';
 import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
 import DateIcon from './icons/date.svg.vue';
@@ -47,6 +58,15 @@ function outsideUnsub(fn) {
     global.removeEventListener('click', fn);
 }
 
+const getDate = (d) => {
+    const day = d.getDate() > 9 ? d.getDate() : '0' + d.getDate();
+                    const month = d.getMonth() + 1;
+                    const monthFormat = month > 9 ? month : '0' + month;
+                    const year = d.getFullYear();
+
+                    return `${day}.${monthFormat}.${year}`;
+}
+
 export default {
     components: {
         VInput,
@@ -55,34 +75,38 @@ export default {
     },
     directives: {maska},
     props: {
-        size: String,
-        modelValue: [Date, String],
+        modelValue: [Date, String, Object],
         placeholder: String,
         error: String,
-        bordered: Boolean,
     },
     setup(props, ctx) {
         const root = ref(null);
-        const isActive = ref(false);
+        const isActiveFrom = ref(false);
+        const isActiveTo = ref(false);
+
+        const date = ref(props.modelValue || {from: null, to: null});
 
         const privateDate = computed({
             get: () => {
-                if (props.modelValue) {
-                    const d = new Date(props.modelValue);
-                    const day = d.getDate() > 9 ? d.getDate() : '0' + d.getDate();
-                    const month = d.getMonth() + 1;
-                    const monthFormat = month > 9 ? month : '0' + month;
-                    const year = d.getFullYear();
+                if (date.value) {
+                    const from = date.value.from && new Date(date.value.from);
+                    const to = date.value.to && new Date(date.value.to);
 
-                    return `${day}.${monthFormat}.${year}`;
+                    return {
+                        from: getDate(from),
+                        to: getDate(to),
+                    }
                 }
 
-                return '';
+                return {
+                        from: '',
+                        to: '',
+                    }
             },
             set: debounce((val) => {
                 if (val) {
                     const [day, month, year] = val.split('.');
-                    const newDate = new Date(props.modelValue);
+                    const newDate = new Date(date.value);
                     if (day) {
                         newDate.setDate(day);
                     }
@@ -93,31 +117,33 @@ export default {
 
                     if (year) {
                         newDate.setFullYear(year);
+                        date.value = newDate;
                         ctx.emit('update:modelValue', newDate);
-                        ctx.emit('update', newDate);
                     }
                 } else {
+                    date.value = null;
+
                     ctx.emit('update:modelValue', null);
-                    ctx.emit('update', null);
                 }
             }, 500),
         });
 
         const selectedDate = (e) => {
+            date.value = e;
             ctx.emit('update:modelValue', e);
-            ctx.emit('update', e);
         };
 
         const hide = (event) => {
-            if (!isActive.value) {
-                return;
+            if (!isActiveFrom.value && !isActiveTo.value) {
+                return 
             }
-
+            
             if (!root.value.contains(event.target)) {
-                isActive.value = false;
+                isActiveFrom.value = false;
+                isActiveTo.value = false;
             }
 
-            ctx.emit('blur', props.modelValue);
+            ctx.emit('blur', date.value);
         };
 
         onMounted(() => {
@@ -129,9 +155,11 @@ export default {
         });
 
         return {
-            isActive,
+            isActiveFrom,
+            isActiveTo,
             hide,
             root,
+            date,
             privateDate,
             selectedDate,
         };
@@ -142,12 +170,13 @@ export default {
 <style scoped>
 .datepicker__container {
     position: relative;
+    display: flex;
 }
 
 .datepicker__calendar {
     position: absolute;
     bottom: -10px;
-    right: 0;
+    left: 0;
     transform: translateY(100%);
     z-index: 20;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
@@ -161,5 +190,16 @@ export default {
     height: 100%;
     cursor: pointer;
     width: 3rem;
+}
+
+.datepicker__container >>> .period-from {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.datepicker__container >>> .period-to {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-left: 0;
 }
 </style>
