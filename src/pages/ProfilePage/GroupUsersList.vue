@@ -42,13 +42,22 @@
             </label>
         </template>
     </div>
-
+    <div class="sAddDocs__footer">
+        <div class="container-fluid d-flex">
+            <VButton class="btn-save" @click="submit"> Сохранить изменения</VButton>
+            <VButton class="ms-2" outline @click="back"> Отмена </VButton>
+        </div>
+    </div>
 </template>
 
 <script>
 import {ref, computed} from 'vue';
+import VButton from '@/ui/VButton';
 
 export default {
+    components: {
+        VButton
+    },
     props: {
         allUsers: {
             type: Array,
@@ -113,5 +122,10 @@ INPUT::placeholder {
 }
 .search-block {
     margin-bottom: 20px;
+}
+.sAddDocs__footer {
+    margin-bottom:-25px;
+    margin-left: -32px;
+    padding-left: 15px;
 }
 </style>
