@@ -26,6 +26,7 @@
         :allUsers="allUsers"
         :propGroup="currentGroup"
         v-if="currentGroup?.id && allUsers.length > 0"
+        @updateGroup="updateGroup"
     >
     </group-users-list>
 
@@ -181,7 +182,7 @@ export default {
            try {
                await groupService.addGroup(newGroup);
                allGroups.value.push(newGroup);
-               // currentGroup.value = newGroup;
+               currentGroup.value = newGroup;
                resetForm();
                isAddModalVisible.value = false;
            } catch(e) {
@@ -200,9 +201,10 @@ export default {
             try {
                 await groupService.removeGroup(groupToRemove.value.id);
                 allGroups.value = allGroups.value.filter(group => group.id !== groupToRemove.value.id);
-                isRemoveModalVisible.value = false;
-            } catch(e) {
+             } catch(e) {
                 console.log(e);
+            } finally {
+                isRemoveModalVisible.value = false;
             }
 
         }
@@ -229,6 +231,16 @@ export default {
             }
         };
 
+        const updateGroup = (updatedGroup) => {
+            const idx = allGroups.value.findIndex(group => group.id === updatedGroup.id);
+            allGroups.value = [
+                ...allGroups.value.slice(0, idx),
+                updatedGroup,
+                ...allGroups.value.slice(idx + 1)
+            ];
+            currentGroup.value = updatedGroup;
+        }
+
         onMounted(async () => {
                 await fetchAllUsers();
                 const groups = await fetchAllGroups();
@@ -252,6 +264,7 @@ export default {
             nameError,
             formMeta,
             sortedFilteredAllUsers,
+            updateGroup,
         }
     }
 };

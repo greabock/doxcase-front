@@ -7,23 +7,21 @@
         >{{currentGroup?.name}}
         </div>
         <div class="search-block">
-            <form>
-                <div class="search-block__input-wrap form-group">
-                    <input
-                        v-model="searchUsersValue"
-                        class="search-block__input form-control"
-                        name="text"
-                        type="text"
-                        placeholder="Поиск"
-                    />
-                </div>
-                <!-- +e.input-wrap-->
-                <button class="search-block__btn" @click.stop.prevent type="submit">
-                    <svg class="icon icon-search">
-                        <use xlink:href="/img/svg/sprite.svg#search"></use>
-                    </svg>
-                </button>
-            </form>
+            <div class="search-block__input-wrap form-group">
+                <input
+                    v-model="searchUsersValue"
+                    class="search-block__input form-control"
+                    name="text"
+                    type="text"
+                    placeholder="Поиск"
+                />
+            </div>
+            <!-- +e.input-wrap-->
+            <button class="search-block__btn" @click.stop.prevent type="submit">
+                <svg class="icon icon-search">
+                    <use xlink:href="/img/svg/sprite.svg#search"></use>
+                </svg>
+            </button>
         </div>
         <div
             class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
@@ -65,7 +63,7 @@
         </div>
         <div class="sAddDocs__footer">
             <div class="container-fluid d-flex">
-                <VButton class="btn-save" @click="() => {}"> Сохранить изменения</VButton>
+                <VButton class="btn-save" @click="updateGroup"> Сохранить изменения</VButton>
                 <VButton class="ms-2" outline @click="() => {}"> Отмена </VButton>
             </div>
         </div>
@@ -75,6 +73,7 @@
 <script>
 import {ref, watch, computed} from 'vue';
 import VButton from '@/ui/VButton';
+import groupService from '@/services/group.service';
 
 const defineUngroupUsers = (allUsers, groupUsers) => {
     if (groupUsers && groupUsers.length > 0) {
@@ -85,6 +84,7 @@ const defineUngroupUsers = (allUsers, groupUsers) => {
 }
 
 export default {
+    emits: ['updateGroup'],
     components: {
         VButton
     },
@@ -98,7 +98,7 @@ export default {
             default: () => {}
         }
     },
-    setup(props) {
+    setup(props, {emit}) {
 
         const currentGroup = ref({...props.propGroup});
         const groupUsersList = ref([...props.propGroup.users]);
@@ -109,7 +109,7 @@ export default {
             currentGroup.value = newVal;
             groupUsersList.value = newVal.users;
             ungroupUsersList.value = defineUngroupUsers(props.allUsers, currentGroup.value.users);
-        })
+        }, {deep: true})
 
         const filteredSortedGroupUsers = computed(() => {
             if (currentGroup.value.users && currentGroup.value.users.length > 0) {
@@ -133,38 +133,18 @@ export default {
                 .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
         })
 
-
-
-        // const filteredMixedUsers = computed(() => {
-        //     let sortedGroupUsers = [];
-        //     let sortedUngroupUsers = [];
-        //
-        //     if (currentGroup.value && currentGroup.value.users && currentGroup.value.users.length > 0) {
-        //         sortedGroupUsers = currentGroup.value.users
-        //             .map(user => ({...user, is: true}))
-        //             .sort((a, b) => (a.name > b.name)? 1 : -1)
-        //     }
-        //
-        //     if (props.allUsers.length > 0) {
-        //
-        //         if (sortedGroupUsers.length > 0) {
-        //
-        //             const sortedGroupIds = sortedGroupUsers.map(user => user.id) // Массив Id-шников из Списка пользователей
-        //             sortedUngroupUsers = [...props.allUsers]
-        //                 .filter((user) => !sortedGroupIds.includes(user.id))
-        //                 .map((user) => ({...user, is: false}))
-        //                 .sort((a, b) => (a.name > b.name) ? 1 : -1 );
-        //         } else {
-        //             sortedUngroupUsers = [...props.allUsers]
-        //                 .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 );
-        //         }
-        //     }
-        //     return [...sortedGroupUsers, ...sortedUngroupUsers].map(user => {
-        //         user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
-        //         return user;
-        //     });
-        // });
-
+        const updateGroup = async () => {
+            const updatedGroup = {
+                ...currentGroup.value,
+                users: groupUsersList.value
+            }
+            try {
+                await groupService.updateGroup(updatedGroup);
+                emit('updateGroup', updatedGroup);
+            } catch(e) {
+                console.log(e);
+            }
+        }
 
         return {
             groupUsersList,
@@ -173,6 +153,7 @@ export default {
             searchUsersValue,
             currentGroup,
             ungroupUsersList,
+            updateGroup,
         };
     },
 };
