@@ -22,97 +22,86 @@
             </button>
         </form>
     </div>
-    <div class="block-position" v-if="searchedUsers.length > 0">
-        <div class="block-position__item" v-for="user in searchedUsers" :key="user?.id">
-            <div class="block-position__title">{{ user?.name }}</div>
-            <div class="block-position__btns">
-                <div @click="setUserToRemove(user)" class="btn-edit-sm btn-danger">
-                    <svg class="icon icon-basket">
-                        <use xlink:href="/img/svg/sprite.svg#basket"></use>
-                    </svg>
-                </div>
-            </div>
-        </div>
+    <div
+        class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
+    >
+        <template
+            v-for='user in filteredMixedUsers'
+            :key='user.id'
+        >
+            <label
+                v-show="user.show"
+                class="groups-users-list__item custom-input form-check"
+            ><input
+                class="custom-input__input form-check-input"
+                type="checkbox"
+                v-model="user.is"
+            /><span class="custom-input__text form-check-label"
+            >{{ user.name }}</span
+            >
+            </label>
+        </template>
     </div>
 
-    <!-- Remove enumItem alert -->
-    <modal-window
-        @close="setRemoveAlertVisible(false)"
-        v-model="isRemoveAlertVisible"
-        maxWidth="400px"
-    >
-        <div class="modal-window__header">
-            <h3>Удаление пользователя из группы</h3>
-        </div>
-        <span>
-            Вы действительно хотите удалить пользователя "{{ userToRemove?.name }}" из справочника
-            "!Заголовок группы!"?
-            </span>
-        <div class="modal-window__buttons">
-            <v-button class="w-100" @click="removeUser(userToRemove)">Удалить</v-button>
-            <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
-        </div>
-    </modal-window>
 </template>
 
 <script>
-import VButton from '@/ui/VButton';
 import {ref, computed} from 'vue';
-import enumsService from '@/services/enums.service';
-import ModalWindow from '@/components/ModalWindow';
 
 export default {
-    components: {
-        VButton,
-        ModalWindow,
-    },
     props: {
-        usersList: {
+        allUsers: {
             type: Array,
             default: () => []
         },
+        currentGroup: {
+            type: Object,
+            default: null
+        }
     },
     setup(props) {
-        const groupUsers = ref(props.usersList);
 
         const searchValue = ref('');
-        const searchedUsers = computed(() => {
-            if (groupUsers.value) {
-                return groupUsers.value.filter((user) => {
-                    return user.name.toLowerCase().includes(searchValue.value.toLowerCase());
-                });
+
+        const mixedUsers = computed(() => {
+            let sortedGroupUsers = [];
+            let sortedUngroupUsers = [];
+
+            if (props.currentGroup.users && props.currentGroup.users.length > 0) {
+                sortedGroupUsers = props.currentGroup.users.map(user => user.is = true)
+                    .sort((a, b) => (a.name > b.name)? 1 : -1)
             }
-            return [];
+
+            if (props.allUsers.length > 0) {
+                if (sortedGroupUsers.length) {
+
+                    const sortedGroupIds = sortedGroupUsers.map(user => user.id) // Массив Id-шников из Списка пользователей
+                    sortedUngroupUsers = props.allUsers
+                        .filter((user) => !sortedGroupIds.includes(user.id))
+                        .sort((a, b) => (a.name > b.name) ? 1 : -1 );
+                } else {
+                    sortedUngroupUsers = [...props.allUsers]
+                        .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 );
+                }
+            }
+            return [...sortedGroupUsers, ...sortedUngroupUsers];
         });
 
-        // Remove EnumItem__________________________
-        const isRemoveAlertVisible = ref(false);
-        const setRemoveAlertVisible = (bool) => {
-            isRemoveAlertVisible.value = bool;
-        };
-        const userToRemove = ref(null);
-        const setUserToRemove = (user) => {
-            userToRemove.value = user;
-            setRemoveAlertVisible(true);
-        };
-        const removeUser = async (myEnum, enumItemId) => {
-            try {
-                groupUsers.value = await enumsService.removeEnumsItem(myEnum, enumItemId);
-                setRemoveAlertVisible(false);
-            } catch (e) {
-                console.log(e.message);
-            }
-        };
+        const filteredMixedUsers = computed(() => {
+            return [...mixedUsers.value]
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
+                .map(user => {
+                    user.show = user.name.toLowerCase().includes(searchValue.value.toLowerCase());
+                    return user;
+                });
+        })
+
+
 
         return {
-            groupUsers,
             searchValue,
-            searchedUsers,
-            userToRemove,
-            setUserToRemove,
-            isRemoveAlertVisible,
-            setRemoveAlertVisible,
-            removeUser,
+            mixedUsers,
+            filteredMixedUsers,
         };
     },
 };
@@ -122,7 +111,7 @@ export default {
 INPUT::placeholder {
     color: #d6d6d6;
 }
-.block-position__item {
-    margin-top: 10px;
+.search-block {
+    margin-bottom: 20px;
 }
 </style>

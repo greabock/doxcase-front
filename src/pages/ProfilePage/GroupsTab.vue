@@ -8,7 +8,7 @@
             :class="{active: group.id === currentGroup.id}"
             :key="group?.id"
         >
-            {{ group?.title }}
+            {{ group?.name }}
             <svg @click.stop="() => setGroupToRemove(group)" class="icon icon-close">
                 <use xlink:href="/img/svg/sprite.svg#close"></use>
             </svg>
@@ -22,11 +22,13 @@
     </div>
 
     <group-users-list
-        v-if="currentGroup.users?.length > 0"
-        :usersList="currentGroup.users"
+        :allUsers="allUsers"
+        :currentGroup="currentGroup"
+        v-if="allUsers.length > 0"
     >
     </group-users-list>
 
+<!-- Удаление группы -->
     <modal-window
         v-model="isRemoveModalVisible"
         maxWidth="400px"
@@ -34,7 +36,7 @@
         <div class="modal-window__header">
             <h3>Удаление группы</h3>
         </div>
-        <p>Вы действительно хотите удалить группу "{{ groupToRemove?.title }}"?</p>
+        <p>Вы действительно хотите удалить группу "{{ groupToRemove?.name }}"?</p>
         <div class="modal-window__buttons">
             <v-button class="w-100" @click="removeGroup(groupToRemove)">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="isRemoveModalVisible = false">Отменить</v-button>
@@ -54,13 +56,13 @@
                 <label
                 ><span class="form-wrap__input-title">Название группы</span
                 ><input
-                    v-model="titleValue"
+                    v-model="nameValue"
                     class="form-wrap__input form-control"
                     type="text"
                     placeholder="Введите название"
                 />
                 </label>
-                <span class="validation-error">{{titleError}}</span>
+                <span class="validation-error">{{nameError}}</span>
             </div>
             <span class="form-wrap__input-title">Поиск</span>
             <div class="modal_search-block">
@@ -150,43 +152,18 @@ export default {
                 });
         })
 
-
-        const mixedUsers = computed(() => {
-            let sortedGroupUsers = [];
-            let sortedUngroupUsers = [];
-
-            if (currentGroup.value.users?.length > 0) {
-                sortedGroupUsers = currentGroup.value.users.map(user => user.is = true)
-                    .sort((a, b) => (a.name > b.name)? 1 : -1)
-            }
-
-            if (allUsers.value.length > 0) {
-                if (sortedGroupUsers.length) {
-
-                    const sortedGroupIds = sortedGroupUsers.map(user => user.id) // Массив Id-шников из Списка пользователей
-                    sortedUngroupUsers = allUsers.value
-                        .filter((user) => !sortedGroupIds.includes(user.id))
-                        .sort((a, b) => (a.name > b.name) ? 1 : -1 );
-                } else {
-                    sortedUngroupUsers = [...allUsers.value]
-                        .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 );
-                }
-            }
-            return [...sortedGroupUsers, ...sortedUngroupUsers];
-        });
-
 // Добавление группы__________________
         const isAddModalVisible = ref(false);
         const schema = yup.object({
-            title: yup.string().required('Поле обязательно для заполнения')
+            name: yup.string().required('Поле обязательно для заполнения')
         });
 
-        const {handleSubmit, meta: formMeta} = useForm({
+        const {handleSubmit, meta: formMeta, resetForm} = useForm({
             validationSchema: schema
         });
-        const {value: titleValue, errorMessage: titleError} = useField('title');
+        const {value: nameValue, errorMessage: nameError} = useField('name');
 
-        const submitHandle = handleSubmit(async ({title}) => {
+        const submitHandle = handleSubmit(async ({name}) => {
 
            const groupUsers = [...sortedFilteredAllUsers.value]
                .filter(item => item.is === true).map( item => {
@@ -196,14 +173,16 @@ export default {
                });
 
            const newGroup = {
-               title,
+               name,
                id: uuidv4(),
-               values: groupUsers
+               users: groupUsers
            }
            try {
                await groupService.addGroup(newGroup);
                allGroups.value.push(newGroup);
-               currentGroup.value = newGroup;
+               // currentGroup.value = newGroup;
+               resetForm();
+               isAddModalVisible.value = false;
            } catch(e) {
                console.log(e);
            }
@@ -259,17 +238,16 @@ export default {
             searchValue,
             allUsers,
             submitHandle,
-            titleValue,
-            titleError,
+            nameValue,
+            nameError,
             formMeta,
-            mixedUsers,
             sortedFilteredAllUsers,
         }
     }
 };
 </script>
 
-<style scoped>
+<style>
 .modal_search-block {
     position: relative;
     margin-bottom: 20px;
