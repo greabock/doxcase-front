@@ -139,7 +139,7 @@ export default {
                 if (user.value?.photo !== null ) {
                 return user.value?.photo;
             } else {
-                return 'img/@1x/avatar-2.png'
+                return '/img/@1x/avatar-2.png'
             }
         }
     );

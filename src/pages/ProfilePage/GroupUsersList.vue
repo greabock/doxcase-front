@@ -1,13 +1,15 @@
 <template>
     <div
-        class="h3 mb-3"
-    >!Заголовок группы!
-    </div>
-    <div class="search-block">
-        <form>
+        v-if="currentGroup?.users"
+    >
+        <div
+            class="h3 mb-3"
+        >{{currentGroup?.name}}
+        </div>
+        <div class="search-block">
             <div class="search-block__input-wrap form-group">
                 <input
-                    v-model="searchValue"
+                    v-model="searchUsersValue"
                     class="search-block__input form-control"
                     name="text"
                     type="text"
@@ -20,99 +22,138 @@
                     <use xlink:href="/img/svg/sprite.svg#search"></use>
                 </svg>
             </button>
-        </form>
-    </div>
-    <div class="block-position" v-if="searchedUsers.length > 0">
-        <div class="block-position__item" v-for="user in searchedUsers" :key="user?.id">
-            <div class="block-position__title">{{ user?.name }}</div>
-            <div class="block-position__btns">
-                <div @click="setUserToRemove(user)" class="btn-edit-sm btn-danger">
-                    <svg class="icon icon-basket">
-                        <use xlink:href="/img/svg/sprite.svg#basket"></use>
-                    </svg>
-                </div>
+        </div>
+        <div
+            class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
+        >
+            <template
+                v-for='user in filteredSortedGroupUsers'
+                :key='user.id'
+            >
+                <label
+                    v-show="user.show"
+                    class="groups-users-list__item custom-input form-check"
+                ><input
+                    class="custom-input__input form-check-input"
+                    type="checkbox"
+                    :value="user"
+                    v-model="groupUsersList"
+                /><span class="custom-input__text form-check-label"
+                >{{ user.name }}</span
+                >
+                </label>
+            </template>
+            <template
+                v-for='user in filteredSortedUngroupUsers'
+                :key='user.id'
+            >
+                <label
+                    v-show="user.show"
+                    class="groups-users-list__item custom-input form-check"
+                ><input
+                    class="custom-input__input form-check-input"
+                    type="checkbox"
+                    :value="user"
+                    v-model="groupUsersList"
+                /><span class="custom-input__text form-check-label"
+                >{{ user.name }}</span
+                >
+                </label>
+            </template>
+        </div>
+        <div class="sAddDocs__footer">
+            <div class="container-fluid d-flex">
+                <VButton class="btn-save" @click="updateGroup"> Сохранить изменения</VButton>
+                <VButton class="ms-2" outline @click="() => {}"> Отмена </VButton>
             </div>
         </div>
     </div>
-
-    <!-- Remove enumItem alert -->
-    <modal-window
-        @close="setRemoveAlertVisible(false)"
-        v-model="isRemoveAlertVisible"
-        maxWidth="400px"
-    >
-        <div class="modal-window__header">
-            <h3>Удаление пользователя из группы</h3>
-        </div>
-        <span>
-            Вы действительно хотите удалить пользователя "{{ userToRemove?.name }}" из справочника
-            "!Заголовок группы!"?
-            </span>
-        <div class="modal-window__buttons">
-            <v-button class="w-100" @click="removeUser(userToRemove)">Удалить</v-button>
-            <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
-        </div>
-    </modal-window>
 </template>
 
 <script>
+import {ref, watch, computed} from 'vue';
 import VButton from '@/ui/VButton';
-import {ref, computed} from 'vue';
-import enumsService from '@/services/enums.service';
-import ModalWindow from '@/components/ModalWindow';
+import groupService from '@/services/group.service';
+
+const defineUngroupUsers = (allUsers, groupUsers) => {
+    if (groupUsers && groupUsers.length > 0) {
+        const excludeIds = groupUsers.map(user => user.id)
+        return allUsers.filter((user) => !excludeIds.includes(user.id))
+    }
+    return [];
+}
 
 export default {
+    emits: ['updateGroup'],
     components: {
-        VButton,
-        ModalWindow,
+        VButton
     },
     props: {
-        usersList: {
+        allUsers: {
             type: Array,
             default: () => []
         },
+        propGroup: {
+            type: Object,
+            default: () => {}
+        }
     },
-    setup(props) {
-        const groupUsers = ref(props.usersList);
+    setup(props, {emit}) {
 
-        const searchValue = ref('');
-        const searchedUsers = computed(() => {
-            if (groupUsers.value) {
-                return groupUsers.value.filter((user) => {
-                    return user.name.toLowerCase().includes(searchValue.value.toLowerCase());
-                });
+        const currentGroup = ref({...props.propGroup});
+        const groupUsersList = ref([...props.propGroup.users]);
+        const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, props.propGroup.users)]);
+        const searchUsersValue = ref('');
+
+        watch(() => props.propGroup, (newVal) => {
+            currentGroup.value = newVal;
+            groupUsersList.value = newVal.users;
+            ungroupUsersList.value = defineUngroupUsers(props.allUsers, currentGroup.value.users);
+        }, {deep: true})
+
+        const filteredSortedGroupUsers = computed(() => {
+            if (currentGroup.value.users && currentGroup.value.users.length > 0) {
+                return currentGroup.value.users
+                    .map((user) => {
+                        user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+                        return user;
+                    })
+                    .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
             }
-            return [];
-        });
+                return [];
+        })
 
-        // Remove EnumItem__________________________
-        const isRemoveAlertVisible = ref(false);
-        const setRemoveAlertVisible = (bool) => {
-            isRemoveAlertVisible.value = bool;
-        };
-        const userToRemove = ref(null);
-        const setUserToRemove = (user) => {
-            userToRemove.value = user;
-            setRemoveAlertVisible(true);
-        };
-        const removeUser = async (myEnum, enumItemId) => {
+        const filteredSortedUngroupUsers = computed(() => {
+
+            return ungroupUsersList.value
+                .map(user => {
+                    user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+                    return user;
+                })
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
+        })
+
+        const updateGroup = async () => {
+            const updatedGroup = {
+                ...currentGroup.value,
+                users: groupUsersList.value
+            }
             try {
-                groupUsers.value = await enumsService.removeEnumsItem(myEnum, enumItemId);
-                setRemoveAlertVisible(false);
-            } catch (e) {
-                console.log(e.message);
+                await groupService.updateGroup(updatedGroup);
+                emit('updateGroup', updatedGroup);
+            } catch(e) {
+                console.log(e);
             }
-        };
+        }
 
         return {
-            groupUsers,
-            searchValue,
-            searchedUsers,
-            userToRemove,
-            setUserToRemove,
-            isRemoveAlertVisible,
-            setRemoveAlertVisible,
-            removeUser,
+            groupUsersList,
+            filteredSortedGroupUsers,
+            filteredSortedUngroupUsers,
+            searchUsersValue,
+            currentGroup,
+            ungroupUsersList,
+            updateGroup,
         };
     },
 };
@@ -122,7 +163,12 @@ export default {
 INPUT::placeholder {
     color: #d6d6d6;
 }
-.block-position__item {
-    margin-top: 10px;
+.search-block {
+    margin-bottom: 20px;
+}
+.sAddDocs__footer {
+    margin-bottom:-25px;
+    margin-left: -32px;
+    padding-left: 15px;
 }
 </style>

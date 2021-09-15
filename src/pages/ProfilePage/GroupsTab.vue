@@ -1,6 +1,7 @@
 <template>
 
-    <div class="btns-group-sm">
+    <div
+        class="btns-group-sm">
         <button
             v-for="group in allGroups"
             @click="currentGroup = group"
@@ -8,7 +9,7 @@
             :class="{active: group.id === currentGroup.id}"
             :key="group?.id"
         >
-            {{ group?.title }}
+            {{ group?.name }}
             <svg @click.stop="() => setGroupToRemove(group)" class="icon icon-close">
                 <use xlink:href="/img/svg/sprite.svg#close"></use>
             </svg>
@@ -22,11 +23,14 @@
     </div>
 
     <group-users-list
-        v-if="currentGroup.users?.length > 0"
-        :usersList="currentGroup.users"
+        :allUsers="allUsers"
+        :propGroup="currentGroup"
+        v-if="currentGroup?.id && allUsers.length > 0"
+        @updateGroup="updateGroup"
     >
     </group-users-list>
 
+<!-- Удаление группы -->
     <modal-window
         v-model="isRemoveModalVisible"
         maxWidth="400px"
@@ -34,9 +38,9 @@
         <div class="modal-window__header">
             <h3>Удаление группы</h3>
         </div>
-        <p>Вы действительно хотите удалить группу "{{ groupToRemove?.title }}"?</p>
+        <p>Вы действительно хотите удалить группу "{{ groupToRemove?.name }}"?</p>
         <div class="modal-window__buttons">
-            <v-button class="w-100" @click="removeGroup(groupToRemove)">Удалить</v-button>
+            <v-button class="w-100" @click="removeGroup()">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="isRemoveModalVisible = false">Отменить</v-button>
         </div>
     </modal-window>
@@ -54,13 +58,13 @@
                 <label
                 ><span class="form-wrap__input-title">Название группы</span
                 ><input
-                    v-model="titleValue"
+                    v-model="nameValue"
                     class="form-wrap__input form-control"
                     type="text"
                     placeholder="Введите название"
                 />
                 </label>
-                <span class="validation-error">{{titleError}}</span>
+                <span class="validation-error">{{nameError}}</span>
             </div>
             <span class="form-wrap__input-title">Поиск</span>
             <div class="modal_search-block">
@@ -84,7 +88,7 @@
             </div>
 
             <div
-                class="sSections__col col-lg-auto col-md"
+                class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
             >
                 <template
                     v-for='user in sortedFilteredAllUsers'
@@ -121,7 +125,7 @@
 import {ref, computed, onMounted} from 'vue';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
-import groupUsersList from '@/pages/ProfilePage/GroupUsersList';
+import GroupUsersList from '@/pages/ProfilePage/GroupUsersList';
 import * as yup from 'yup';
 import {useField, useForm} from 'vee-validate';
 import usersService from '@/services/users.service';
@@ -132,7 +136,7 @@ export default {
     components: {
         VButton,
         ModalWindow,
-        groupUsersList
+        GroupUsersList
     },
     setup() {
 
@@ -150,43 +154,18 @@ export default {
                 });
         })
 
-
-        const mixedUsers = computed(() => {
-            let sortedGroupUsers = [];
-            let sortedUngroupUsers = [];
-
-            if (currentGroup.value.users?.length > 0) {
-                sortedGroupUsers = currentGroup.value.users.map(user => user.is = true)
-                    .sort((a, b) => (a.name > b.name)? 1 : -1)
-            }
-
-            if (allUsers.value.length > 0) {
-                if (sortedGroupUsers.length) {
-
-                    const sortedGroupIds = sortedGroupUsers.map(user => user.id) // Массив Id-шников из Списка пользователей
-                    sortedUngroupUsers = allUsers.value
-                        .filter((user) => !sortedGroupIds.includes(user.id))
-                        .sort((a, b) => (a.name > b.name) ? 1 : -1 );
-                } else {
-                    sortedUngroupUsers = [...allUsers.value]
-                        .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 );
-                }
-            }
-            return [...sortedGroupUsers, ...sortedUngroupUsers];
-        });
-
 // Добавление группы__________________
         const isAddModalVisible = ref(false);
         const schema = yup.object({
-            title: yup.string().required('Поле обязательно для заполнения')
+            name: yup.string().required('Поле обязательно для заполнения')
         });
 
-        const {handleSubmit, meta: formMeta} = useForm({
+        const {handleSubmit, meta: formMeta, resetForm} = useForm({
             validationSchema: schema
         });
-        const {value: titleValue, errorMessage: titleError} = useField('title');
+        const {value: nameValue, errorMessage: nameError} = useField('name');
 
-        const submitHandle = handleSubmit(async ({title}) => {
+        const submitHandle = handleSubmit(async ({name}) => {
 
            const groupUsers = [...sortedFilteredAllUsers.value]
                .filter(item => item.is === true).map( item => {
@@ -196,14 +175,16 @@ export default {
                });
 
            const newGroup = {
-               title,
+               name,
                id: uuidv4(),
-               values: groupUsers
+               users: groupUsers
            }
            try {
                await groupService.addGroup(newGroup);
                allGroups.value.push(newGroup);
                currentGroup.value = newGroup;
+               resetForm();
+               isAddModalVisible.value = false;
            } catch(e) {
                console.log(e);
            }
@@ -216,9 +197,16 @@ export default {
             groupToRemove.value = group;
             isRemoveModalVisible.value = true;
         };
-        const removeGroup = (id) => {
-            allGroups.value = allGroups.value.filter(group => group.id !== id);
-            isRemoveModalVisible.value = false;
+        const removeGroup = async () => {
+            try {
+                await groupService.removeGroup(groupToRemove.value.id);
+                allGroups.value = allGroups.value.filter(group => group.id !== groupToRemove.value.id);
+             } catch(e) {
+                console.log(e);
+            } finally {
+                isRemoveModalVisible.value = false;
+            }
+
         }
 
 // Поиск пользователей_________________
@@ -234,17 +222,30 @@ export default {
 
         const fetchAllGroups = async () => {
             try {
-                allGroups.value = await groupService.getAllGroups();
+                const res = await groupService.getAllGroups();
+                allGroups.value = res;
+                return res;
+
             } catch (e) {
                 console.log(e);
             }
         };
 
-        onMounted(() => {
-                fetchAllUsers();
-                fetchAllGroups();
-                if (allGroups.value.length) {
-                    currentGroup.value = allGroups.value[0];
+        const updateGroup = (updatedGroup) => {
+            const idx = allGroups.value.findIndex(group => group.id === updatedGroup.id);
+            allGroups.value = [
+                ...allGroups.value.slice(0, idx),
+                updatedGroup,
+                ...allGroups.value.slice(idx + 1)
+            ];
+            currentGroup.value = updatedGroup;
+        }
+
+        onMounted(async () => {
+                await fetchAllUsers();
+                const groups = await fetchAllGroups();
+                if (groups.length) {
+                    currentGroup.value = groups[0];
                 }
         });
 
@@ -259,17 +260,17 @@ export default {
             searchValue,
             allUsers,
             submitHandle,
-            titleValue,
-            titleError,
+            nameValue,
+            nameError,
             formMeta,
-            mixedUsers,
             sortedFilteredAllUsers,
+            updateGroup,
         }
     }
 };
 </script>
 
-<style scoped>
+<style>
 .modal_search-block {
     position: relative;
     margin-bottom: 20px;
@@ -284,5 +285,37 @@ export default {
     display: block;
     margin-top: 5px;
     color: #ff0000;
+}
+.users-list-fom-wrapper {
+    max-height: 500px;
+    overflow-x: visible;
+    overflow-y: auto;
+    padding: 5px 0 5px 5px;
+    margin: 0 0 20px -5px;
+}
+.users-list-fom-wrapper::-webkit-scrollbar {
+    width: 4px;               /* ширина scrollbar */
+}
+.users-list-fom-wrapper::-webkit-scrollbar-track {
+    background: #c4c4c4;        /* цвет дорожки */
+}
+.users-list-fom-wrapper::-webkit-scrollbar-thumb {
+    background-color: #1D47CE;    /* цвет плашки */
+    border-radius: 3px;       /* закругления плашки */
+    border: 0;  /* padding вокруг плашки */
+}
+
+.users-list-fom-wrapper .form-check {
+    padding-left:25px;
+}
+.users-list-fom-wrapper .form-check-input {
+    width: 1.5em;
+    height: 1.5em;
+    margin-top: 0;
+}
+.users-list-fom-wrapper .form-check-input[type="checkbox"] {
+    background-size: 80%;
+    margin-right: 10px;
+    background-position-x: center;
 }
 </style>
