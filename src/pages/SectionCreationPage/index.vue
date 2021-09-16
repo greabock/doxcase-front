@@ -119,6 +119,7 @@
 
                     </div>
                     <div class="col col--main">
+
                         <section class="sSectionMain section section-creation-main__wrapper" id="sSectionMain">
 
                             <div class="section-creation-access__wrapper">
@@ -128,7 +129,7 @@
                                 <div class="col-auto">
                                     <div class="section-creation-access__prefs">
                                         <span class="section-creation-access__avalible">Доступен: </span>
-                                        <span class="section-creation-access__avalible-value">!значение!</span>
+                                        <span class="section-creation-access__avalible-value">{{accessType}}</span>
                                         <v-button
                                             @click="isAccessModal = true"
                                             class="btn-xxs"
@@ -311,6 +312,13 @@ export default {
 
 // Управление доступом__________________
         const isAccessModal = ref(false);
+        const accessType = computed(() => {
+            if (section.value.groups.length === 0 && section.value.users.length === 0) {
+                    return 'Всем'
+                }
+                return 'Только определенным пользователям и группам'
+            });
+
         const updateGroupsNUsers = ({type, users, groups}) => {
             switch (type) {
                 case 'all':
@@ -329,12 +337,12 @@ export default {
                     }
             }
         }
-
         const updateAccessHandle = (accessObj) => {
             updateGroupsNUsers(accessObj);
             isAccessModal.value = false;
         }
 
+//Добавление поля___________________
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
             if (itemToUpdate) {
@@ -372,7 +380,7 @@ export default {
             }
         };
 
-        // Section Filters_____________
+// Section Filters_____________
         const isFiltersOpen = ref(false);
         const setFiltersOpen = (bool) => {
             isFiltersOpen.value = bool;
@@ -390,7 +398,7 @@ export default {
             };
         };
 
-        // Remove field_________________
+// Remove field_________________
         const isFieldAlertVisible = ref(false);
         const setFieldAlertVisible = (bool) => {
             isFieldAlertVisible.value = bool;
@@ -449,6 +457,7 @@ export default {
             isLoading,
             isAccessModal,
             updateAccessHandle,
+            accessType,
         };
     },
 };
