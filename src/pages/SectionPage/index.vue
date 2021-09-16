@@ -219,6 +219,19 @@
                 <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
             </div>
         </modal-window>
+
+        <!-- Управление доступом -->
+        <modal-window
+            v-model="isAccessModal"
+            maxWidth="600px"
+        >
+            <access-control-form
+                :section="section"
+                @updateAccess="updateAccessHandle"
+            >
+            </access-control-form>
+        </modal-window>
+
     </main>
 </template>
 
@@ -238,9 +251,10 @@ import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
 import filesService from '@/services/files.service';
+import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
     setup() {
         const isLoading = ref(true);
         let initSection = null;
@@ -271,6 +285,32 @@ export default {
             if (fieldToChange.value) {
                 setFieldModalVisible(true);
             }
+        }
+
+        // Управление доступом__________________
+        const isAccessModal = ref(false);
+        const updateGroupsNUsers = ({type, users, groups}) => {
+            switch (type) {
+                case 'all':
+                    section.value = {
+                        ...section.value,
+                        groups: [],
+                        users: []
+                    }
+                    return;
+
+                case 'include':
+                    section.value = {
+                        ...section.value,
+                        groups,
+                        users
+                    }
+            }
+        }
+
+        const updateAccessHandle = (accessObj) => {
+            updateGroupsNUsers(accessObj);
+            isAccessModal.value = false;
         }
 
         const addNewField = (newField) => {
@@ -383,6 +423,7 @@ export default {
             isLoading,
             isMobFiltersShow,
             setMobFiltersShow,
+            updateAccessHandle,
         };
     },
 };
