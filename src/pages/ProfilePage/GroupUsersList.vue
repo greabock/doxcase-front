@@ -171,4 +171,7 @@ INPUT::placeholder {
     margin-left: -32px;
     padding-left: 15px;
 }
+.search-block {
+    position: relative;
+}
 </style>
