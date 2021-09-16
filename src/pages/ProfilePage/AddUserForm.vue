@@ -47,22 +47,6 @@
           </label>
           <span class="validation-error">{{emailError}}</span>
         </div>
-
-        <div class="form-wrap__input-wrap form-group">
-          <label
-          ><span class="form-wrap__input-title">Логин</span
-          ><input
-              v-model="loginValue"
-              class="form-wrap__input form-control"
-              type="text"
-              name="newUserLogin"
-              placeholder="Введите"
-              autocomplete="off"
-              maxLength="30"
-          />
-          </label>
-          <span class="validation-error">{{loginError}}</span>
-        </div>
         <div class="form-wrap__input-wrap form-group">
           <label>
             <span
@@ -139,7 +123,6 @@ export default {
       role: yup.object().required('Поле обязательно для заполнения'),
       email: yup.string().email( 'Пожалуйста, введите корректный email-адрес')
           .required('Поле обязательно для заполнения'),
-      login: yup.string().required('Поле обязательно для заполнения'),
       password: yup.string()
           .min(6, "Длина пароля не менее 6 символов")
           .required('Поле обязательно для заполнения')
@@ -155,7 +138,6 @@ export default {
     const {value: nameValue, errorMessage: nameError} = useField('name');
     const {value: roleValue} = useField('role');
     const {value: emailValue, errorMessage: emailError} = useField('email');
-    const {value: loginValue, errorMessage: loginError} = useField('login');
     const {value: passwordValue, errorMessage: passwordError} = useField('password');
     const roleOptions = [
       {key: 'admin', name: "Администратор"},
@@ -200,7 +182,6 @@ export default {
     return {
       addNewUser,
       formMeta,
-      loginValue,
       emailValue,
       nameValue,
       passwordValue,
@@ -212,7 +193,6 @@ export default {
       nameError,
       emailError,
       passwordError,
-      loginError,
       isShowPass,
     };
   },
