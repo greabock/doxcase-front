@@ -1,10 +1,10 @@
 import {axiosInstance} from '@/utils/API';
 
 class AuthService {
-    getToken = async ({login, password}) => {
+    getToken = async ({email, password}) => {
         try {
             const resp = await axiosInstance.post('/auth/login', {
-                login,
+                email,
                 password,
             });
             return resp.data.data?.token;

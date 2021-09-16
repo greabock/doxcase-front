@@ -119,7 +119,7 @@
 
                     </div>
                     <div class="col col--main">
-                        <section class="sSectionMain section" id="sSectionMain">
+                        <section class="sSectionMain section section-creation-main__wrapper" id="sSectionMain">
                             <div class="row">
                                 <div class="col">
                                     <h3>Конструктор полей для добавления материалов</h3>
@@ -445,5 +445,7 @@ export default {
 .carousel__button svg {
     filter:none;
 }
-
+.section-creation-main__wrapper.section {
+    padding-top: 0;
+}
 </style>
