@@ -6,8 +6,8 @@
                 <logo-icon iconWidth="354" iconHeight="157" iconColor="#fff"></logo-icon>
                 <Form @submit="handleLogin" :validation-schema="schema">
                     <div class="form-wrap__input-wrap form-group">
-                        <Field name="login" type="text" class="form-wrap__input form-control" placeholder="Логин" />
-                        <ErrorMessage name="login" class="error-feedback" />
+                        <Field name="email" type="text" class="form-wrap__input form-control" placeholder="Email" />
+                        <ErrorMessage name="email" class="error-feedback" />
                     </div>
                     <!-- +e.input-wrap-->
                     <div class="form-wrap__input-wrap form-group">
@@ -55,7 +55,7 @@ export default {
     },
     setup() {
         const schema = yup.object().shape({
-            login: yup.string().required('Введите логин'),
+            email: yup.string().required('Введите email'),
             password: yup.string().required('Введите пароль'),
         });
         const {handleLogin, handleLogout, loading, error, authCheck} = useAuth();
