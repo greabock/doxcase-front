@@ -119,22 +119,28 @@
 
                     </div>
                     <div class="col col--main">
+
                         <section class="sSectionMain section section-creation-main__wrapper" id="sSectionMain">
 
-<!--                            <div class="row">-->
-<!--                                <div class="col">-->
-<!--                                    <h6>Управление доступом</h6>-->
-<!--                                </div>-->
-<!--                                <div class="col-auto d-none d-lg-block">-->
-<!--                                    <span>Доступен: </span>-->
-<!--                                    <span>!значение!</span>-->
-<!--                                    <v-button>Настроить</v-button>-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <div class="section-creation-access__wrapper">
+                                <div class="col section-creation-access__header">
+                                    Управление общим доступом
+                                </div>
+                                <div class="col-auto">
+                                    <div class="section-creation-access__prefs">
+                                        <span class="section-creation-access__avalible">Доступен: </span>
+                                        <span class="section-creation-access__avalible-value">{{accessType}}</span>
+                                        <v-button
+                                            @click="isAccessModal = true"
+                                            class="btn-xxs"
+                                        >Настроить</v-button>
+                                    </div>
+                                </div>
+                            </div>
 
 
                             <div class="row">
-                                <div class="col">
+                                <div class="col section-creation__header">
                                     <h3>Конструктор полей для добавления материалов</h3>
                                 </div>
                                 <div class="col-auto d-none d-lg-block">
@@ -185,7 +191,6 @@
                                 </div>
                             </div>
                         </section>
-                        <!-- end sSectionMain-->
                     </div>
                 </div>
             </div>
@@ -201,9 +206,8 @@
             :allSections="allSections"
         ></new-field-form>
 
-        <!-- Remove Field alert -->
+<!-- Remove Field alert -->
         <modal-window
-            @click="setFieldAlertVisible(false)"
             v-model="isFieldAlertVisible"
             maxWidth="400px"
         >
@@ -218,6 +222,21 @@
                 <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
             </div>
         </modal-window>
+
+<!-- Управление доступом -->
+        <modal-window
+            v-model="isAccessModal"
+            maxWidth="600px"
+        >
+            <access-control-form
+                :section="section"
+                @updateAccess="updateAccessHandle"
+            >
+            </access-control-form>
+        </modal-window>
+
+
+
 
         <loader
             v-if="isLoading"
@@ -244,9 +263,10 @@ import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
+import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
         setup() {
         let initSection = {
             id: uuidv4(),
@@ -256,6 +276,8 @@ export default {
             image: '/img/empty.png',
             sort_index: 0,
             fields: [],
+            users: [],
+            groups: []
         };
         const isLoading = ref(false);
         const allSections = ref([]);
@@ -272,8 +294,6 @@ export default {
 
 
         const resetForm = () => {
-            // section.value = {...initSection};
-            // fileInput.value = null;
             router.push('/sections');
         };
 
@@ -290,6 +310,39 @@ export default {
             }
         }
 
+// Управление доступом__________________
+        const isAccessModal = ref(false);
+        const accessType = computed(() => {
+            if (section.value.groups.length === 0 && section.value.users.length === 0) {
+                    return 'Всем'
+                }
+                return 'Только определенным пользователям и группам'
+            });
+
+        const updateGroupsNUsers = ({type, users, groups}) => {
+            switch (type) {
+                case 'all':
+                    section.value = {
+                    ...section.value,
+                    groups: [],
+                    users: []
+                }
+                return;
+
+                case 'include':
+                    section.value = {
+                        ...section.value,
+                        groups,
+                        users
+                    }
+            }
+        }
+        const updateAccessHandle = (accessObj) => {
+            updateGroupsNUsers(accessObj);
+            isAccessModal.value = false;
+        }
+
+//Добавление поля___________________
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields.find((item) => item.id === newField.id);
             if (itemToUpdate) {
@@ -327,7 +380,7 @@ export default {
             }
         };
 
-        // Section Filters_____________
+// Section Filters_____________
         const isFiltersOpen = ref(false);
         const setFiltersOpen = (bool) => {
             isFiltersOpen.value = bool;
@@ -345,7 +398,7 @@ export default {
             };
         };
 
-        // Remove field_________________
+// Remove field_________________
         const isFieldAlertVisible = ref(false);
         const setFieldAlertVisible = (bool) => {
             isFieldAlertVisible.value = bool;
@@ -402,6 +455,9 @@ export default {
             isMobFiltersShow,
             setMobFiltersShow,
             isLoading,
+            isAccessModal,
+            updateAccessHandle,
+            accessType,
         };
     },
 };
@@ -458,7 +514,42 @@ export default {
 .carousel__button svg {
     filter:none;
 }
-/*.section-creation-main__wrapper.section {*/
-/*    padding-top: 0;*/
-/*}*/
+.section-creation-main__wrapper.section {
+    padding-top: 0;
+}
+.section-creation-access__wrapper {
+    display: flex;
+    padding: 15px 0;
+    margin-bottom: 25px;
+    border-bottom: solid 1px #ededed;
+    align-items: center;
+}
+.section-creation-access__header {
+    font-weight:500;
+}
+.section-creation-access__prefs {
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+.btn-xxs {
+    font-size: 13px;
+    font-weight: 400;
+    padding: 3px 10px;
+    border-radius: 5px !important;
+}
+.section-creation-access__avalible {
+    display: block;
+    margin-right: 3px;
+    color:#6E6E6E;
+}
+.section-creation-access__avalible-value {
+    display: block;
+    margin-right: 30px;
+    color: #1D47CE;
+}
+.section-creation__header {
+    margin-bottom: 20px;
+}
 </style>

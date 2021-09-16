@@ -128,7 +128,24 @@
 
                     </div>
                     <div class="col col--main">
-                        <section class="sSectionMain section" id="sSectionMain">
+                        <section class="sSectionMain section section-creation-main__wrapper" id="sSectionMain">
+
+                            <div class="section-creation-access__wrapper">
+                                <div class="col section-creation-access__header">
+                                    Управление общим доступом
+                                </div>
+                                <div class="col-auto">
+                                    <div class="section-creation-access__prefs">
+                                        <span class="section-creation-access__avalible">Доступен: </span>
+                                        <span class="section-creation-access__avalible-value">{{accessType}}</span>
+                                        <v-button
+                                            @click="isAccessModal = true"
+                                            class="btn-xxs"
+                                        >Настроить</v-button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col">
                                     <h3>Конструктор полей для добавления материалов</h3>
@@ -219,6 +236,19 @@
                 <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
             </div>
         </modal-window>
+
+        <!-- Управление доступом -->
+        <modal-window
+            v-model="isAccessModal"
+            maxWidth="600px"
+        >
+            <access-control-form
+                :section="section"
+                @updateAccess="updateAccessHandle"
+            >
+            </access-control-form>
+        </modal-window>
+
     </main>
 </template>
 
@@ -238,9 +268,10 @@ import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
 import filesService from '@/services/files.service';
+import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
     setup() {
         const isLoading = ref(true);
         let initSection = null;
@@ -271,6 +302,38 @@ export default {
             if (fieldToChange.value) {
                 setFieldModalVisible(true);
             }
+        }
+
+// Управление доступом__________________
+        const isAccessModal = ref(false);
+        const accessType = computed(() => {
+            if (section.value.groups.length === 0 && section.value.users.length === 0) {
+                return 'Всем'
+            }
+            return 'Только определенным пользователям и группам'
+        });
+        const updateGroupsNUsers = ({type, users, groups}) => {
+            switch (type) {
+                case 'all':
+                    section.value = {
+                        ...section.value,
+                        groups: [],
+                        users: []
+                    }
+                    return;
+
+                case 'include':
+                    section.value = {
+                        ...section.value,
+                        groups,
+                        users
+                    }
+            }
+        }
+
+        const updateAccessHandle = (accessObj) => {
+            updateGroupsNUsers(accessObj);
+            isAccessModal.value = false;
         }
 
         const addNewField = (newField) => {
@@ -383,6 +446,9 @@ export default {
             isLoading,
             isMobFiltersShow,
             setMobFiltersShow,
+            updateAccessHandle,
+            accessType,
+            isAccessModal,
         };
     },
 };

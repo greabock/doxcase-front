@@ -3,7 +3,7 @@
         <div
             :class="[
                 'form-control select__element',
-                {select__element_bordered: bordered},
+                {select__element_border: bordered},
                 {select__element_shadow: shadow},
                 {select__element_active: isActive},
                 {'is-invalid': error},
