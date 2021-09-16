@@ -120,6 +120,19 @@
                     </div>
                     <div class="col col--main">
                         <section class="sSectionMain section section-creation-main__wrapper" id="sSectionMain">
+
+<!--                            <div class="row">-->
+<!--                                <div class="col">-->
+<!--                                    <h6>Управление доступом</h6>-->
+<!--                                </div>-->
+<!--                                <div class="col-auto d-none d-lg-block">-->
+<!--                                    <span>Доступен: </span>-->
+<!--                                    <span>!значение!</span>-->
+<!--                                    <v-button>Настроить</v-button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+
                             <div class="row">
                                 <div class="col">
                                     <h3>Конструктор полей для добавления материалов</h3>
@@ -445,7 +458,7 @@ export default {
 .carousel__button svg {
     filter:none;
 }
-.section-creation-main__wrapper.section {
-    padding-top: 0;
-}
+/*.section-creation-main__wrapper.section {*/
+/*    padding-top: 0;*/
+/*}*/
 </style>
