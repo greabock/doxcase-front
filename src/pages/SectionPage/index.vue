@@ -137,7 +137,7 @@
                                 <div class="col-auto">
                                     <div class="section-creation-access__prefs">
                                         <span class="section-creation-access__avalible">Доступен: </span>
-                                        <span class="section-creation-access__avalible-value">{{accessType}}</span>
+                                        <span class="section-creation-access__avalible-value">{{accessType.name}}</span>
                                         <v-button
                                             @click="isAccessModal = true"
                                             class="btn-xxs"
@@ -269,6 +269,7 @@ import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
 import filesService from '@/services/files.service';
 import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
+import {defineAccessType} from '@/utils/section.helpers';
 
 export default {
     components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
@@ -307,35 +308,43 @@ export default {
 // Управление доступом__________________
         const isAccessModal = ref(false);
         const accessType = computed(() => {
-            if (section.value.groups.length === 0 && section.value.users.length === 0) {
-                return 'Всем'
-            }
-            return 'Только определенным пользователям и группам'
+            return defineAccessType(section.value.access);
         });
-        const updateGroupsNUsers = ({type, users, groups}) => {
-            switch (type) {
+
+        const updateGroupsNUsers = ({access, users, groups}) => {
+            switch (access) {
                 case 'all':
                     section.value = {
                         ...section.value,
+                        access,
                         groups: [],
                         users: []
                     }
                     return;
-
-                case 'include':
+                case 'only':
                     section.value = {
                         ...section.value,
+                        access,
                         groups,
                         users
                     }
+                    return;
+                case 'except':
+                    section.value = {
+                        ...section.value,
+                        access,
+                        groups,
+                        users
+                    }
+                    return;
             }
         }
-
         const updateAccessHandle = (accessObj) => {
             updateGroupsNUsers(accessObj);
             isAccessModal.value = false;
         }
 
+//Добавление поля___________________
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields?.find((item) => item.id === newField.id);
             if (itemToUpdate) {
