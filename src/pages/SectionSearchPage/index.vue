@@ -269,7 +269,6 @@
                 </div>
             </div>
         </div>
-        <!-- end sSearchResult-->
     </main>
 </template>
 
@@ -325,7 +324,6 @@ export default {
             direction: 'asc',
         });
 
-
         const searchObj = ref('');
         const extensionsObj = ref([]);
         const checkboxesObj = ref([]);
@@ -346,6 +344,7 @@ export default {
            selectorsObj.value = [];
            searchObj.value = '';
         };
+
         const showResetSelectors = computed(() => {
             return !!(Object.keys(selectorsObj.value).length || searchObj.value);
         });
@@ -371,56 +370,21 @@ export default {
             }
         });
 
-//Поисковая строка____________________________________
-        const serialize = (obj, prefix) => {
-            const str = [];
-
-            for (const p in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, p)) {
-                    const k = prefix ? prefix + "[" + p + "]" : p,
-                        v = obj[p];
-                    str.push((v !== null && typeof v === "object") ?
-                        serialize(v, k) :
-                        k + "=" + v);
-                }
-            }
-            return str.join("&");
-        }
-        const resultString = computed(() => {
-            return '?' + serialize(queryObject.value);
-        });
-
 //Обработчики событий_______________________________________
         const toggleSort = (field, direction) => {
-                sortObj.value = {
-                        field,
-                        direction
-                }
-        };
-        const updateExtensionsHandler = (extensions) => {
-            queryObject.value = {
-                ...queryObject.value,
-                extensions
-            }
-        }
-        const updateCheckboxHandler = ({name, value}) => {
-            queryObject.value = {
-                ...queryObject.value,
-                checkboxes: {
-                    ...queryObject.value.checkboxes,
-                    [name]: value,
-                }
+            sortObj.value = {
+                    field,
+                    direction
             }
         };
+
         const updateSelectorHandler = (newSelectors) => {
             selectorsObj.value = newSelectors;
         }
 
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (url, queryObject) => {
-
             try {
-                isLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, queryObject);
                 materials.value = materialsAndFiles.data.materials;
                 files.value = materialsAndFiles.data.files;
@@ -428,14 +392,11 @@ export default {
                 totalPages.value = materialsAndFiles.last_page;
             } catch(e) {
                 console.log(e);
-            } finally {
-                isLoading.value = false;
             }
-
         }
+
         const updateSearchPage = async (id) => {
             try {
-                isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(id);
                 resetSelectors();
                 resetFilters();
@@ -443,16 +404,15 @@ export default {
 
             } catch(e) {
                 console.log(e)
-            } finally {
-                isLoading.value = false;
             }
         };
 
         watch( queryObject, (newVal, oldVal) => {
             if (newVal.search === oldVal.search) {
-                updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
-            }
-        },  {deep: true}
+                    updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
+                }
+            },
+            {deep: true}
         );
 
         watch( router.currentRoute, async (newVal) => {
@@ -462,20 +422,15 @@ export default {
         });
         onMounted(async () => {
             try {
-                isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
                 await updateSearchPage(router.currentRoute.value.params.id);
             } catch(e) {
                 console.log(e)
-            } finally {
-                isLoading.value = false;
             }
-
         });
 
 // Подгрузка при скролле__________________________________________________
         const addSearch = async () => {
-            console.log('intersected');
             isPreloaderShown.value = true;
             if (currentPage.value < totalPages.value) {
                 try {
@@ -494,13 +449,10 @@ export default {
         };
 
         return {
-            resultString,
             isLoading,
             bcTitle,
             toggleSort,
-            updateCheckboxHandler,
             updateSelectorHandler,
-            updateExtensionsHandler,
             section,
             allSections,
             searchService,
