@@ -245,6 +245,8 @@
             <access-control-form
                 :section="section"
                 @updateAccess="updateAccessHandle"
+                :allUsers="allUsers"
+                :allGroups="allGroups"
             >
             </access-control-form>
         </modal-window>
@@ -255,7 +257,12 @@
 <script>
 import {ref, computed, onMounted} from 'vue';
 import sectionsService from '@/services/sections.service';
+
 import enumService from '@/services/enums.service';
+import filesService from '@/services/files.service';
+import usersService from '@/services/users.service';
+import groupService from '@/services/group.service';
+
 import {useRouter} from 'vue-router';
 import Loader from "@/components/Loader";
 import {sortByIndexDown} from '@/utils/sortByIndex';
@@ -267,7 +274,6 @@ import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
-import filesService from '@/services/files.service';
 import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 import {defineAccessType} from '@/utils/section.helpers';
 
@@ -278,6 +284,9 @@ export default {
         let initSection = null;
         const allSections = ref([]);
         const allEnums = ref([]);
+        const allUsers = ref([]);
+        const allGroups = ref([]);
+
         const router = useRouter();
         const section = ref({});
         const sortedFields = computed(() => {
@@ -422,6 +431,9 @@ export default {
                 section.value = initSection;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
+                allUsers.value = await usersService.getUsers();
+                allGroups.value = await groupService.getAllGroups();
+
             } catch(e) {
                 console.log(e)
             } finally {
@@ -458,6 +470,8 @@ export default {
             updateAccessHandle,
             accessType,
             isAccessModal,
+            allUsers,
+            allGroups,
         };
     },
 };
