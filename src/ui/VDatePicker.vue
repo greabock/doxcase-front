@@ -2,7 +2,7 @@
     <div ref="root" class="datepicker__container">
         <VInput
             v-model="privateDate"
-            @focus="isActive = true"
+            @focus="focusInput"
             v-maska="'##.##.####'"
             :placeholder="placeholder"
             :error="error"
@@ -17,8 +17,10 @@
             </template>
         </VInput>
         <VCalendar
+            ref="calendar"
             :style="{
                 width: size || 'auto',
+                transform: calendarPositionStyle || 'none',
             }"
             :modelValue="modelValue"
             @selected="selectedDate"
@@ -60,10 +62,97 @@ export default {
         placeholder: String,
         error: String,
         bordered: Boolean,
+        positionY: {
+            type: String,
+            default: 'auto',
+        },
+        offset: {
+            type: String,
+            default: '10px',
+        }
     },
-    setup(props, ctx) {
+    setup(props, {emit}) {
         const root = ref(null);
         const isActive = ref(false);
+        const calendar = ref(null);
+
+        const position = ref({});
+        const innerSize = ref({});
+        const calendarSize = ref({});
+
+        const setInnerSize = debounce(() => {
+            if (props.positionY !== 'auto') {
+                return;
+            }
+
+            innerSize.value = {
+                width: document.documentElement.clientWidth,
+                height: document.documentElement.clientHeight,
+            };
+        }, 100);
+
+        const setCalendarSize = debounce(() => {
+            if (calendar.value?.$el) {
+                calendarSize.value = {
+                    height: calendar.value?.$el.clientHeight,
+                    width: calendar.value?.$el.clientWidth,
+                };
+            }
+        }, 0);
+
+        const setPosition = debounce(() => {
+            if (props.positionY !== 'auto') {
+                return;
+            }
+            const {bottom, top, left, right} = root.value.getBoundingClientRect();
+
+            position.value = {
+                bottom,
+                top,
+                left,
+                right,
+            };
+        }, 100);
+
+        onMounted(() => {
+            setPosition();
+            setInnerSize();
+            window.addEventListener('scroll', setPosition);
+            window.addEventListener('resize', setInnerSize);
+        });
+
+        onUnmounted(() => {
+            window.removeEventListener('scroll', setPosition);
+            window.addEventListener('resize', setInnerSize);
+        });
+
+        const focusInput = () => {
+            isActive.value = true;
+            emit('focus');
+            setPosition();
+            setCalendarSize();
+        };
+
+        const calendarPositionStyle = computed(() => {
+            const top = `translateY(calc(0% - ${props.offset} - ${root.value.clientHeight}px))`;
+            const bot = `translateY(calc(100% + ${props.offset}))`;
+
+            if (props.positionY == 'top') {
+                return top
+            }
+
+            if (props.positionY == 'bottom') {
+                return bot
+            }
+
+            if (props.positionY == 'auto') {
+                if (position.value.bottom + calendarSize.value.height > innerSize.value.height) {
+                    return top
+                }
+            }
+
+            return bot
+        });
 
         const privateDate = computed({
             get: () => {
@@ -93,19 +182,19 @@ export default {
 
                     if (year) {
                         newDate.setFullYear(year);
-                        ctx.emit('update:modelValue', newDate);
-                        ctx.emit('update', newDate);
+                        emit('update:modelValue', newDate);
+                        emit('update', newDate);
                     }
                 } else {
-                    ctx.emit('update:modelValue', null);
-                    ctx.emit('update', null);
+                    emit('update:modelValue', null);
+                    emit('update', null);
                 }
             }, 500),
         });
 
         const selectedDate = (e) => {
-            ctx.emit('update:modelValue', e);
-            ctx.emit('update', e);
+            emit('update:modelValue', e);
+            emit('update', e);
         };
 
         const hide = (event) => {
@@ -117,7 +206,7 @@ export default {
                 isActive.value = false;
             }
 
-            ctx.emit('blur', props.modelValue);
+            emit('blur', props.modelValue);
         };
 
         onMounted(() => {
@@ -134,6 +223,12 @@ export default {
             root,
             privateDate,
             selectedDate,
+            position,
+            innerSize,
+            calendarSize,
+            calendarPositionStyle,
+            focusInput,
+            calendar,
         };
     },
 };
@@ -146,11 +241,12 @@ export default {
 
 .datepicker__calendar {
     position: absolute;
-    bottom: -10px;
-    right: 0;
-    transform: translateY(100%);
     z-index: 20;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
+    transition: 0.3s ease-in-out;
+    right: 0;
+    bottom: 0;
+    transform: translateY(0%);
 }
 
 .date__icon {
