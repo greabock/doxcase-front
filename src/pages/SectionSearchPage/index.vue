@@ -126,11 +126,12 @@
                                     </div>
                                 </div>
                             </div>
-<!-- Сортировка -->
-                            <div class="sSearchResult__aside-body">
 
+                            <div class="sSearchResult__aside-body">
+ <!-- Сортировка -->
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
+
 <!-- Сортировка по дате -->
                                     <div
                                         v-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
@@ -260,6 +261,7 @@
                                     v-model="fullQueryObject.checkboxes"
                                 >
                                 </checkbox-filters>
+<!-- Даты -->
                                <date-filters
                                    :fieldsArray="filteredSectionFields"
                                    v-model="fullQueryObject.dateFilters"
@@ -320,6 +322,7 @@ export default {
         const materials = ref([]);
         const files = ref([]);
 
+// Объект запроса_______________________
         const initQueryObject = {
             search: '',
             sort: {

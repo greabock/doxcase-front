@@ -36,7 +36,7 @@ export default {
             default: () => [],
         },
     },
-    emits: ['updateSelectors, isSelectsLoading'],
+    emits: ['updateSelectors', 'isSelectsLoading'],
 
     setup(props, {emit}) {
         const selectorOptionsArr = ref([]);

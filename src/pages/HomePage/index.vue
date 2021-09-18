@@ -1,5 +1,5 @@
 <template>
-    <loader v-show="isLoading"></loader>
+    <loader v-show="isLoading || isSelectsLoading"></loader>
     <main v-if="!isAtFirst" class="main-block">
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
@@ -8,7 +8,7 @@
                         <VBreadcrumb
                             :list="[
                                 {
-                                    name: 'Главная',
+                                    name: 'Главная'
                                 },
                             ]"
                         />
@@ -18,7 +18,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="searchObj"
+                                                v-model="fullQueryObject.search"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -75,6 +75,7 @@
                                     :allSections="allSections"
                                     :fieldsArray="filteredSectionFields"
                                     @updateSelectors="updateSelectorHandler"
+                                    @isSelectsLoading = "setSelectsLoading"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -82,7 +83,7 @@
                                     <svg class="icon icon-close">
                                         <use xlink:href="/img/svg/sprite.svg#close"></use>
                                     </svg>
-                                    <span @click="resetSelectors" class="ms-2">очистить фильтр</span>
+                                    <span @click="resetSelectorsNSearch" class="ms-2">очистить фильтр</span>
                                 </div>
                             </div>
                         </div>
@@ -124,139 +125,146 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Сортировка -->
+
+
                             <div class="sSearchResult__aside-body">
+<!-- Сортировка -->
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
+
                                     <!-- Сортировка по дате -->
                                     <div
-                                        v-if="sortObj.field === 'created_at' && sortObj.direction === 'asc'"
-                                        @click="toggleSort('created_at', 'desc')"
-                                        class="sSearchResult__filter-item"
-                                    >
+                                        v-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
+                                        @click="toggleSort('created_at','desc')"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
-                                                <svg class="icon icon-arrow-up">
+                                                <svg class="icon icon-arrow-up ">
                                                     <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
                                                 </svg>
                                             </div>
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-arrow-down">
+                                                <svg class="icon icon-arrow-down ">
                                                     <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">сначала новые</div>
+                                        <div class="sSearchResult__filter-result-text">сначала новые
+                                        </div>
                                     </div>
                                     <div
-                                        v-else-if="sortObj.field === 'created_at' && sortObj.direction === 'desc'"
-                                        @click="toggleSort('created_at', 'asc')"
-                                        class="sSearchResult__filter-item"
-                                    >
+                                        v-else-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'desc'"
+                                        @click="toggleSort('created_at','asc')"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
-                                                <svg class="icon icon-arrow-down">
+                                                <svg class="icon icon-arrow-down ">
                                                     <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
                                                 </svg>
                                             </div>
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-arrow-up">
+                                                <svg class="icon icon-arrow-up ">
                                                     <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">сначала старые</div>
+                                        <div class="sSearchResult__filter-result-text">сначала старые
+                                        </div>
                                     </div>
                                     <div
-                                        v-else-if="sortObj.field === 'name'"
-                                        @click="toggleSort('created_at', 'asc')"
-                                        class="sSearchResult__filter-item"
-                                    >
+                                        v-else-if="fullQueryObject.sort.field === 'name'"
+                                        @click="toggleSort('created_at','asc')"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-arrow-up">
+                                                <svg class="icon icon-arrow-up ">
                                                     <use xlink:href="/img/svg/sprite.svg#arrow-up"></use>
                                                 </svg>
                                             </div>
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-arrow-down">
+                                                <svg class="icon icon-arrow-down ">
                                                     <use xlink:href="/img/svg/sprite.svg#arrow-down"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">сначала новые</div>
+                                        <div class="sSearchResult__filter-result-text">сначала новые
+                                        </div>
                                     </div>
                                     <!-- Сортировка по алфавиту -->
                                     <div
-                                        v-if="sortObj.field === 'name' && sortObj.direction === 'asc'"
-                                        @click="toggleSort('name', 'desc')"
-                                        class="sSearchResult__filter-item"
-                                    >
+                                        v-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'asc'"
+                                        @click="toggleSort('name','desc')"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn active">
-                                                <svg class="icon icon-a">
+                                                <svg class="icon icon-a ">
                                                     <use xlink:href="/img/svg/sprite.svg#a"></use>
                                                 </svg>
                                             </div>
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-Ya">
+                                                <svg class="icon icon-Ya ">
                                                     <use xlink:href="/img/svg/sprite.svg#Ya"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">от А до Я</div>
+                                        <div class="sSearchResult__filter-result-text">от А до Я
+                                        </div>
                                     </div>
                                     <div
-                                        v-else-if="sortObj.field === 'name' && sortObj.direction === 'desc'"
-                                        @click="toggleSort('name', 'asc')"
-                                        class="sSearchResult__filter-item"
-                                    >
+                                        v-else-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'desc'"
+                                        @click="toggleSort('name','asc')"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-a">
+                                                <svg class="icon icon-a ">
                                                     <use xlink:href="/img/svg/sprite.svg#a"></use>
                                                 </svg>
                                             </div>
                                             <div class="sSearchResult__filter-btn active">
-                                                <svg class="icon icon-Ya">
+                                                <svg class="icon icon-Ya ">
                                                     <use xlink:href="/img/svg/sprite.svg#Ya"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">от Я до А</div>
+                                        <div class="sSearchResult__filter-result-text">от Я до А
+                                        </div>
                                     </div>
                                     <div
-                                        v-if="sortObj.field === 'created_at'"
-                                        @click="toggleSort('name', 'asc')"
-                                        class="sSearchResult__filter-item"
-                                    >
+                                        v-if="fullQueryObject.sort.field === 'created_at'"
+                                        @click="toggleSort('name','asc')"
+                                        class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-Ya">
+                                                <svg class="icon icon-Ya ">
                                                     <use xlink:href="/img/svg/sprite.svg#Ya"></use>
                                                 </svg>
                                             </div>
                                             <div class="sSearchResult__filter-btn">
-                                                <svg class="icon icon-a">
+                                                <svg class="icon icon-a ">
                                                     <use xlink:href="/img/svg/sprite.svg#a"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="sSearchResult__filter-result-text">от А до Я</div>
+                                        <div class="sSearchResult__filter-result-text">от А до Я
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- Типы документов -->
-                                <files-types v-model="extensionsObj"> </files-types>
+<!-- Типы документов -->
+                                <files-types
+                                    v-model='fullQueryObject.extensions'
+                                >
+                                </files-types>
 
-                                <!-- Чекбоксы -->
+<!-- Чекбоксы -->
                                 <checkbox-filters
                                     :fieldsArray="filteredSectionFields"
-                                    v-model="checkboxesObj"
+                                    v-model="fullQueryObject.checkboxes"
                                 >
                                 </checkbox-filters>
+<!-- Даты -->
                                 <date-filters
                                     :fieldsArray="filteredSectionFields"
-                                    v-model="dateFilters"
+                                    v-model="fullQueryObject.dateFilters"
                                 />
                             </div>
                         </div>
@@ -272,7 +280,7 @@
             <form>
                 <div class="search-block__input-wrap form-group">
                     <input
-                        v-model="searchObj"
+                        v-model="fullQueryObject.search"
                         class="search-block__input form-control"
                         name="text"
                         type="text"
@@ -295,7 +303,7 @@
     </main>
 </template>
 <script>
-import {onMounted, ref, computed, watch} from 'vue';
+import {onMounted, ref, computed, watch, reactive} from 'vue';
 import Loader from '@/components/Loader';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -321,8 +329,18 @@ export default {
     },
     setup() {
         const isLoading = ref(false);
+        const isSelectsLoading = ref(false);
         const isAtFirst = ref(true); // При первом открытии старницы
+        const bcTitle = ref('');
+
+        const currentSectionId = ref('');
         const section = ref({}); // если идет поиск по секции или {}
+        const allSections = ref([]);
+
+        const currentPage = ref(1);
+        const totalPages = ref(1);
+        const isPreloaderShown = ref(false);
+
         const filteredSectionFields = computed(() => {
             if (section.value.fields) {
                 return section.value.fields.filter((field) => !!field.filter_sort_index);
@@ -331,105 +349,87 @@ export default {
             }
         })
 
-        const currentSectionId = ref('');
-        const allSections = ref([]);
-        const bcTitle = ref('');
         const store = useStore();
-        const currentPage = ref(1);
-        const totalPages = ref(1);
-        const isPreloaderShown = ref(false);
 
-        const changeSectionHandler = (id) => {
-            currentSectionId.value = id;
-        };
-
-        // Выдача поиска_______________
+ // Выдача поиска_______________
         const materials = ref([]);
         const files = ref([]);
 
-        //Строка запроса______________________
-        const sortObj = ref({
-            field: 'created_at',
-            direction: 'asc',
-        });
-        const searchObj = ref('');
-        const extensionsObj = ref([]);
-        const checkboxesObj = ref([]);
-        const selectorsObj = ref([]);
-        const dateFilters = ref({});
+// Объект запроса_______________________
+        const initQueryObject = {
+            search: '',
+            sort: {
+                field: 'created_at',
+                direction: 'asc',
+            },
+            extensions: [],
+            checkboxes:[],
+            dateFilters:{},
+            selectors: []
+        }
 
-        const resetFilters = () => {
-            checkboxesObj.value = [];
-            extensionsObj.value = [];
-            dateFilters.value = {};
-        };
-        const resetSelectors = () => {
-            if (section.value.fields) {
-                section.value = {
-                    ...section.value,
-                    fields: [...section.value.fields],
-                };
-            } else {
-                section.value = {
-                    ...section.value,
-                };
-            }
-
-            selectorsObj.value = [];
-            searchObj.value = '';
-        };
-        const showResetSelectors = computed(() => {
-            return !!(Object.keys(selectorsObj.value).length || searchObj.value);
-        });
+        const fullQueryObject = reactive(initQueryObject);
 
         const queryObject = computed(() => {
-            const iterCheckboxes = checkboxesObj.value.map((item, i, arr) => ({[arr[i]]: 1})).values();
+            const iterCheckboxes = fullQueryObject.checkboxes.map((item, i, arr) => ({[arr[i]] : 1 })).values();
             let checkboxes = {};
-
             for (let val of iterCheckboxes) {
                 checkboxes = {...checkboxes, ...val};
             }
 
             return {
-                search: searchObj.value,
-                sort: sortObj.value,
-                materials: extensionsObj.value.includes('materials'),
-                extensions: extensionsObj.value.filter((item) => item !== 'materials'),
+                search: fullQueryObject.search,
+                sort: fullQueryObject.sort,
+                materials: fullQueryObject.extensions.includes('materials'),
+                extensions: fullQueryObject.extensions.filter(item => item !== 'materials'),
                 filter: {
-                    ...checkboxes,
-                    ...selectorsObj.value,
-                    ...dateFilters.value
-                },
-            };
+                    ...fullQueryObject.checkboxes,
+                    ...fullQueryObject.selectors,
+                    ...fullQueryObject.dateFilters,
+                }
+            }
         });
 
-        //Обработчики событий_______________________________________
+//Обработчики событий_______________________________________
         const toggleSort = (field, direction) => {
-            sortObj.value = {
-                field,
-                direction,
-            };
-        };
-        const updateExtensionsHandler = (extensions) => {
-            queryObject.value = {
-                ...queryObject.value,
-                extensions,
-            };
-        };
-        const updateCheckboxHandler = ({name, value}) => {
-            queryObject.value = {
-                ...queryObject.value,
-                checkboxes: {
-                    ...queryObject.value.checkboxes,
-                    [name]: value,
-                },
-            };
+            fullQueryObject.sort = { field, direction }
         };
         const updateSelectorHandler = (newSelectors) => {
-            selectorsObj.value = newSelectors;
+            fullQueryObject.selectors = newSelectors;
+        }
+        const setSelectsLoading = (bool) => {
+            isSelectsLoading.value = bool;
+        }
+
+//Сбросы поиска________________________
+        const resetFilters = () => {
+            fullQueryObject.checkboxes = [];
+            fullQueryObject.extensions = [];
+            fullQueryObject.dateFilters = {};
         };
 
-        // Отправка поискового запроса_____________
+        const resetSelectorsNSearch = () => {
+            fullQueryObject.selectors = [];
+            fullQueryObject.search = '';
+            if (section.value.fields) {
+                section.value.fields = [...section.value.fields]
+            } else {
+                updateMaterialsAndFiles('', queryObject);
+            }
+        };
+        const resetSelectors = () => {
+            fullQueryObject.selectors = [];
+            if (section.value.fields) {
+                section.value.fields = [...section.value.fields]
+            }
+        };
+
+        const showResetSelectors = computed(() => {
+            return !!(Object.keys(fullQueryObject.selectors).length || fullQueryObject.search.length);
+        });
+
+
+// Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (id, queryObject) => {
             try {
                 isLoading.value = true;
@@ -444,6 +444,7 @@ export default {
                 isLoading.value = false;
             }
         };
+
         const updateSearchPage = async (id) => {
             try {
                 isLoading.value = true;
@@ -459,7 +460,7 @@ export default {
         watch(
             () => store.getters['search/getAtFirst'],
             () => {
-                searchObj.value = '';
+                fullQueryObject.search = '';
                 currentSectionId.value = '';
                 isAtFirst.value = true;
             }
@@ -478,12 +479,9 @@ export default {
         });
         onMounted(async () => {
             try {
-                isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
             } catch (e) {
                 console.log(e);
-            } finally {
-                isLoading.value = false;
             }
         });
 
@@ -492,6 +490,7 @@ export default {
             isAtFirst.value = false;
         };
 
+// Подгрузка при скролле_________________________________________
         const addSearch = async () => {
             console.log('intersected');
             isPreloaderShown.value = true;
@@ -519,29 +518,27 @@ export default {
             isLoading,
             bcTitle,
             toggleSort,
-            updateCheckboxHandler,
             updateSelectorHandler,
-            updateExtensionsHandler,
             section,
             allSections,
             searchService,
             materials,
             files,
             updateMaterialsAndFiles,
-            sortObj,
-            searchObj,
-            extensionsObj,
-            checkboxesObj,
             resetFilters,
-            selectorsObj,
             queryObject,
             resetSelectors,
+            resetSelectorsNSearch,
             showResetSelectors,
             currentSectionId,
-            changeSectionHandler,
             handleSearch,
             filteredSectionFields,
-            dateFilters,
+            isSelectsLoading,
+            setSelectsLoading,
+            fullQueryObject,
+            totalPages,
+            currentPage,
+            isPreloaderShown,
         };
     },
 };
