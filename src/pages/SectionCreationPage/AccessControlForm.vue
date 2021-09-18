@@ -32,17 +32,23 @@
 </template>
 
 <script>
-import {ref, computed, onMounted} from'vue';
+import {ref, computed} from'vue';
 import VSelect from '@/ui/VSelect';
 import VButton from '@/ui/VButton';
 import VMultiBox from '@/ui/VMultiBox';
-import usersService from '@/services/users.service';
-import groupService from '@/services/group.service';
 import {defineAccessType, defineOptions} from '@/utils/section.helpers';
 
 export default {
     components: {VSelect, VButton, VMultiBox},
     props: {
+        allUsers: {
+          type: Array,
+          default: () => []
+        },
+        allGroups: {
+            type: Array,
+            default: () => []
+        },
         section: {
             type: Object,
             default: () => {}
@@ -55,7 +61,7 @@ export default {
     emits: ['updateAccess'],
     setup(props, {emit}) {
 
-        const accessType = ref({key: "all", name: "Всем"});
+        const accessType = ref(defineAccessType(props.section.access));
         const accessTypeOptions = [
             {key: "all", name: "Всем"},
             {key: "only", name: "Только определенным пользователям и группам"},
@@ -64,14 +70,12 @@ export default {
 
         const users = ref(defineOptions(props.section.users));
         const groups = ref(defineOptions(props.section.groups));
-        const allUsers = ref([]);
-        const allGroups = ref([]);
 
         const usersOptions = computed(() => {
-            return defineOptions(allUsers.value)
+            return defineOptions(props.allUsers)
         })
         const groupsOptions = computed(() => {
-           return defineOptions(allGroups.value)
+           return defineOptions(props.allGroups)
         });
 
         const updateAccess = () => {
@@ -82,17 +86,6 @@ export default {
             })
         }
 
-        onMounted( async () => {
-            try {
-
-                allUsers.value = await usersService.getUsers();
-                allGroups.value = await groupService.getAllGroups();
-                accessType.value = defineAccessType(props.section.access);
-
-            } catch(e) {
-                console.log(e);
-            }
-        })
         return {
             accessType,
             accessTypeOptions,

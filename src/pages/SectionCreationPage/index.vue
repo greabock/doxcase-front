@@ -231,12 +231,11 @@
             <access-control-form
                 :section="section"
                 @updateAccess="updateAccessHandle"
+                :allUsers="allUsers"
+                :allGroups="allGroups"
             >
             </access-control-form>
         </modal-window>
-
-
-
 
         <loader
             v-if="isLoading"
@@ -250,8 +249,12 @@
 import {ref, computed, onMounted} from 'vue';
 import {v4 as uuidv4} from 'uuid';
 import sectionsService from '@/services/sections.service';
+
 import filesService from '@/services/files.service';
 import enumService from '@/services/enums.service';
+import usersService from '@/services/users.service';
+import groupService from '@/services/group.service';
+
 import {useRouter} from 'vue-router';
 import Loader from "@/components/Loader";
 import {sortByIndexDown} from '@/utils/sortByIndex';
@@ -284,6 +287,8 @@ export default {
         const isLoading = ref(false);
         const allSections = ref([]);
         const allEnums = ref([]);
+        const allUsers = ref([]);
+        const allGroups = ref([]);
 
         const router = useRouter();
         const section = ref({...initSection});
@@ -431,6 +436,8 @@ export default {
                 isLoading.value = true;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
+                allUsers.value = await usersService.getUsers();
+                allGroups.value = await groupService.getAllGroups();
             } catch(e) {
                 console.log(e)
             } finally {
@@ -467,6 +474,8 @@ export default {
             isAccessModal,
             updateAccessHandle,
             accessType,
+            allUsers,
+            allGroups,
         };
     },
 };
