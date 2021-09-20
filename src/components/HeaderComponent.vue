@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {ref, computed, onMounted} from 'vue';
+import {ref, computed, onMounted, onUnmounted} from 'vue';
 import {useStore} from 'vuex';
 import {useRoute} from 'vue-router';
 import LogoIcon from '@/assets/LogoIcon';
@@ -147,6 +147,10 @@ export default {
         onMounted(async () => {
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
+        });
+
+        onUnmounted(async () => {
+            await store.dispatch('sections/setSections', []);
         });
 
         return {
