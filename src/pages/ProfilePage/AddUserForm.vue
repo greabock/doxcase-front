@@ -90,7 +90,7 @@
             <span class="validation-error">{{passwordError}}</span>
         </div>
         <button
-            :disabled="!formMeta.valid"
+            :disabled="!formMeta.valid || emailOccupied"
             class="btn btn-primary w-100"
             type="submit"
         >
