@@ -150,7 +150,7 @@ export default {
         });
 
         onUnmounted(async () => {
-            await store.dispatch('sections/setSections', []);
+            await store.commit('sections/setSections', []);
         });
 
         return {
