@@ -95,7 +95,6 @@
                     :key='user.id'
                 >
                     <label
-                        v-show="user.show"
                         class="groups-users-list__item custom-input form-check"
                     ><input
                         class="custom-input__input form-check-input"
