@@ -48,7 +48,7 @@
         </div>
     </div>
     <div class="block-position" v-if="enumObject">
-        <div class="block-position__item" v-for="item in searchedEnums" :key="item.name">
+        <div class="block-position__item" v-for="item in searchedAndFilteredEnums" :key="item.name">
             <div class="block-position__title">{{ item?.title }}</div>
             <div class="block-position__btns">
                 <div @click="setItemToChange(item)" class="btn-edit-sm btn-secondary">
@@ -135,14 +135,15 @@ export default {
         const {enumId} = toRefs(props);
         const enumObject = ref(null);
         const searchValue = ref('');
-        const searchedEnums = computed(() => {
+        const searchedAndFilteredEnums = computed(() => {
             if (enumObject.value) {
-                return [...enumObject.value.values].filter((enumItem) => {
-                    return enumItem.title.toLowerCase().includes(searchValue.value.toLowerCase());
-                });
+                return [...enumObject.value.values]
+                    .filter((enumItem) => enumItem.title.toLowerCase().includes(searchValue.value.toLowerCase()))
+                    .sort((a,b) => (a.title.toLowerCase() > b.title.toLowerCase()) ? 1 : -1);
             }
             return [];
         });
+
         const newEnumItemSchema = yup.object().shape({
             title: yup.string().required('Введите название позиции'),
         });
@@ -220,7 +221,7 @@ export default {
             setShownEnumItemForm,
             updateEnumObject,
             enumObject,
-            searchedEnums,
+            searchedAndFilteredEnums,
             enumItemToRemove,
             setEnumItemToRemove,
             isRemoveAlertVisible,
