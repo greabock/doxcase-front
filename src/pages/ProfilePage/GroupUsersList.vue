@@ -101,9 +101,9 @@ export default {
     setup(props, {emit}) {
 
         const currentGroup = ref({...props.propGroup});
+        const searchUsersValue = ref('');
         const groupUsersList = ref([...props.propGroup.users]);
         const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, props.propGroup.users)]);
-        const searchUsersValue = ref('');
 
         watch(() => props.propGroup, (newVal) => {
             currentGroup.value = newVal;
@@ -124,7 +124,6 @@ export default {
         })
 
         const filteredSortedUngroupUsers = computed(() => {
-
             return ungroupUsersList.value
                 .map(user => {
                     user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
@@ -136,7 +135,10 @@ export default {
         const updateGroup = async () => {
             const updatedGroup = {
                 ...currentGroup.value,
-                users: groupUsersList.value
+                users: groupUsersList.value.map(user => {
+                    delete user.show;
+                    return user;
+                })
             }
             try {
                 await groupService.updateGroup(updatedGroup);

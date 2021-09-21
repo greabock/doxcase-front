@@ -39,7 +39,7 @@
                 </div>
               </td>
             </tr>
-                <tr v-for="user in searchedUsersList" :key="user?.id">
+                <tr v-for="user in searchedFilteredUsers" :key="user?.id">
                     <td class="fw-500">{{ user.name }}</td>
                     <td>
                         <div class="sCabinetMain__input-wrap form-group">
@@ -114,6 +114,13 @@ export default {
         const loading = ref(false);
         const error = ref(null);
         const searchUserValue = ref('');
+
+        const searchedFilteredUsers = computed(() => {
+            return [...usersList.value]
+                .filter((user) => user.name.toLowerCase().includes(searchUserValue.value.toLowerCase()))
+                .sort((a,b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ))
+        });
+
         const switchUserRole = async (e, user) => {
             try {
                 loading.value = true;
@@ -174,11 +181,7 @@ export default {
         onMounted(fetchUsers);
 
         return {
-            searchedUsersList: computed(() => {
-                return [...usersList.value].filter((user) =>
-                    user.name.toLowerCase().includes(searchUserValue.value.toLowerCase())
-                );
-            }),
+            searchedFilteredUsers,
             switchUserRole,
             searchUserValue,
             loading,
