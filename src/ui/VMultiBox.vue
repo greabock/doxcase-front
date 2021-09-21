@@ -18,7 +18,7 @@
                     <template v-if="modelValue && modelValue.length">
                         <VBox class="me-1 mt-1" v-for="(item, key) of modelValue" :key="key" :title="item.name" @delete="select(item)" />
                     </template>
-                    <input ref="input" class="me-1 mt-1 input__search" :placeholder="placeholder" v-model="privateValue" />
+                    <input ref="input" class="me-1 mt-1 input__search" :placeholder="(modelValue && modelValue.length) ? '' : placeholder" v-model="privateValue" />
                 </div>
                 <div @click.stop="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
                     <ArrowDown class="select__icon" />
