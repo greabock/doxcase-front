@@ -17,6 +17,8 @@
             </template>
         </VInput>
         <VCalendar
+            :min="min"
+            :max="max"
             ref="calendar"
             :style="{
                 width: size || 'auto',
@@ -69,7 +71,9 @@ export default {
         offset: {
             type: String,
             default: '10px',
-        }
+        },
+        min: Date,
+        max: Date,
     },
     setup(props, {emit}) {
         const root = ref(null);

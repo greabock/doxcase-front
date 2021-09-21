@@ -216,7 +216,7 @@ $blue: #1d47ce;
     z-index: 20;
     background-color: #fff;
     
-    max-width: 10rem;
+    max-height: 10rem;
     overflow: auto;
 }
 
