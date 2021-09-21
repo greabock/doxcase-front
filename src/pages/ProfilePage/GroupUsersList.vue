@@ -135,7 +135,10 @@ export default {
         const updateGroup = async () => {
             const updatedGroup = {
                 ...currentGroup.value,
-                users: groupUsersList.value
+                users: groupUsersList.value.map(user => {
+                    delete user.show;
+                    return user;
+                })
             }
             try {
                 await groupService.updateGroup(updatedGroup);
