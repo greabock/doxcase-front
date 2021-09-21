@@ -187,7 +187,7 @@ $blue: #1d47ce;
     z-index: 20;
     background-color: #fff;
 
-    max-height: 10rem;
+    max-height: 14rem;
     overflow: auto;
 }
 

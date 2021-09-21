@@ -39,6 +39,7 @@
                 </slot>
                 <MarkIcon v-if="isActiveElement(item)" class="select__mark" />
             </li>
+            <li class="select-list__not-data" v-if="!privateOptions.length">Нет данных</li>
         </ul>
     </div>
 </template>
@@ -212,7 +213,7 @@ $blue: #1d47ce;
     z-index: 20;
     background-color: #fff;
     
-    max-height: 10rem;
+    max-height: 14rem;
     overflow: auto;
 }
 
