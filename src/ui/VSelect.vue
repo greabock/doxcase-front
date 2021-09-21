@@ -205,6 +205,9 @@ export default {
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
     z-index: 20;
     background-color: #fff;
+    
+    max-width: 10rem;
+    overflow: auto;
 }
 
 .select-list__item {

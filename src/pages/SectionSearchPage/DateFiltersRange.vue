@@ -4,13 +4,13 @@
         <div class="row">
             <div class="col-3 text-label">Начало периода</div>
             <div class="col">
-                <VDatePicker bordered v-model="dateFrom" @update="updateDates" size="20rem" placeholder="ДД.ММ.ГГГГ" />
+                <VDatePicker bordered v-model="dateFrom" @update="updateDates" size="20rem" placeholder="ДД.ММ.ГГГГ" :max="dateTo" />
             </div>
         </div>
         <div class="row">
             <div class="col-3 text-label">Окончание периода</div>
             <div class="col">
-                <VDatePicker bordered v-model="dateTo" @update="updateDates" size="20rem" placeholder="ДД.ММ.ГГГГ" />
+                <VDatePicker bordered v-model="dateTo" @update="updateDates" size="20rem" placeholder="ДД.ММ.ГГГГ" :min="dateFrom" />
             </div>
         </div>
     </div>
@@ -27,13 +27,11 @@ export default {
         modelValue: Array,
     },
     setup(props, {emit}) {
-        const dateFrom = ref();
-        const dateTo = ref();
+        const dateFrom = ref(null);
+        const dateTo = ref(null);
 
         const updateDates = () => {
-            if (dateFrom.value && dateTo.value) {
-                emit('update:modelValue', [dateFrom.value, dateTo.value]);
-            }
+            emit('update:modelValue', [dateFrom.value, dateTo.value]);
         };
 
         watch(

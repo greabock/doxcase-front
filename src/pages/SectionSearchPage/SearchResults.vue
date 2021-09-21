@@ -104,9 +104,9 @@
                     </div>
                 </div>
                 <div class="col">
-                    <a :href="API_URL + '/files/' +file.file.id">
+                    <FileLink :href="file.file.id" target="_blank">
                         <div class="h5">{{ file.file.name }}</div>
-                    </a>
+                    </FileLink>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
@@ -145,8 +145,12 @@
 import {computed} from 'vue';
 import fileService from '@/services/file.service';
 import {API_URL} from '@/globals';
+import FileLink  from '@/components/FileLink'
 
 export default {
+    components: {
+        FileLink,
+    },
     props: {
         allSections: {
             type: Array,

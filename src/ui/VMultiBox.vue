@@ -8,19 +8,19 @@
                 {select__element_active: isActive},
                 {'is-invalid': error},
             ]"
-            @click="isActive = !isActive"
+            @click="isActive = true"
         >
             <div v-if="title" class="select__title">
                 {{ title }}
             </div>
             <div class="select__input">
-                <div v-if="modelValue && modelValue.length">
-                    <VBox class="me-1 mt-1" v-for="(item, key) of modelValue" :key="key" :title="item.name" @delete="select(item)" />
+                <div>
+                    <template v-if="modelValue && modelValue.length">
+                        <VBox class="me-1 mt-1" v-for="(item, key) of modelValue" :key="key" :title="item.name" @delete="select(item)" />
+                    </template>
+                    <input ref="input" class="me-1 mt-1 input__search" :placeholder="placeholder" v-model="privateValue" />
                 </div>
-                <div v-else class="select__input-placeholder">
-                    {{ placeholder }}
-                </div>
-                <div @click="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
+                <div @click.stop="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
                     <ArrowDown class="select__icon" />
                 </div>
             </div>
@@ -29,7 +29,7 @@
 
         <ul class="select-list__container" v-if="isActive">
             <li
-                v-for="(item, i) of options"
+                v-for="(item, i) of privateOptions"
                 :key="i"
                 :class="['select-list__item', {'select-list__item_active': isActiveElement(item)}]"
                 @click="select(item)"
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import { onMounted, onUnmounted} from '@vue/runtime-core';
 import ArrowDown from './icons/arrow-down.svg.vue';
 import MarkIcon from './icons/mark.svg.vue';
@@ -94,7 +94,9 @@ export default {
             }
 
             if (!root.value.contains(event.target)) {
+                console.log(event)
                 isActive.value = false;
+                privateValue.value = null;
             }
 
             ctx.emit('blur', props.modelValue);
@@ -110,6 +112,7 @@ export default {
 
         const select = (item) => {
             let multipleSelect = Array.isArray(props.modelValue) ? props.modelValue : [];
+            privateValue.value = null;
 
             const index = multipleSelect.findIndex((x) => x.key === item.key);
 
@@ -122,7 +125,17 @@ export default {
             ctx.emit('select', multipleSelect);
         };
 
-        return {isActive, root, select, isActiveElement};
+        const privateValue = ref(null);
+        const privateOptions = computed(() =>
+            props.options.filter((str) => {
+                if (privateValue.value) {
+                    return str.name.toString().toLowerCase().includes(privateValue.value.toLowerCase());
+                }
+                return props.options;
+            })
+        );
+
+        return {isActive, root, select, isActiveElement, privateOptions, privateValue};
     },
 };
 </script>
@@ -170,6 +183,7 @@ $blue: #1d47ce;
     height: 100%;
     cursor: pointer;
     // width: 3rem;
+    padding: 0.3rem 0;
 }
 
 .select__arrow_up {
@@ -197,6 +211,9 @@ $blue: #1d47ce;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
     z-index: 20;
     background-color: #fff;
+    
+    max-width: 10rem;
+    overflow: auto;
 }
 
 .select-list__item {
@@ -256,5 +273,15 @@ $blue: #1d47ce;
 
 .select__mark {
     height: 0.8rem;
+}
+
+.input__search {
+    border: none;
+    outline: none;
+    max-width: 100%;
+}
+
+.input__search::placeholder {
+    color: #d6d6d6;
 }
 </style>
