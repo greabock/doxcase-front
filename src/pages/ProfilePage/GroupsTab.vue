@@ -95,6 +95,7 @@
                     :key='user.id'
                 >
                     <label
+                        v-show="user.modalShow"
                         class="groups-users-list__item custom-input form-check"
                     ><input
                         class="custom-input__input form-check-input"
@@ -146,12 +147,23 @@ export default {
 
         const sortedFilteredAllUsers = computed(() => {
             return [...allUsers.value]
-                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
                 .map(user => {
-                    user.show = user.name.toLowerCase().includes(searchValue.value.toLowerCase());
+                    user.modalShow = user.name.toLowerCase().includes(searchValue.value.toLowerCase());
                     return user;
-                });
+                })
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
         })
+
+        // Поиск пользователей_________________
+        const searchValue = ref('');
+
+        const fetchAllUsers = async () => {
+            try {
+                allUsers.value = await usersService.getUsers();
+            } catch (e) {
+                console.log(e);
+            }
+        };
 
 // Добавление группы__________________
         const isAddModalVisible = ref(false);
@@ -169,6 +181,7 @@ export default {
            const groupUsers = [...sortedFilteredAllUsers.value]
                .filter(item => item.is === true).map( item => {
                    delete item.is;
+                   delete item.modalShow;
                    delete item.show;
                    return item;
                });
@@ -182,8 +195,9 @@ export default {
                const res = await groupService.addGroup(newGroup);
                allGroups.value.push(res);
                currentGroup.value = res;
-               resetForm();
                isAddModalVisible.value = false;
+               searchValue.value = '';
+               resetForm();
            } catch(e) {
                console.log(e);
            }
@@ -208,17 +222,6 @@ export default {
             }
 
         }
-
-// Поиск пользователей_________________
-        const searchValue = ref('');
-
-        const fetchAllUsers = async () => {
-            try {
-                allUsers.value = await usersService.getUsers();
-            } catch (e) {
-                console.log(e);
-            }
-        };
 
         const fetchAllGroups = async () => {
             try {
