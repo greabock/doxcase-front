@@ -2,7 +2,6 @@
     <button
         class="box"
         :class="{active}"
-        :key="item?.id"
     >
         {{ title }}
         <BtnClose @click.stop="$emit('delete')"  class="delete" />
