@@ -143,6 +143,12 @@ export default {
                 ctx.emit('select', multipleSelect.value);
             } else {
                 isActive.value = false;
+                if (props.modelValue && props.modelValue.key == item.key) {
+                    ctx.emit('update:modelValue', null);
+                    ctx.emit('select', null);
+                    return;
+                }
+
                 ctx.emit('update:modelValue', item);
                 ctx.emit('select', item);
             }
