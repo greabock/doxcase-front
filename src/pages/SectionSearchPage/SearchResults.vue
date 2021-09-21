@@ -104,7 +104,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <FileLink :href="file.file.id" target="_blank">
+                    <FileLink :id="file.file.id">
                         <div class="h5">{{ file.file.name }}</div>
                     </FileLink>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}

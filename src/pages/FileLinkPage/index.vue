@@ -29,7 +29,7 @@ export default {
         const getFileLink = async () => {
             isPreloaderShown.value = true;
             try {
-                const temporaryLink = await fileService.getFile(link);
+                const temporaryLink = await fileService.getFileLink(link);
                 privateLink.value = temporaryLink;
                 window.open(temporaryLink, '_blank');
             } catch (e) {

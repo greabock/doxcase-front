@@ -15,7 +15,7 @@ import SectionSearchPage from '@/pages/SectionSearchPage';
 import {adminGuard, authGuard} from '@/guards/admin.guard';
 import AzurePage from '@/pages/AzurePage';
 import ForbiddenPage from '@/pages/ForbiddenPage';
-import FileLinkPage from '@/pages/FileLinkPage';
+// import FileLinkPage from '@/pages/FileLinkPage';
 
 const routes = [
     {
@@ -120,13 +120,13 @@ const routes = [
         beforeEnter: authGuard,
         meta: {title:'База знаний'}
     },
-    {
-        path: '/file-link/:link',
-        name: 'FileLinkPageRoute',
-        components: {default: FileLinkPage, header: HeaderComponent, footer: FooterComponent},
-        beforeEnter: authGuard,
-        meta: {title:'База знаний'}
-    }
+    // {
+    //     path: '/file-link/:link',
+    //     name: 'FileLinkPageRoute',
+    //     components: {default: FileLinkPage, header: HeaderComponent, footer: FooterComponent},
+    //     beforeEnter: authGuard,
+    //     meta: {title:'База знаний'}
+    // }
 ];
 
 export const router = createRouter({
