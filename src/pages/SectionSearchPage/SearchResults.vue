@@ -143,7 +143,6 @@
 
 <script>
 import {computed} from 'vue';
-import fileService from '@/services/file.service';
 import {API_URL} from '@/globals';
 import FileLink  from '@/components/FileLink'
 
@@ -265,7 +264,6 @@ export default {
             materialsSnippetsArr,
             createMaterialSnippet,
             formatDate,
-            fileService,
             API_URL,
         }
     }

@@ -80,7 +80,7 @@ const defineUngroupUsers = (allUsers, groupUsers) => {
         const excludeIds = groupUsers.map(user => user.id)
         return allUsers.filter((user) => !excludeIds.includes(user.id))
     }
-    return [];
+    return allUsers;
 }
 
 export default {

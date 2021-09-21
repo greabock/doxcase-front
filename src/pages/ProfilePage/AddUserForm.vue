@@ -1,5 +1,8 @@
 <template>
   <div id="modal-add-field-not-required">
+      <div class="modal-window__header">
+          <h3>Добавление нового пользователя</h3>
+      </div>
     <div class="form-wrap">
       <form @submit="submitHandle">
         <div>
@@ -39,13 +42,14 @@
           <label
           ><span class="form-wrap__input-title">Почта</span
           ><input
+              @input="emailOccupied = null"
               v-model="emailValue"
               class="form-wrap__input form-control"
               type="text"
               placeholder="Введите e-mail"
           />
           </label>
-          <span class="validation-error">{{emailError}}</span>
+          <span class="validation-error">{{emailError}}{{emailOccupied}}</span>
         </div>
         <div class="form-wrap__input-wrap form-group">
           <label>
@@ -86,7 +90,7 @@
             <span class="validation-error">{{passwordError}}</span>
         </div>
         <button
-            :disabled="!formMeta.valid"
+            :disabled="!formMeta.valid || emailOccupied"
             class="btn btn-primary w-100"
             type="submit"
         >
@@ -148,6 +152,7 @@ export default {
     const fileInput = ref(null);
     const photoUrl = ref(null);
 
+    const emailOccupied = ref('');
     const addNewUser = async (user, photo) => {
       const userData = {
         ...user,
@@ -169,13 +174,18 @@ export default {
         }
 
         const userResp = await addNewUser(values, photoUrl.value);
-        console.log('NewUser: ', userResp.data);
         emit('addNewUser', userResp.data);
-      } catch (e) {
-        console.log(e);
-      } finally {
         isLoading.value = false;
         emit('closeModal');
+      } catch (e) {
+          if(e.message === 'email occupied') {
+              emailOccupied.value = 'Пользователь c таким e-mail уже существует';
+          } else {
+              console.log(e.message)
+              emit('closeModal');
+          }
+      } finally {
+          isLoading.value = false;
       }
     });
 
@@ -194,6 +204,7 @@ export default {
       emailError,
       passwordError,
       isShowPass,
+      emailOccupied,
     };
   },
 };

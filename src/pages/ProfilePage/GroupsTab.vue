@@ -88,14 +88,13 @@
             </div>
 
             <div
-                class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
+                class="users-list-fom-wrapper max-h-240 sSections__col col-lg-auto col-md"
             >
                 <template
                     v-for='user in sortedFilteredAllUsers'
                     :key='user.id'
                 >
                     <label
-                        v-show="user.show"
                         class="groups-users-list__item custom-input form-check"
                     ><input
                         class="custom-input__input form-check-input"
@@ -286,6 +285,16 @@ export default {
     display: block;
     margin-top: 5px;
     color: #ff0000;
+}
+.users-list-fom-wrapper {
+    max-height: 500px;
+    overflow-x: visible;
+    overflow-y: auto;
+    padding: 5px 0 5px 5px;
+    margin: 0 0 20px -5px;
+}
+.max-h-240 {
+max-height: 240px!important;
 }
 .users-list-fom-wrapper {
     max-height: 500px;
