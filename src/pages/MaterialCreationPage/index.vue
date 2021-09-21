@@ -301,9 +301,16 @@ export default {
         getData();
 
         const selectSection = async (section) => {
-            const sectionObject = await sectionsService.getSectionObject(section.key);
+            if (section) {
+                const sectionObject = await sectionsService.getSectionObject(section.key);
+    
+                setFields(sectionObject);
+                return
+            } 
 
-            setFields(sectionObject);
+            fields.value = []
+            files.value = []
+
         };
 
         const setActive = (file) => {
