@@ -166,6 +166,8 @@ export default {
                 usersList.value = [...usersList.value].filter(user => user.id !== userToRemove.value.id);
             } catch(e) {
                 console.log(e);
+            } finally {
+                isRemoveModalVisible.value = false;
             }
         }
 
