@@ -235,8 +235,16 @@ export default {
         const getData = async () => {
             if (sectionId && materialId) {
                 isNew.value = false;
-                const material = await materialService.getMaterial(sectionId, materialId);
-                const sectionObject = await sectionsService.getSectionObject(sectionId);
+
+                let material = null;
+                let sectionObject = null;
+
+                try {
+                    material = await materialService.getMaterial(sectionId, materialId);
+                    sectionObject = await sectionsService.getSectionObject(sectionId);
+                } catch(e) {
+                    router.push('/')
+                }
 
                 breadcrumb.value = [
                     {
