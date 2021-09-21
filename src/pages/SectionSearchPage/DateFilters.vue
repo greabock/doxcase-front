@@ -1,7 +1,7 @@
 <template>
     <div v-if="filteredFields?.length">
         <div v-for="(field, index) of filteredFields" :key="index">
-            <DateFiltersRange :title="field?.title" @update:modelValue="updateDates" v-model="dates[field.id]" />
+            <DateFiltersRange :title="field?.title" @update:modelValue="e => updateDates(field.id, e)" v-model="dates[field.id]" />
         </div>
     </div>
 </template>
@@ -30,7 +30,14 @@ export default {
 
         const dates = ref({});
 
-        const updateDates = () => {
+        const updateDates = (id, datesList) => {
+            if(!datesList[0] && !datesList[1]) {
+                const _dates = {...dates.value}
+                delete _dates[id]
+                emit('update:modelValue', _dates)
+                return;
+            }
+
             emit('update:modelValue', dates.value)
         }
 
