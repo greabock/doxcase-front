@@ -64,7 +64,7 @@
         <div class="sAddDocs__footer">
             <div class="container-fluid d-flex">
                 <VButton class="btn-save" @click="updateGroup"> Сохранить изменения</VButton>
-                <VButton class="ms-2" outline @click="() => {}"> Отмена </VButton>
+                <VButton class="ms-2" outline @click="cancelUpdate"> Отмена </VButton>
             </div>
         </div>
     </div>
@@ -84,7 +84,7 @@ const defineUngroupUsers = (allUsers, groupUsers) => {
 }
 
 export default {
-    emits: ['updateGroup'],
+    emits: ['updateGroup', 'cancelUpdate'],
     components: {
         VButton
     },
@@ -148,6 +148,10 @@ export default {
             }
         }
 
+        const cancelUpdate = () => {
+            emit('cancelUpdate');
+        }
+
         return {
             groupUsersList,
             filteredSortedGroupUsers,
@@ -156,6 +160,7 @@ export default {
             currentGroup,
             ungroupUsersList,
             updateGroup,
+            cancelUpdate,
         };
     },
 };
@@ -175,5 +180,9 @@ INPUT::placeholder {
 }
 .search-block {
     position: relative;
+}
+.sAddDocs__footer {
+    position: absolute;
+    bottom: 0;
 }
 </style>

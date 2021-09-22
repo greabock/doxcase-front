@@ -27,6 +27,7 @@
         :propGroup="currentGroup"
         v-if="currentGroup?.id && allUsers.length > 0"
         @updateGroup="updateGroup"
+        @cancelUpdate="cancelUpdateGroup"
     >
     </group-users-list>
 
@@ -244,6 +245,10 @@ export default {
             currentGroup.value = updatedGroup;
         }
 
+        const cancelUpdateGroup = () => {
+            currentGroup.value = {...currentGroup.value}
+        }
+
         onMounted(async () => {
                 await fetchAllUsers();
                 const groups = await fetchAllGroups();
@@ -268,6 +273,7 @@ export default {
             formMeta,
             sortedFilteredAllUsers,
             updateGroup,
+            cancelUpdateGroup,
         }
     }
 };
