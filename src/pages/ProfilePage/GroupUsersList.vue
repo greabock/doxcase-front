@@ -183,6 +183,6 @@ INPUT::placeholder {
 }
 .sAddDocs__footer {
     position: absolute;
-    bottom: 0;
+    bottom: 33px;
 }
 </style>
