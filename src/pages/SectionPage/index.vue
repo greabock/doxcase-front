@@ -128,7 +128,24 @@
 
                     </div>
                     <div class="col col--main">
-                        <section class="sSectionMain section" id="sSectionMain">
+                        <section class="sSectionMain section section-creation-main__wrapper" id="sSectionMain">
+
+                            <div class="section-creation-access__wrapper">
+                                <div class="col section-creation-access__header">
+                                    Управление общим доступом
+                                </div>
+                                <div class="col-auto">
+                                    <div class="section-creation-access__prefs">
+                                        <span class="section-creation-access__avalible">Доступен: </span>
+                                        <span class="section-creation-access__avalible-value">{{accessType.name}}</span>
+                                        <v-button
+                                            @click="isAccessModal = true"
+                                            class="btn-xxs"
+                                        >Настроить</v-button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col">
                                     <h3>Конструктор полей для добавления материалов</h3>
@@ -219,13 +236,33 @@
                 <v-button :outline="true" class="w-100" @click="setFieldAlertVisible(false)">Отменить</v-button>
             </div>
         </modal-window>
+
+        <!-- Управление доступом -->
+        <modal-window
+            v-model="isAccessModal"
+            maxWidth="600px"
+        >
+            <access-control-form
+                :section="section"
+                @updateAccess="updateAccessHandle"
+                :allUsers="allUsers"
+                :allGroups="allGroups"
+            >
+            </access-control-form>
+        </modal-window>
+
     </main>
 </template>
 
 <script>
 import {ref, computed, onMounted} from 'vue';
 import sectionsService from '@/services/sections.service';
+
 import enumService from '@/services/enums.service';
+import filesService from '@/services/files.service';
+import usersService from '@/services/users.service';
+import groupService from '@/services/group.service';
+
 import {useRouter} from 'vue-router';
 import Loader from "@/components/Loader";
 import {sortByIndexDown} from '@/utils/sortByIndex';
@@ -237,15 +274,19 @@ import UploaderImage from '@/components/UploaderImage';
 import FieldsToFilter from '@/pages/SectionCreationPage/FieldsToFilter';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
-import filesService from '@/services/files.service';
+import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
+import {defineAccessType} from '@/utils/section.helpers';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
     setup() {
         const isLoading = ref(true);
         let initSection = null;
         const allSections = ref([]);
         const allEnums = ref([]);
+        const allUsers = ref([]);
+        const allGroups = ref([]);
+
         const router = useRouter();
         const section = ref({});
         const sortedFields = computed(() => {
@@ -273,6 +314,46 @@ export default {
             }
         }
 
+// Управление доступом__________________
+        const isAccessModal = ref(false);
+        const accessType = computed(() => {
+            return defineAccessType(section.value.access);
+        });
+
+        const updateGroupsNUsers = ({access, users, groups}) => {
+            switch (access) {
+                case 'all':
+                    section.value = {
+                        ...section.value,
+                        access,
+                        groups: [],
+                        users: []
+                    }
+                    return;
+                case 'only':
+                    section.value = {
+                        ...section.value,
+                        access,
+                        groups,
+                        users
+                    }
+                    return;
+                case 'except':
+                    section.value = {
+                        ...section.value,
+                        access,
+                        groups,
+                        users
+                    }
+                    return;
+            }
+        }
+        const updateAccessHandle = (accessObj) => {
+            updateGroupsNUsers(accessObj);
+            isAccessModal.value = false;
+        }
+
+//Добавление поля___________________
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields?.find((item) => item.id === newField.id);
             if (itemToUpdate) {
@@ -350,6 +431,9 @@ export default {
                 section.value = initSection;
                 allEnums.value = await enumService.getEnums();
                 allSections.value = await sectionsService.getSections();
+                allUsers.value = await usersService.getUsers();
+                allGroups.value = await groupService.getAllGroups();
+
             } catch(e) {
                 console.log(e)
             } finally {
@@ -383,6 +467,11 @@ export default {
             isLoading,
             isMobFiltersShow,
             setMobFiltersShow,
+            updateAccessHandle,
+            accessType,
+            isAccessModal,
+            allUsers,
+            allGroups,
         };
     },
 };

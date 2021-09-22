@@ -9,10 +9,10 @@ export function useAuth() {
     const loading = ref(false);
     const store = useStore();
 
-    const handleLogin = async ({login, password}) => {
+    const handleLogin = async ({email, password}) => {
         try {
             loading.value = true;
-            const token = await AuthService.getToken({login, password});
+            const token = await AuthService.getToken({email, password});
             localStorage.setItem('token', token);
             await store.dispatch('user/fetchUserData');
             const user = store.getters['user/getUser'];

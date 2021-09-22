@@ -116,6 +116,8 @@ import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import VSelect from '@/ui/VSelect';
+import VMultiBox from '@/ui/VMultiBox';
+
 import VInput from '@/ui/VInput';
 import VCheckbox from '@/ui/VCheckbox';
 import VDatePicker from '@/ui/VDatePicker';
@@ -233,8 +235,16 @@ export default {
         const getData = async () => {
             if (sectionId && materialId) {
                 isNew.value = false;
-                const material = await materialService.getMaterial(sectionId, materialId);
-                const sectionObject = await sectionsService.getSectionObject(sectionId);
+
+                let material = null;
+                let sectionObject = null;
+
+                try {
+                    material = await materialService.getMaterial(sectionId, materialId);
+                    sectionObject = await sectionsService.getSectionObject(sectionId);
+                } catch(e) {
+                    router.push('/')
+                }
 
                 breadcrumb.value = [
                     {
@@ -291,9 +301,16 @@ export default {
         getData();
 
         const selectSection = async (section) => {
-            const sectionObject = await sectionsService.getSectionObject(section.key);
+            if (section) {
+                const sectionObject = await sectionsService.getSectionObject(section.key);
+    
+                setFields(sectionObject);
+                return
+            } 
 
-            setFields(sectionObject);
+            fields.value = []
+            files.value = []
+
         };
 
         const setActive = (file) => {
@@ -420,7 +437,7 @@ export default {
             Boolean: VCheckbox,
             Text: VText,
             Enum: VSelect,
-            List: VSelect,
+            List: VMultiBox,
             Dictionary: VSelect,
             Select: VSelect,
             Date: VDatePicker,

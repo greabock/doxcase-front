@@ -1,18 +1,14 @@
 <template>
     <!-- Enums block -->
     <div class="btns-group-sm">
-        <button
+        <VBox
             v-for="item in enums"
-            @click="updateActiveEnumId(item.id)"
-            class="btn-filter"
-            :class="{active: item.id === activeEnumId}"
             :key="item?.id"
-        >
-            {{ item?.title }}
-            <svg @click.stop="setEnumToRemove(item)" class="icon icon-close">
-                <use xlink:href="/img/svg/sprite.svg#close"></use>
-            </svg>
-        </button>
+            :title="item?.title"
+            :active="item.id === activeEnumId"
+            @click="updateActiveEnumId(item.id)"
+            @delete="setEnumToRemove(item)"
+        />
     </div>
     <div class="mb-4">
         <div @click="setModalVisible(true)" class="btn-add">
@@ -22,41 +18,32 @@
     </div>
 
     <!-- New Enum Add Form -->
-    <enums-items v-if="activeEnumId" :enumId="activeEnumId"></enums-items>
+    <EnumsItems v-if="activeEnumId" :enumId="activeEnumId" />
 
-    <modal-window
-        v-model="isModalVisible"
-        maxWidth="400px"
-    >
+    <ModalWindow v-model="isModalVisible" maxWidth="400px">
         <div class="modal-window__header">
             <h3>Новый справочник</h3>
         </div>
         <div class="form-cont">
-                <form @submit="onEnumSubmit">
-                    <div class="form-wrap__input-wrap form-group">
-                        <input
-                            v-model="enumTitle"
-                            name="enumTitle"
-                            type="text"
-                            class="form-wrap__input form-control"
-                            placeholder="Название справончика"
-                        />
-                    </div>
-                    <button
-                        :disabled="!enumFormMeta.valid"
-                        type="submit"
-                        class="btn btn-primary w-100">
-                        <span>Добавить</span>
-                    </button>
-                </form>
-            </div>
-        </modal-window>
+            <form @submit="onEnumSubmit">
+                <div class="form-wrap__input-wrap form-group">
+                    <input
+                        v-model="enumTitle"
+                        name="enumTitle"
+                        type="text"
+                        class="form-wrap__input form-control"
+                        placeholder="Название справончика"
+                    />
+                </div>
+                <button :disabled="!enumFormMeta.valid" type="submit" class="btn btn-primary w-100">
+                    <span>Добавить</span>
+                </button>
+            </form>
+        </div>
+    </ModalWindow>
 
     <!-- Remove enum alert -->
-    <modal-window
-        v-model="isRemoveAlertVisible"
-        maxWidth="400px"
-    >
+    <ModalWindow v-model="isRemoveAlertVisible" maxWidth="400px">
         <div class="modal-window__header">
             <h3>Удаление справочника</h3>
         </div>
@@ -65,8 +52,7 @@
             <v-button class="w-100" @click="removeEnum(enumToRemove?.id)">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
         </div>
-    </modal-window>
-
+    </ModalWindow>
 </template>
 <script>
 import {onMounted, ref} from 'vue';
@@ -75,6 +61,8 @@ import {useForm, useField} from 'vee-validate';
 import * as yup from 'yup';
 import EnumsItems from '@/pages/ProfilePage/EnumsItems';
 import VButton from '@/ui/VButton';
+import VBox from '@/ui/VBox';
+
 import ModalWindow from '@/components/ModalWindow.vue';
 
 export default {
@@ -82,6 +70,7 @@ export default {
         EnumsItems,
         VButton,
         ModalWindow,
+        VBox,
     },
     setup() {
         const enums = ref([]);
@@ -113,9 +102,9 @@ export default {
         const {handleSubmit, meta: enumFormMeta, setValues} = useForm({validationSchema: enumSchema});
         const {value: enumTitle} = useField('enumTitle');
         setValues({
-            enumTitle: ''
-        })
-        const onEnumSubmit = handleSubmit( async(values, actions) => {
+            enumTitle: '',
+        });
+        const onEnumSubmit = handleSubmit(async (values, actions) => {
             await addNewEnum(values.enumTitle);
             actions.resetForm();
         });
@@ -179,4 +168,3 @@ export default {
     },
 };
 </script>
-

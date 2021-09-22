@@ -1,6 +1,6 @@
 <template>
 
-    <loader v-show="isLoading"></loader>
+    <loader v-show="isLoading || isSelectsLoading"></loader>
     <main class="main-block">
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
@@ -23,7 +23,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="searchObj"
+                                                v-model="fullQueryObject.search"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -67,6 +67,7 @@
                                     :allSections="allSections"
                                     :fieldsArray="filteredSectionFields"
                                     @updateSelectors="updateSelectorHandler"
+                                    @isSelectsLoading = "setSelectsLoading"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -77,7 +78,7 @@
                                         <use xlink:href="/img/svg/sprite.svg#close"></use>
                                     </svg>
                                     <span
-                                        @click='resetSelectors'
+                                        @click='resetSelectorsNSearch'
                                         class="ms-2">очистить фильтр</span>
                                 </div>
                             </div>
@@ -125,14 +126,15 @@
                                     </div>
                                 </div>
                             </div>
-<!-- Сортировка -->
-                            <div class="sSearchResult__aside-body">
 
+                            <div class="sSearchResult__aside-body">
+ <!-- Сортировка -->
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
+
 <!-- Сортировка по дате -->
                                     <div
-                                        v-if="sortObj.field === 'created_at' && sortObj.direction === 'asc'"
+                                        v-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
                                         @click="toggleSort('created_at','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -151,7 +153,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="sortObj.field === 'created_at' && sortObj.direction === 'desc'"
+                                        v-else-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'desc'"
                                         @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -170,7 +172,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="sortObj.field === 'name'"
+                                        v-else-if="fullQueryObject.sort.field === 'name'"
                                         @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -190,7 +192,7 @@
                                     </div>
 <!-- Сортировка по алфавиту -->
                                     <div
-                                        v-if="sortObj.field === 'name' && sortObj.direction === 'asc'"
+                                        v-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'asc'"
                                         @click="toggleSort('name','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -209,7 +211,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="sortObj.field === 'name' && sortObj.direction === 'desc'"
+                                        v-else-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'desc'"
                                         @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -228,7 +230,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-if="sortObj.field === 'created_at'"
+                                        v-if="fullQueryObject.sort.field === 'created_at'"
                                         @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -249,19 +251,20 @@
                                 </div>
 <!-- Типы документов -->
                                 <files-types
-                                    v-model='extensionsObj'
+                                    v-model='fullQueryObject.extensions'
                                 >
                                 </files-types>
 
 <!-- Чекбоксы -->
                                 <checkbox-filters
                                     :fieldsArray="filteredSectionFields"
-                                    v-model="checkboxesObj"
+                                    v-model="fullQueryObject.checkboxes"
                                 >
                                 </checkbox-filters>
+<!-- Даты -->
                                <date-filters
                                    :fieldsArray="filteredSectionFields"
-                                   v-model="dateFilters"
+                                   v-model="fullQueryObject.dateFilters"
                                 />
                             </div>
                         </div>
@@ -269,12 +272,11 @@
                 </div>
             </div>
         </div>
-        <!-- end sSearchResult-->
     </main>
 </template>
 
 <script>
-import {onMounted, ref, computed, watch} from 'vue';
+import {onMounted, ref, computed, watch, reactive} from 'vue';
 import Loader from '@/components/Loader';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -299,7 +301,8 @@ export default {
     setup() {
 
         const router = useRouter();
-        const isLoading = ref(false);
+        const isLoading = ref(true);
+        const isSelectsLoading = ref(false);
         const section = ref({});
         const allSections = ref([]);
         const bcTitle = ref('');
@@ -315,110 +318,78 @@ export default {
             }
         })
 
-// Выдача поиска_______________
+// Выдача поиска_______________________
         const materials = ref([]);
         const files = ref([]);
 
-//Строка запроса______________________
-        const sortObj = ref({
-            field: 'created_at',
-            direction: 'asc',
-        });
+// Объект запроса_______________________
+        const initQueryObject = {
+            search: '',
+            sort: {
+                field: 'created_at',
+                direction: 'asc',
+            },
+            extensions: [],
+            checkboxes:[],
+            dateFilters:{},
+            selectors: []
+        }
 
-
-        const searchObj = ref('');
-        const extensionsObj = ref([]);
-        const checkboxesObj = ref([]);
-        const selectorsObj = ref([]);
-        const dateFilters = ref({});
-
-        const resetFilters = () => {
-            checkboxesObj.value = [];
-            extensionsObj.value = [];
-            dateFilters.value = {};
-        };
-
-        const resetSelectors = () => {
-           section.value = {
-               ...section.value,
-               fields: [...section.value.fields]
-           };
-           selectorsObj.value = [];
-           searchObj.value = '';
-        };
-        const showResetSelectors = computed(() => {
-            return !!(Object.keys(selectorsObj.value).length || searchObj.value);
-        });
+        const fullQueryObject = reactive(initQueryObject);
 
         const queryObject = computed(() => {
-
-            const iterCheckboxes = checkboxesObj.value.map((item, i, arr) => ({[arr[i]] : 1 })).values();
+            const iterCheckboxes = fullQueryObject.checkboxes.map((item, i, arr) => ({[arr[i]] : 1 })).values();
             let checkboxes = {};
             for (let val of iterCheckboxes) {
                 checkboxes = {...checkboxes, ...val};
             }
 
             return {
-                search: searchObj.value,
-                sort: sortObj.value,
-                materials: extensionsObj.value.includes('materials'),
-                extensions: extensionsObj.value.filter(item => item !== 'materials'),
+                search: fullQueryObject.search,
+                sort: fullQueryObject.sort,
+                materials: fullQueryObject.extensions.includes('materials'),
+                extensions: fullQueryObject.extensions.filter(item => item !== 'materials'),
                 filter: {
-                    ...checkboxes,
-                    ...selectorsObj.value,
-                    ...dateFilters.value,
+                    ...fullQueryObject.checkboxes,
+                    ...fullQueryObject.selectors,
+                    ...fullQueryObject.dateFilters,
                 }
             }
-        });
-
-//Поисковая строка____________________________________
-        const serialize = (obj, prefix) => {
-            const str = [];
-
-            for (const p in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, p)) {
-                    const k = prefix ? prefix + "[" + p + "]" : p,
-                        v = obj[p];
-                    str.push((v !== null && typeof v === "object") ?
-                        serialize(v, k) :
-                        k + "=" + v);
-                }
-            }
-            return str.join("&");
-        }
-        const resultString = computed(() => {
-            return '?' + serialize(queryObject.value);
         });
 
 //Обработчики событий_______________________________________
         const toggleSort = (field, direction) => {
-                sortObj.value = {
-                        field,
-                        direction
-                }
-        };
-        const updateExtensionsHandler = (extensions) => {
-            queryObject.value = {
-                ...queryObject.value,
-                extensions
-            }
-        }
-        const updateCheckboxHandler = ({name, value}) => {
-            queryObject.value = {
-                ...queryObject.value,
-                checkboxes: {
-                    ...queryObject.value.checkboxes,
-                    [name]: value,
-                }
-            }
+            fullQueryObject.sort = { field, direction }
         };
         const updateSelectorHandler = (newSelectors) => {
-            selectorsObj.value = newSelectors;
+            fullQueryObject.selectors = newSelectors;
         }
+        const setSelectsLoading = (bool) => {
+            isSelectsLoading.value = bool;
+        }
+//Сбросы поиска________________________
+        const resetFilters = () => {
+            fullQueryObject.checkboxes = [];
+            fullQueryObject.extensions = [];
+            fullQueryObject.dateFilters = {};
+        };
+
+        const resetSelectorsNSearch = () => {
+            section.value.fields = [...section.value.fields]
+            fullQueryObject.selectors = [];
+            fullQueryObject.search = '';
+        };
+        const resetSelectors = () => {
+            section.value.felds = [...section.value.fields];
+            fullQueryObject.selectors = [];
+        };
+
+        const showResetSelectors = computed(() => {
+            return !!(Object.keys(fullQueryObject.selectors).length || fullQueryObject.search.length);
+        });
 
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (url, queryObject) => {
-
             try {
                 isLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, queryObject);
@@ -431,14 +402,14 @@ export default {
             } finally {
                 isLoading.value = false;
             }
-
         }
+
         const updateSearchPage = async (id) => {
             try {
                 isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(id);
-                resetSelectors();
                 resetFilters();
+                resetSelectorsNSearch();
                 bcTitle.value = section.value.title;
 
             } catch(e) {
@@ -450,9 +421,10 @@ export default {
 
         watch( queryObject, (newVal, oldVal) => {
             if (newVal.search === oldVal.search) {
-                updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
-            }
-        },  {deep: true}
+                    updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
+                }
+            },
+            {deep: true}
         );
 
         watch( router.currentRoute, async (newVal) => {
@@ -467,20 +439,16 @@ export default {
                 await updateSearchPage(router.currentRoute.value.params.id);
             } catch(e) {
                 console.log(e)
-            } finally {
-                isLoading.value = false;
             }
-
         });
 
 // Подгрузка при скролле__________________________________________________
         const addSearch = async () => {
-            console.log('intersected');
             isPreloaderShown.value = true;
             if (currentPage.value < totalPages.value) {
                 try {
                     const materialsAndFiles = await searchService
-                        .searchSectionPost(`${router.currentRoute.value.params.id}/?page=${currentPage.value + 1}`, queryObject);
+                        .searchSectionPost(`${router.currentRoute.value.params.id}/?page=${currentPage.value + 1}`, queryObject.value);
                     materials.value = [...materials.value, ...materialsAndFiles.data.materials];
                     files.value = [...files.value, ...materialsAndFiles.data.files];
                     currentPage.value = materialsAndFiles.current_page;
@@ -494,34 +462,29 @@ export default {
         };
 
         return {
-            resultString,
             isLoading,
             bcTitle,
             toggleSort,
-            updateCheckboxHandler,
             updateSelectorHandler,
-            updateExtensionsHandler,
             section,
             allSections,
             searchService,
             materials,
             files,
             updateMaterialsAndFiles,
-            sortObj,
-            searchObj,
-            extensionsObj,
-            checkboxesObj,
             resetFilters,
-            selectorsObj,
-            queryObject,
             resetSelectors,
+            resetSelectorsNSearch,
             showResetSelectors,
             addSearch,
             totalPages,
             currentPage,
             isPreloaderShown,
-            dateFilters,
             filteredSectionFields,
+            fullQueryObject,
+            queryObject,
+            setSelectsLoading,
+            isSelectsLoading,
         }
     },
 }

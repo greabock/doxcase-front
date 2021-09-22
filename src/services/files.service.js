@@ -19,5 +19,13 @@ class FilesService {
             return res.data.data;
         } else throw new Error('Error update File');
     };
+
+    getFileLink = async (file) => {
+        const res = await axiosInstance.get(`/files/${file}/sign`)
+
+        if (res.data.data) {
+            return res.data.data;
+        } else throw new Error('Error get file link');
+    };
 }
 export default new FilesService();

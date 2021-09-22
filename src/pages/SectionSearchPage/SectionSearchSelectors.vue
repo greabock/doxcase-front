@@ -36,7 +36,7 @@ export default {
             default: () => [],
         },
     },
-    emits: ['updateSelectors'],
+    emits: ['updateSelectors', 'isSelectsLoading'],
 
     setup(props, {emit}) {
         const selectorOptionsArr = ref([]);
@@ -108,6 +108,7 @@ export default {
         watch(
             filteredFields,
             async (newVal) => {
+                emit('isSelectsLoading', true);
                 selectorOptionsArr.value = await Promise.all(
                     newVal.map(async (field) => {
                         switch (field.type.name) {
@@ -134,6 +135,7 @@ export default {
                         }
                     })
                 );
+                emit('isSelectsLoading', false);
             },
             {deep: true}
         );

@@ -1,5 +1,8 @@
 <template>
   <div id="modal-add-field-not-required">
+      <div class="modal-window__header">
+          <h3>Добавление нового пользователя</h3>
+      </div>
     <div class="form-wrap">
       <form @submit="submitHandle">
         <div>
@@ -39,29 +42,14 @@
           <label
           ><span class="form-wrap__input-title">Почта</span
           ><input
+              @input="emailOccupied = null"
               v-model="emailValue"
               class="form-wrap__input form-control"
               type="text"
               placeholder="Введите e-mail"
           />
           </label>
-          <span class="validation-error">{{emailError}}</span>
-        </div>
-
-        <div class="form-wrap__input-wrap form-group">
-          <label
-          ><span class="form-wrap__input-title">Логин</span
-          ><input
-              v-model="loginValue"
-              class="form-wrap__input form-control"
-              type="text"
-              name="newUserLogin"
-              placeholder="Введите"
-              autocomplete="off"
-              maxLength="30"
-          />
-          </label>
-          <span class="validation-error">{{loginError}}</span>
+          <span class="validation-error">{{emailError}}{{emailOccupied}}</span>
         </div>
         <div class="form-wrap__input-wrap form-group">
           <label>
@@ -102,7 +90,7 @@
             <span class="validation-error">{{passwordError}}</span>
         </div>
         <button
-            :disabled="!formMeta.valid"
+            :disabled="!formMeta.valid || emailOccupied"
             class="btn btn-primary w-100"
             type="submit"
         >
@@ -139,7 +127,6 @@ export default {
       role: yup.object().required('Поле обязательно для заполнения'),
       email: yup.string().email( 'Пожалуйста, введите корректный email-адрес')
           .required('Поле обязательно для заполнения'),
-      login: yup.string().required('Поле обязательно для заполнения'),
       password: yup.string()
           .min(6, "Длина пароля не менее 6 символов")
           .required('Поле обязательно для заполнения')
@@ -155,7 +142,6 @@ export default {
     const {value: nameValue, errorMessage: nameError} = useField('name');
     const {value: roleValue} = useField('role');
     const {value: emailValue, errorMessage: emailError} = useField('email');
-    const {value: loginValue, errorMessage: loginError} = useField('login');
     const {value: passwordValue, errorMessage: passwordError} = useField('password');
     const roleOptions = [
       {key: 'admin', name: "Администратор"},
@@ -166,6 +152,7 @@ export default {
     const fileInput = ref(null);
     const photoUrl = ref(null);
 
+    const emailOccupied = ref('');
     const addNewUser = async (user, photo) => {
       const userData = {
         ...user,
@@ -187,20 +174,24 @@ export default {
         }
 
         const userResp = await addNewUser(values, photoUrl.value);
-        console.log('NewUser: ', userResp.data);
         emit('addNewUser', userResp.data);
-      } catch (e) {
-        console.log(e);
-      } finally {
         isLoading.value = false;
         emit('closeModal');
+      } catch (e) {
+          if(e.message === 'email occupied') {
+              emailOccupied.value = 'Пользователь c таким e-mail уже существует';
+          } else {
+              console.log(e.message)
+              emit('closeModal');
+          }
+      } finally {
+          isLoading.value = false;
       }
     });
 
     return {
       addNewUser,
       formMeta,
-      loginValue,
       emailValue,
       nameValue,
       passwordValue,
@@ -212,8 +203,8 @@ export default {
       nameError,
       emailError,
       passwordError,
-      loginError,
       isShowPass,
+      emailOccupied,
     };
   },
 };

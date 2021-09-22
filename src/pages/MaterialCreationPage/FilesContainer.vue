@@ -38,9 +38,9 @@ const getFileData = (file) => {
     const {size, name, type} = file;
     const n = name.split('.');
     const t = n.splice(-1);
-    const fileName = n.length ? n.join() : t.join();
+    const fileName = n.length ? n.join('.') : t.join('.');
 
-    const fileType = t.join() || type.split('/').splice(-1).join();
+    const fileType = t.join('.') || type.split('/').splice(-1).join('/');
 
     return {
         size,

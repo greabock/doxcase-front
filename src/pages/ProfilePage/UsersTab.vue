@@ -39,7 +39,7 @@
                 </div>
               </td>
             </tr>
-                <tr v-for="user in searchedUsersList" :key="user?.id">
+                <tr v-for="user in searchedFilteredUsers" :key="user?.id">
                     <td class="fw-500">{{ user.name }}</td>
                     <td>
                         <div class="sCabinetMain__input-wrap form-group">
@@ -53,6 +53,12 @@
                                 <option value="moderator">Модератор</option>
                                 <option value="user">Пользователь</option>
                             </select>
+
+                            <div @click="setUserToRemoveHandler(user)" class="btn-edit-sm btn-danger">
+                                <svg class="icon icon-basket">
+                                    <use xlink:href="/img/svg/sprite.svg#basket"></use>
+                                </svg>
+                            </div>
                         </div>
                         <!-- +e.input-wrap-->
                     </td>
@@ -73,6 +79,21 @@
       @closeModal="isModalVisible = false"
     ></add-user-form>
   </modal-window>
+
+    <!-- Удаление группы -->
+    <modal-window
+        v-model="isRemoveModalVisible"
+        maxWidth="400px"
+    >
+        <div class="modal-window__header">
+            <h3>Удаление пользователя</h3>
+        </div>
+        <p>Вы действительно хотите удалить пользователя "{{ userToRemove?.name }}"?</p>
+        <div class="modal-window__buttons">
+            <v-button class="w-100" @click="removeUser()">Удалить</v-button>
+            <v-button :outline="true" class="w-100" @click="isRemoveModalVisible = false">Отменить</v-button>
+        </div>
+    </modal-window>
 </template>
 
 <script>
@@ -80,17 +101,26 @@ import {computed, onMounted, ref} from 'vue';
 import usersService from '@/services/users.service';
 import ModalWindow from "@/components/ModalWindow";
 import AddUserForm from '@/pages/ProfilePage/AddUserForm';
+import VButton from '@/ui/VButton';
 
 export default {
   components: {
     ModalWindow,
     AddUserForm,
+    VButton,
   },
     setup() {
         const usersList = ref([]);
         const loading = ref(false);
         const error = ref(null);
         const searchUserValue = ref('');
+
+        const searchedFilteredUsers = computed(() => {
+            return [...usersList.value]
+                .filter((user) => user.name.toLowerCase().includes(searchUserValue.value.toLowerCase()))
+                .sort((a,b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ))
+        });
+
         const switchUserRole = async (e, user) => {
             try {
                 loading.value = true;
@@ -123,19 +153,35 @@ export default {
             fetchUsers();
             error.value = null;
         };
+        const addNewUserHandle = (user) => {
+            usersList.value = [...usersList.value, user];
+        }
+
+//Удаление пользователя________________________________
+        const isRemoveModalVisible = ref(false);
+        const userToRemove = ref(null);
+        const setUserToRemove = (user) => {
+            userToRemove.value = user;
+        }
+        const setUserToRemoveHandler = (user) => {
+            isRemoveModalVisible.value = true;
+            setUserToRemove(user);
+        }
+        const removeUser = async () => {
+            try {
+                await usersService.removeUser(userToRemove.value.id);
+                usersList.value = [...usersList.value].filter(user => user.id !== userToRemove.value.id);
+            } catch(e) {
+                console.log(e);
+            } finally {
+                isRemoveModalVisible.value = false;
+            }
+        }
 
         onMounted(fetchUsers);
 
-        const addNewUserHandle = (user) => {
-          usersList.value = [...usersList.value, user];
-        }
-
         return {
-            searchedUsersList: computed(() => {
-                return [...usersList.value].filter((user) =>
-                    user.name.toLowerCase().includes(searchUserValue.value.toLowerCase())
-                );
-            }),
+            searchedFilteredUsers,
             switchUserRole,
             searchUserValue,
             loading,
@@ -144,6 +190,10 @@ export default {
             isModalVisible,
             setModalVisible,
             addNewUserHandle,
+            isRemoveModalVisible,
+            userToRemove,
+            removeUser,
+            setUserToRemoveHandler
         };
     },
 };
@@ -176,5 +226,11 @@ export default {
     right: 0;
     z-index: 1000;
     background-color: rgba(255, 0, 0, 0.2);
+}
+.sCabinetMain__input-wrap {
+    display: flex;
+}
+.sCabinetMain__input-wrap select {
+    margin-right: 5px;
 }
 </style>
