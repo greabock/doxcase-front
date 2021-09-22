@@ -104,8 +104,10 @@
                     </div>
                 </div>
                 <div class="col">
-                    <a :href="file.file.url">
-                        <div class="h5">{{ file.file.name }}</div>
+                    <a :href="`https://api.knowledge.msharks.ru/api/files/${file.file.id}`">
+                        <div class="h5">
+                            {{ file.file.name }}
+                        </div>
                     </a>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
