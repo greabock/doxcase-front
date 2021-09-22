@@ -31,10 +31,11 @@
                 {'cr-today': day.isToday},
                 {'cr-current-month': day.isCurrentMonth},
                 {'cr-selected': day.isSelected},
+                {'cr-disable': day.isMin || day.isMax},
                 !displayDaysOtherMonth && {'cr-hide': !day.isCurrentMonth},
             ]"
             :key="index"
-            @click.prevent="setSelectedDate(day)"
+            @click.prevent="() => !(day.isMin || day.isMax) && setSelectedDate(day)"
         >
             {{ formatDateToDay(day.date) }}
         </span>
@@ -96,6 +97,8 @@ export default {
             type: String,
             default: 'd',
         },
+        min: Date,
+        max: Date,
     },
     computed: {
         dateYear() {
@@ -134,6 +137,8 @@ export default {
                 isCurrentMonth: isSameMonth(cursorDate, date),
                 isToday: isToday(date),
                 isSelected: isSameDay(new Date(this.modelValue), date),
+                isMin: this.min && date < this.min,
+                isMax: this.max && date > this.max,
             }));
         },
     },
@@ -155,9 +160,8 @@ export default {
             this.$emit('prevYear', this.currDateCursor);
         },
         setSelectedDate(day) {
-            // change calendar to correct month if they select previous or next month's days
             if (!day.isCurrentMonth) {
-                const selectedMonth = getMonth(this.selectedDate);
+                const selectedMonth = getMonth(day.date);
                 this.currDateCursor = setMonth(this.currDateCursor, selectedMonth);
             }
 
@@ -255,19 +259,19 @@ export default {
     font-size: 1rem;
     cursor: pointer;
 }
-.cr-calendar__day.cr-current-month {
+.cr-current-month {
     color: var(--day-color);
 }
-.cr-calendar__day.cr-today {
+.cr-today {
     color: var(--additional-color);
 }
-.cr-calendar__day.cr-hide {
+.cr-hide {
     visibility: hidden;
 }
 .cr-calendar__day:hover {
     background: var(--light-color);
 }
-.cr-calendar__day.cr-selected {
+.cr-selected {
     background: var(--additional-color);
     color: #fff;
 }
@@ -278,5 +282,12 @@ export default {
     font-size: inherit;
     text-align: center;
     color: var(--main-color);
+}
+
+.cr-disable:hover,
+.cr-disable {
+    background: #fff;
+    color: var(--light-color);
+    cursor: not-allowed;
 }
 </style>

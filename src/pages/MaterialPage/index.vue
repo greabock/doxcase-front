@@ -263,7 +263,7 @@ export default {
 
         const deleteMaterial = async () => {
             await materialService.removeMaterial(sectionId, materialId);
-            router.push('/');
+            router.go(-1);
         };
 
         const edit = () => {

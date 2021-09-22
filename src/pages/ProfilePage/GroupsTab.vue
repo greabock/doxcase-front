@@ -1,14 +1,15 @@
 <template>
 
-    <div class="btns-group-sm">
+    <div
+        class="btns-group-sm">
         <button
             v-for="group in allGroups"
-            @click="setCurrentGroupId(group.id)"
+            @click="currentGroup = group"
             class="btn-filter"
-            :class="{active: group.id === currentGroupId}"
+            :class="{active: group.id === currentGroup.id}"
             :key="group?.id"
         >
-            {{ group?.title }}
+            {{ group?.name }}
             <svg @click.stop="() => setGroupToRemove(group)" class="icon icon-close">
                 <use xlink:href="/img/svg/sprite.svg#close"></use>
             </svg>
@@ -21,6 +22,15 @@
         </div>
     </div>
 
+    <group-users-list
+        :allUsers="allUsers"
+        :propGroup="currentGroup"
+        v-if="currentGroup?.id && allUsers.length > 0"
+        @updateGroup="updateGroup"
+    >
+    </group-users-list>
+
+<!-- Удаление группы -->
     <modal-window
         v-model="isRemoveModalVisible"
         maxWidth="400px"
@@ -28,59 +38,83 @@
         <div class="modal-window__header">
             <h3>Удаление группы</h3>
         </div>
-        <p>Вы действительно хотите удалить группу "{{ groupToRemove?.title }}"?</p>
+        <p>Вы действительно хотите удалить группу "{{ groupToRemove?.name }}"?</p>
         <div class="modal-window__buttons">
-            <v-button class="w-100" @click="removeGroup(groupToRemove?.id)">Удалить</v-button>
+            <v-button class="w-100" @click="removeGroup()">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="isRemoveModalVisible = false">Отменить</v-button>
         </div>
     </modal-window>
 
+<!-- Создание группы -->
     <modal-window
         v-model="isAddModalVisible"
         maxWidth="600px"
     >
         <div class="modal-window__header">
-            <h3>Выберите пользователей</h3>
+            <h3>Создание группы пользователей</h3>
         </div>
-
-        <div class="search-block">
-            <div class="search-block__input-wrap form-group">
-                <input
-                    v-model="searchUser"
-                    class="search-block__input form-control"
-                    name="text"
+        <form @submit="submitHandle">
+            <div class="form-wrap__input-wrap form-group">
+                <label
+                ><span class="form-wrap__input-title">Название группы</span
+                ><input
+                    v-model="nameValue"
+                    class="form-wrap__input form-control"
                     type="text"
-                    placeholder="Введите фамилию"
+                    placeholder="Введите название"
                 />
+                </label>
+                <span class="validation-error">{{nameError}}</span>
             </div>
-            <!-- +e.input-wrap-->
-            <button
-                @click.prevent
-                class="search-block__btn"
-            >
-                <svg class="icon icon-search">
-                    <use xlink:href="/img/svg/sprite.svg#search"></use>
-                </svg>
-            </button>
-        </div>
+            <span class="form-wrap__input-title">Поиск</span>
+            <div class="modal_search-block">
+                <div class="form-wrap__input-title form-group">
+                    <input
+                        v-model="searchValue"
+                        class="form-wrap__input form-control"
+                        name="text"
+                        type="text"
+                        placeholder="Введите фамилию"
+                    />
+                </div>
+                <button
+                    @click.prevent
+                    class="search-block__btn"
+                >
+                    <svg class="icon icon-search">
+                        <use xlink:href="/img/svg/sprite.svg#search"></use>
+                    </svg>
+                </button>
+            </div>
 
-        <div
-            v-if='mockUsers.length > 0'
-            class="sSections__col col-lg-auto col-md"
-        >
-            <label
-                v-for='user in mockUsers'
-                :key='user.id'
-                class="groups-users-list__item custom-input form-check"
-            ><input
-                class="custom-input__input form-check-input"
-                type="checkbox"
-                v-model="user.is"
-            /><span class="custom-input__text form-check-label"
-            >{{ user.name }}</span
+            <div
+                class="users-list-fom-wrapper max-h-240 sSections__col col-lg-auto col-md"
             >
-            </label>
-        </div>
+                <template
+                    v-for='user in sortedFilteredAllUsers'
+                    :key='user.id'
+                >
+                    <label
+                        v-show="user.modalShow"
+                        class="groups-users-list__item custom-input form-check"
+                    ><input
+                        class="custom-input__input form-check-input"
+                        type="checkbox"
+                        v-model="user.is"
+                    /><span class="custom-input__text form-check-label"
+                    >{{ user.name }}</span
+                    >
+                    </label>
+                </template>
+            </div>
+            <button
+                :disabled="!formMeta.valid"
+                class="btn btn-primary w-100"
+                type="submit"
+            >
+                Создать группу
+            </button>
+        </form>
     </modal-window>
 
 
@@ -88,36 +122,86 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
+import GroupUsersList from '@/pages/ProfilePage/GroupUsersList';
+import * as yup from 'yup';
+import {useField, useForm} from 'vee-validate';
+import usersService from '@/services/users.service';
+import groupService from '@/services/group.service';
+import {v4 as uuidv4} from 'uuid';
 
 export default {
     components: {
         VButton,
-        ModalWindow
-    },
-    props: {
-        allUsers: {
-            type: Array,
-            default: () => []
-        }
+        ModalWindow,
+        GroupUsersList
     },
     setup() {
-        const mockGroups = [
-            { id: 1, title: 'Менеджеры'},
-            { id: 2, title: 'Программисты'},
-            { id: 3, title: 'Музыканты'},
-            { id: 4, title: 'Директоры'},
-        ]
+
 //Выбор группы________________________
-        const allGroups = ref(mockGroups);
-        const currentGroupId = ref(null);
-        const setCurrentGroupId = (id) => {
-            currentGroupId.value = id;
-        }
+        const allGroups = ref([]);
+        const allUsers = ref([]);
+        const currentGroup = ref({});
+
+        const sortedFilteredAllUsers = computed(() => {
+            return [...allUsers.value]
+                .map(user => {
+                    user.modalShow = user.name.toLowerCase().includes(searchValue.value.toLowerCase());
+                    return user;
+                })
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
+        })
+
+        // Поиск пользователей_________________
+        const searchValue = ref('');
+
+        const fetchAllUsers = async () => {
+            try {
+                allUsers.value = await usersService.getUsers();
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
 // Добавление группы__________________
         const isAddModalVisible = ref(false);
+        const schema = yup.object({
+            name: yup.string().required('Поле обязательно для заполнения')
+        });
+
+        const {handleSubmit, meta: formMeta, resetForm} = useForm({
+            validationSchema: schema
+        });
+        const {value: nameValue, errorMessage: nameError} = useField('name');
+
+        const submitHandle = handleSubmit(async ({name}) => {
+
+           const groupUsers = [...sortedFilteredAllUsers.value]
+               .filter(item => item.is === true).map( item => {
+                   delete item.is;
+                   delete item.modalShow;
+                   delete item.show;
+                   return item;
+               });
+
+           const newGroup = {
+               name,
+               id: uuidv4(),
+               users: groupUsers
+           }
+           try {
+               const res = await groupService.addGroup(newGroup);
+               allGroups.value.push(res);
+               currentGroup.value = res;
+               isAddModalVisible.value = false;
+               searchValue.value = '';
+               resetForm();
+           } catch(e) {
+               console.log(e);
+           }
+        });
 
 // Удаление группы____________________
         const isRemoveModalVisible = ref(false);
@@ -126,60 +210,125 @@ export default {
             groupToRemove.value = group;
             isRemoveModalVisible.value = true;
         };
-        const removeGroup = (id) => {
-            allGroups.value = allGroups.value.filter(group => group.id !== id);
-            isRemoveModalVisible.value = false;
+        const removeGroup = async () => {
+            try {
+                await groupService.removeGroup(groupToRemove.value.id);
+                allGroups.value = allGroups.value.filter(group => group.id !== groupToRemove.value.id);
+                currentGroup.value = allGroups.value[0];
+             } catch(e) {
+                console.log(e);
+            } finally {
+                isRemoveModalVisible.value = false;
+            }
+
         }
 
-// Поиск пользователей_________________
-        const searchUser = ref('');
-    const mockUsers = [
-        {name: 'Анатолий Вассел', id: 1, is: true},
-        {name: 'Елена Шмара', id: 2, is: false},
-        {name: 'Сергей Шляхов', id: 3, is: false},
-        {name: 'Анатолий Вассел', id: 4, is: true}
-    ]
+        const fetchAllGroups = async () => {
+            try {
+                const res = await groupService.getAllGroups();
+                allGroups.value = res;
+                return res;
+
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        const updateGroup = (updatedGroup) => {
+            const idx = allGroups.value.findIndex(group => group.id === updatedGroup.id);
+            allGroups.value = [
+                ...allGroups.value.slice(0, idx),
+                updatedGroup,
+                ...allGroups.value.slice(idx + 1)
+            ];
+            currentGroup.value = updatedGroup;
+        }
+
+        onMounted(async () => {
+                await fetchAllUsers();
+                const groups = await fetchAllGroups();
+                if (groups.length) {
+                    currentGroup.value = groups[0];
+                }
+        });
 
         return {
-            currentGroupId,
+            currentGroup,
             allGroups,
-            setCurrentGroupId,
             isAddModalVisible,
             isRemoveModalVisible,
             groupToRemove,
             setGroupToRemove,
             removeGroup,
-            searchUser,
-            mockUsers
+            searchValue,
+            allUsers,
+            submitHandle,
+            nameValue,
+            nameError,
+            formMeta,
+            sortedFilteredAllUsers,
+            updateGroup,
         }
     }
 };
 </script>
 
-<style scoped>
-.search-block {
+<style>
+.modal_search-block {
     position: relative;
     margin-bottom: 20px;
 }
-.search-block__input {
-    height: 2.7rem;
-    padding-left: 1rem;
-    padding-right: 2.7rem;
-    font-size: 0.95rem;
+.modal_search-block .search-block__btn {
+    padding: 16px 13px 0;
 }
-.search-block__btn {
-    padding: 11px 10px;
-}
-.search-block__btn svg {
+.modal_search-block .search-block__btn svg {
     font-size: 1.2rem;
 }
-.groups-users-list__item {
-
+.validation-error {
+    display: block;
+    margin-top: 5px;
+    color: #ff0000;
 }
-.groups-users-list__item .form-check-input {
-    width: 1.4em;
-    height: 1.4em;
+.users-list-fom-wrapper {
+    max-height: 500px;
+    overflow-x: visible;
+    overflow-y: auto;
+    padding: 5px 0 5px 5px;
+    margin: 0 0 20px -5px;
+}
+.max-h-240 {
+max-height: 240px!important;
+}
+.users-list-fom-wrapper {
+    max-height: 500px;
+    overflow-x: visible;
+    overflow-y: auto;
+    padding: 5px 0 5px 5px;
+    margin: 0 0 20px -5px;
+}
+.users-list-fom-wrapper::-webkit-scrollbar {
+    width: 4px;               /* ширина scrollbar */
+}
+.users-list-fom-wrapper::-webkit-scrollbar-track {
+    background: #c4c4c4;        /* цвет дорожки */
+}
+.users-list-fom-wrapper::-webkit-scrollbar-thumb {
+    background-color: #1D47CE;    /* цвет плашки */
+    border-radius: 3px;       /* закругления плашки */
+    border: 0;  /* padding вокруг плашки */
+}
+
+.users-list-fom-wrapper .form-check {
+    padding-left:25px;
+}
+.users-list-fom-wrapper .form-check-input {
+    width: 1.5em;
+    height: 1.5em;
     margin-top: 0;
+}
+.users-list-fom-wrapper .form-check-input[type="checkbox"] {
+    background-size: 80%;
     margin-right: 10px;
+    background-position-x: center;
 }
 </style>

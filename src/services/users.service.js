@@ -12,7 +12,17 @@ class usersService {
             const res = await axiosInstance.post('/users', user);
             return res.data;
         } catch(e) {
+           if (e.response && e.response.status === 422) {
+               throw new Error('email occupied')
+           }
            throw new Error('Ошибка добавления пользователя');
+        }
+    };
+    removeUser = async (id) => {
+        try {
+            return await axiosInstance.delete(`/users/${id}`);
+        } catch(e) {
+            throw new Error('Ошибка удаления пользователя');
         }
     };
     setNewRole = async (newRole, user) => {

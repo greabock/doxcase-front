@@ -186,6 +186,9 @@ $blue: #1d47ce;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
     z-index: 20;
     background-color: #fff;
+
+    max-height: 14rem;
+    overflow: auto;
 }
 
 .select-list__item {

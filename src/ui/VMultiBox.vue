@@ -8,19 +8,19 @@
                 {select__element_active: isActive},
                 {'is-invalid': error},
             ]"
-            @click="isActive = !isActive"
+            @click="isActive = true"
         >
             <div v-if="title" class="select__title">
                 {{ title }}
             </div>
             <div class="select__input">
-                <div v-if="privateValue">
-                    {{ privateValue }}
+                <div>
+                    <template v-if="modelValue && modelValue.length">
+                        <VBox class="me-1 mt-1" v-for="(item, key) of modelValue" :key="key" :title="item.name" @delete="select(item)" />
+                    </template>
+                    <input ref="input" class="me-1 mt-1 input__search" :placeholder="(modelValue && modelValue.length) ? '' : placeholder" v-model="privateValue" />
                 </div>
-                <div v-else class="select__input-placeholder">
-                    {{ placeholder }}
-                </div>
-                <div @click="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
+                <div @click.stop="isActive = !isActive" :class="['select__arrow', {select__arrow_up: isActive}]">
                     <ArrowDown class="select__icon" />
                 </div>
             </div>
@@ -37,6 +37,7 @@
                 <slot name="option" :item="item">
                     {{ item.name }}
                 </slot>
+                <MarkIcon v-if="isActiveElement(item)" class="select__mark" />
             </li>
             <li class="select-list__not-data" v-if="!privateOptions.length">Нет данных</li>
         </ul>
@@ -44,9 +45,11 @@
 </template>
 
 <script>
-import {ref} from 'vue';
-import {computed, onMounted, onUnmounted} from '@vue/runtime-core';
+import {ref, computed} from 'vue';
+import { onMounted, onUnmounted} from '@vue/runtime-core';
 import ArrowDown from './icons/arrow-down.svg.vue';
+import MarkIcon from './icons/mark.svg.vue';
+import VBox from '@/ui/VBox';
 
 function outsideSub(fn) {
     global.addEventListener('focusin', fn);
@@ -61,6 +64,8 @@ function outsideUnsub(fn) {
 export default {
     components: {
         ArrowDown,
+        MarkIcon,
+        VBox,
     },
     props: {
         modelValue: Array,
@@ -70,10 +75,6 @@ export default {
         bordered: Boolean,
         disabled: Boolean,
         placeholder: String,
-        multiple: {
-            type: Boolean,
-            default: true,
-        },
         error: String,
     },
     setup(props, ctx) {
@@ -88,26 +89,15 @@ export default {
             return false;
         };
 
-        const privateOptions = computed(() => {
-            const options = [...props.options];
-            return options.sort((x, y) => isActiveElement(y) - isActiveElement(x));
-        });
-
-        const privateValue = computed(() => {
-            if (props.modelValue && props.modelValue.length) {
-                return `Выбрано: ${props.modelValue.length}`;
-            }
-
-            return '';
-        });
-
         const hide = (event) => {
             if (!isActive.value) {
                 return;
             }
 
             if (!root.value.contains(event.target)) {
+                console.log(event)
                 isActive.value = false;
+                privateValue.value = null;
             }
 
             ctx.emit('blur', props.modelValue);
@@ -122,26 +112,31 @@ export default {
         });
 
         const select = (item) => {
-            if (props.multiple) {
-                let multipleSelect = Array.isArray(props.modelValue) ? props.modelValue : [];
+            let multipleSelect = Array.isArray(props.modelValue) ? props.modelValue : [];
+            privateValue.value = null;
 
-                const index = multipleSelect.findIndex((x) => x.key === item.key);
+            const index = multipleSelect.findIndex((x) => x.key === item.key);
 
-                if (multipleSelect[index]) {
-                    multipleSelect.splice(index, 1);
-                } else {
-                    multipleSelect = [...multipleSelect, item];
-                }
-                ctx.emit('update:modelValue', multipleSelect);
-                ctx.emit('select', multipleSelect);
+            if (multipleSelect[index]) {
+                multipleSelect.splice(index, 1);
             } else {
-                isActive.value = false;
-                ctx.emit('update:modelValue', item);
-                ctx.emit('select', item);
+                multipleSelect = [...multipleSelect, item];
             }
+            ctx.emit('update:modelValue', multipleSelect);
+            ctx.emit('select', multipleSelect);
         };
 
-        return {isActive, root, select, privateValue, privateOptions, isActiveElement};
+        const privateValue = ref(null);
+        const privateOptions = computed(() =>
+            props.options.filter((str) => {
+                if (privateValue.value) {
+                    return str.name.toString().toLowerCase().includes(privateValue.value.toLowerCase());
+                }
+                return props.options;
+            })
+        );
+
+        return {isActive, root, select, isActiveElement, privateOptions, privateValue};
     },
 };
 </script>
@@ -189,6 +184,7 @@ $blue: #1d47ce;
     height: 100%;
     cursor: pointer;
     // width: 3rem;
+    padding: 0.3rem 0;
 }
 
 .select__arrow_up {
@@ -225,9 +221,12 @@ $blue: #1d47ce;
     margin: 0;
     cursor: pointer;
     color: $blue;
-    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    padding: 0.5rem 1rem;
     position: relative;
     font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     &:hover {
         background-color: #f8f8f8;
@@ -272,4 +271,18 @@ $blue: #1d47ce;
 .select__element_active{
     box-shadow: 0 0 0 0.25rem rgba(29, 71, 206, 0.25)
 };
+
+.select__mark {
+    height: 0.8rem;
+}
+
+.input__search {
+    border: none;
+    outline: none;
+    max-width: 100%;
+}
+
+.input__search::placeholder {
+    color: #d6d6d6;
+}
 </style>
