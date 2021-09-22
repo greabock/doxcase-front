@@ -5,12 +5,9 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-aside col-lg-auto">
-                        <!-- start sCabinetAside-->
                         <user-profile-aside :user="user"></user-profile-aside>
-                        <!-- end sCabinetAside-->
                     </div>
                     <div class="col col--main">
-                        <!-- start sCabinetMain-->
                         <div
                             v-if="user?.role === 'admin' || user?.role === 'moderator'"
                             class="sCabinetMain section"
@@ -65,7 +62,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- end sCabinetMain-->
                     </div>
                 </div>
             </div>
@@ -112,6 +108,9 @@ export default {
 </script>
 
 <style scoped>
+.sCabinetMain {
+    z-index:0;
+}
 .nav-link {
     cursor: pointer;
 }
