@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {onMounted, onUnmounted, ref} from 'vue';
+import {onMounted, onUnmounted, ref, watch} from 'vue';
 import { debounce } from 'lodash';
 
 export default {
@@ -59,7 +59,8 @@ props: {
         default: () => []
     }
 },
-setup(props) {
+    emits: ['updateIsDropdownShow'],
+setup(props, {emit}) {
 
     const sectionsInDropdown = ref([]);
     const ulBlock = ref(null);
@@ -92,6 +93,10 @@ setup(props) {
             isDropdownShow.value = false;
         }
     };
+
+    watch(isDropdownShow, (newVal) => {
+        emit('updateIsDropdownShow', newVal);
+    });
     onMounted(() => {
         window.addEventListener('resize', linksHandler);
         global.addEventListener('click', closeDropdown);

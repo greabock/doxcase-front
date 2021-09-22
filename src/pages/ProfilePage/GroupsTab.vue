@@ -180,11 +180,15 @@ export default {
         const submitHandle = handleSubmit(async ({name}) => {
 
            const groupUsers = [...sortedFilteredAllUsers.value]
-               .filter(item => item.is === true).map( item => {
-                   delete item.is;
-                   delete item.modalShow;
-                   delete item.show;
-                   return item;
+               .filter(user => user.is === true).map( user => {
+                   user.is = false;
+                   return {
+                       id: user.id,
+                       name: user.name,
+                       role: user.role,
+                       email: user.email,
+                       photo: user.photo
+                   };
                });
 
            const newGroup = {
@@ -296,22 +300,16 @@ export default {
     color: #ff0000;
 }
 .users-list-fom-wrapper {
-    max-height: 500px;
     overflow-x: visible;
     overflow-y: auto;
-    padding: 5px 0 5px 5px;
+    padding: 5px 0 63px 5px;
     margin: 0 0 20px -5px;
 }
 .max-h-240 {
 max-height: 240px!important;
+    padding-bottom: 0;
 }
-.users-list-fom-wrapper {
-    max-height: 500px;
-    overflow-x: visible;
-    overflow-y: auto;
-    padding: 5px 0 5px 5px;
-    margin: 0 0 20px -5px;
-}
+
 .users-list-fom-wrapper::-webkit-scrollbar {
     width: 4px;               /* ширина scrollbar */
 }

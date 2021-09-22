@@ -51,7 +51,9 @@
                                 <div v-if="user?.role === 'admin'">
                                     <div v-show="pageContent === 'users'" class="sCabinetMain__body">
                                         <!-- Users block -->
-                                        <users-tab></users-tab>
+                                        <users-tab
+                                            :currentUser="user"
+                                        ></users-tab>
                                     </div>
                                 </div>
 
@@ -108,9 +110,6 @@ export default {
 </script>
 
 <style scoped>
-.sCabinetMain {
-    z-index:0;
-}
 .nav-link {
     cursor: pointer;
 }
