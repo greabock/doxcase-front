@@ -104,7 +104,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <a :href="`https://api.knowledge.msharks.ru/api/files/${file.file.id}`">
+                    <a :href="`/api/files/${file.file.id}`">
                         <div class="h5">
                             {{ file.file.name }}
                         </div>
