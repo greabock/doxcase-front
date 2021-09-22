@@ -1,5 +1,9 @@
 <template>
-    <div class="topLine section" id="topLine">
+    <div
+        class="topLine section"
+        id="topLine"
+        :class="{'z-index-10': isDropdownShow}"
+    >
         <div class="container-fluid">
             <div class="row">
 
@@ -68,6 +72,7 @@
                                     v-if="sectionsInHeader?.length"
                                     :sectionsInHeader="sectionsInHeader"
                                     @toggleIsMobileActive="toggleMenuMobileActive"
+                                    @updateIsDropdownShow="updateIsDropdownShow"
                                 ></top-menu>
                             </div>
                         </div>
@@ -120,6 +125,10 @@ export default {
             }
             return []
         });
+        const isDropdownShow = ref(false);
+        const updateIsDropdownShow = (bool) => {
+            isDropdownShow.value = bool;
+        }
 
         const materialCreationLink = computed(() => {
             const {id} = route.params;
@@ -161,6 +170,8 @@ export default {
             toggleMenuMobileActive,
             isMenuMobileActive,
             changeAtFirst,
+            isDropdownShow,
+            updateIsDropdownShow,
         };
     },
 };
@@ -168,9 +179,12 @@ export default {
 
 <style scoped>
 .topLine {
-    z-index: 1;
+    z-index: 2;
 }
 .logo-div {
     cursor:pointer;
+}
+.z-index-10 {
+    z-index:10 !important;
 }
 </style>
