@@ -108,9 +108,6 @@ export default {
 </script>
 
 <style scoped>
-.sCabinetMain {
-    z-index:0;
-}
 .nav-link {
     cursor: pointer;
 }
