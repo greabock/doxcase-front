@@ -306,6 +306,7 @@ export default {
     margin: 0 0 83px -5px;
     max-height: 500px;
 }
+
 .max-h-240 {
 max-height: 240px!important;
     padding-bottom: 0;
