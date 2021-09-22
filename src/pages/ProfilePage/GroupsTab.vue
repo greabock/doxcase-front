@@ -1,7 +1,8 @@
 <template>
 
     <div
-        class="btns-group-sm">
+        class="btns-group-sm groups-users-buttons"
+    >
         <button
             v-for="group in allGroups"
             @click="currentGroup = group"
@@ -15,7 +16,7 @@
             </svg>
         </button>
     </div>
-    <div class="mb-4">
+    <div class="mb-4 groups-users-add-button">
         <div @click="isAddModalVisible = true" class="btn-add">
             <div class="btn-add__plus"></div>
             <div class="btn-add__text">Добавить группу</div>
@@ -119,7 +120,7 @@
     </modal-window>
 
 
-
+    <div class="users-list-loader" v-if="loading"><span class="spinner-border"></span></div>
 </template>
 
 <script>
@@ -145,6 +146,7 @@ export default {
         const allGroups = ref([]);
         const allUsers = ref([]);
         const currentGroup = ref({});
+        const loading = ref(false);
 
         const sortedFilteredAllUsers = computed(() => {
             return [...allUsers.value]
@@ -160,7 +162,7 @@ export default {
 
         const fetchAllUsers = async () => {
             try {
-                allUsers.value = await usersService.getUsers();
+                return await usersService.getUsers();
             } catch (e) {
                 console.log(e);
             }
@@ -217,6 +219,7 @@ export default {
         };
         const removeGroup = async () => {
             try {
+                loading.value = true;
                 await groupService.removeGroup(groupToRemove.value.id);
                 allGroups.value = allGroups.value.filter(group => group.id !== groupToRemove.value.id);
                 currentGroup.value = allGroups.value[0];
@@ -224,6 +227,7 @@ export default {
                 console.log(e);
             } finally {
                 isRemoveModalVisible.value = false;
+                loading.value = false;
             }
 
         }
@@ -254,11 +258,19 @@ export default {
         }
 
         onMounted(async () => {
-                await fetchAllUsers();
+            try {
+                loading.value = true;
+                allUsers.value = await fetchAllUsers();
                 const groups = await fetchAllGroups();
                 if (groups.length) {
                     currentGroup.value = groups[0];
                 }
+            } catch(e) {
+                console.log(e);
+            } finally {
+                loading.value = false;
+            }
+
         });
 
         return {
@@ -278,6 +290,7 @@ export default {
             sortedFilteredAllUsers,
             updateGroup,
             cancelUpdateGroup,
+            loading,
         }
     }
 };
@@ -309,7 +322,7 @@ export default {
 
 .max-h-240 {
 max-height: 240px!important;
-    padding-bottom: 0;
+    margin-bottom: 20px !important;
 }
 
 .users-list-fom-wrapper::-webkit-scrollbar {
@@ -336,5 +349,18 @@ max-height: 240px!important;
     background-size: 80%;
     margin-right: 10px;
     background-position-x: center;
+}
+.users-list-loader {
+    position: absolute;
+    color: #394dce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 </style>
