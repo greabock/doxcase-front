@@ -322,7 +322,7 @@ export default {
 
 .max-h-240 {
 max-height: 240px!important;
-    padding-bottom: 0;
+    margin-bottom: 20px !important;
 }
 
 .users-list-fom-wrapper::-webkit-scrollbar {
