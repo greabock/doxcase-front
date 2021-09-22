@@ -104,9 +104,9 @@
                     </div>
                 </div>
                 <div class="col">
-                    <FileLink :id="file.file.id">
+                    <a :href="file.file.url">
                         <div class="h5">{{ file.file.name }}</div>
-                    </FileLink>
+                    </a>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
                         <span class="d-sm-none text-primary">
                             <svg class="icon icon-doc ">
@@ -144,11 +144,11 @@
 <script>
 import {computed} from 'vue';
 import {API_URL} from '@/globals';
-import FileLink  from '@/components/FileLink'
+// import FileLink  from '@/components/FileLink'
 
 export default {
     components: {
-        FileLink,
+        // FileLink,
     },
     props: {
         allSections: {

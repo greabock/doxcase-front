@@ -21,7 +21,7 @@
                         <div v-if="file.isActive" class="row">
                             <template v-if="file.value && file.value.length">
                                 <div v-for="(el, i) of file.value" :key="i" class="col-4">
-                                    <FileLink class="sCardDocs__item" :id="el.id">
+                                    <a class="sCardDocs__item" :href="el.url">
                                         <span class="sCardDocs__type">
                                             <FileIcon class="icon icon-doc" />
                                             {{ el.extension }}
@@ -39,7 +39,7 @@
                                                 Скачать
                                             </span>
                                         </div>
-                                    </FileLink>
+                                    </a>
                                 </div>
                             </template>
                              <div v-else class="sCardDocs__empty-text">
@@ -56,7 +56,7 @@
 <script>
 import DownloadIcon from '@/assets/DownloadIcon';
 import FileIcon from '@/assets/FileIcon';
-import FileLink  from '@/components/FileLink'
+// import FileLink  from '@/components/FileLink'
 
 import {sizeFormat} from '@/utils/helpers';
 
@@ -64,7 +64,7 @@ export default {
     components: {
         DownloadIcon,
         FileIcon,
-        FileLink,
+        // FileLink,
     },
     props: {
         files: Array,
