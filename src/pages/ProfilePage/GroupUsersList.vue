@@ -37,7 +37,7 @@
                     class="custom-input__input form-check-input"
                     type="checkbox"
                     :value="user"
-                    v-model="groupUsersList"
+                    v-model="updatedGroupUsers"
                 /><span class="custom-input__text form-check-label"
                 >{{ user.name }}</span
                 >
@@ -54,7 +54,7 @@
                     class="custom-input__input form-check-input"
                     type="checkbox"
                     :value="user"
-                    v-model="groupUsersList"
+                    v-model="updatedGroupUsers"
                 /><span class="custom-input__text form-check-label"
                 >{{ user.name }}</span
                 >
@@ -101,26 +101,25 @@ export default {
     setup(props, {emit}) {
 
         const currentGroup = ref({...props.propGroup});
-        const searchUsersValue = ref('');
         const groupUsersList = ref([...props.propGroup.users]);
-        const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, props.propGroup.users)]);
+        const updatedGroupUsers = ref([...props.propGroup.users]);
+        const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, groupUsersList.value)]);
+        const searchUsersValue = ref('');
 
         watch(() => props.propGroup, (newVal) => {
             currentGroup.value = newVal;
             groupUsersList.value = newVal.users;
-            ungroupUsersList.value = defineUngroupUsers(props.allUsers, currentGroup.value.users);
-        }, {deep: true})
+            updatedGroupUsers.value = newVal.users;
+            ungroupUsersList.value = defineUngroupUsers(props.allUsers, newVal.users);
+        })
 
         const filteredSortedGroupUsers = computed(() => {
-            if (currentGroup.value.users && currentGroup.value.users.length > 0) {
-                return currentGroup.value.users
-                    .map((user) => {
-                        user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
-                        return user;
-                    })
-                    .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
-            }
-                return [];
+            return groupUsersList.value
+                .map((user) => {
+                    user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+                    return user;
+                })
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
         })
 
         const filteredSortedUngroupUsers = computed(() => {
@@ -135,7 +134,7 @@ export default {
         const updateGroup = async () => {
             const updatedGroup = {
                 ...currentGroup.value,
-                users: groupUsersList.value.map(user => {
+                users: updatedGroupUsers.value.map(user => {
                     delete user.show;
                     return user;
                 })
@@ -161,6 +160,7 @@ export default {
             ungroupUsersList,
             updateGroup,
             cancelUpdate,
+            updatedGroupUsers,
         };
     },
 };
