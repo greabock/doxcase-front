@@ -109,7 +109,12 @@ export default {
     AddUserForm,
     VButton,
   },
-    setup() {
+    props: {
+      currentUser: {
+          type: Object
+      }
+    },
+    setup(props) {
         const usersList = ref([]);
         const loading = ref(false);
         const error = ref(null);
@@ -117,6 +122,7 @@ export default {
 
         const searchedFilteredUsers = computed(() => {
             return [...usersList.value]
+                .filter((user) => user.id !== props.currentUser.id)
                 .filter((user) => user.name.toLowerCase().includes(searchUserValue.value.toLowerCase()))
                 .sort((a,b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ))
         });
