@@ -5,12 +5,9 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-aside col-lg-auto">
-                        <!-- start sCabinetAside-->
                         <user-profile-aside :user="user"></user-profile-aside>
-                        <!-- end sCabinetAside-->
                     </div>
                     <div class="col col--main">
-                        <!-- start sCabinetMain-->
                         <div
                             v-if="user?.role === 'admin' || user?.role === 'moderator'"
                             class="sCabinetMain section"
@@ -52,20 +49,21 @@
 
 
                                 <div v-if="user?.role === 'admin'">
-                                    <div v-show="pageContent === 'users'" class="sCabinetMain__body">
+                                    <div v-if="pageContent === 'users'" class="sCabinetMain__body">
                                         <!-- Users block -->
-                                        <users-tab></users-tab>
+                                        <users-tab
+                                            :currentUser="user"
+                                        ></users-tab>
                                     </div>
                                 </div>
 
                             <div v-if="user?.role === 'admin'">
-                                <div v-show="pageContent === 'groups'" class="sCabinetMain__body">
+                                <div v-if="pageContent === 'groups'" class="sCabinetMain__body">
                                     <!-- Users block -->
                                     <groups-tab></groups-tab>
                                 </div>
                             </div>
                         </div>
-                        <!-- end sCabinetMain-->
                     </div>
                 </div>
             </div>

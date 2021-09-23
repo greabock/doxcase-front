@@ -22,103 +22,103 @@ const routes = [
         path: '/:pathMatch(.*)*',
         components: {default: NotFoundPage},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/',
         name: 'HomePageRoute',
         components: {default: HomePage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/auth',
         name: 'AuthPageRoute',
         components: {default: AuthPage},
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/oauth/login',
         name: 'AzurePageRoute',
         components: {default: AzurePage},
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/profile',
         name: 'ProfilePageRoute',
         components: {default: ProfilePage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/search',
         name: 'SearchPageRoute',
         components: {default: SearchPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/search/:id',
         name: 'SectionSearchPage',
         components: {default: SectionSearchPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/sections',
         name: 'SectionListPageRoute',
         components: {default: SectionsListPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: [adminGuard, authGuard],
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/section-creation',
         name: 'SectionCreationPageRoute',
         components: {default: SectionCreationPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: [adminGuard, authGuard],
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/sections/:id',
         name: 'SectionPageRoute',
         components: {default: SectionPage, header: HeaderComponent, footer: FooterComponent,},
         beforeEnter: [adminGuard, authGuard],
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/material-creation',
         name: 'MaterialSectionCreationPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: [authGuard],
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/material-creation/:sectionId',
         name: 'MaterialCreationPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/material-edit/:sectionId/:materialId',
         name: 'MaterialEditPageRoute',
         components: {default: MaterialCreationPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/sections/:sectionId/material/:materialId',
         name: 'MaterialItemPageRoute',
         components: {default: MaterialPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     {
         path: '/forbidden',
         name: 'ForbiddenPageRoute',
         components: {default: ForbiddenPage, header: HeaderComponent, footer: FooterComponent},
         beforeEnter: authGuard,
-        meta: {title:'База знаний'}
+        meta: {title:'Doxcase'}
     },
     // {
     //     path: '/file-link/:link',

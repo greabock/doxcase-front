@@ -1,5 +1,5 @@
 <template>
-    <a :href="href" target="_blank" >
+    <a @click.prevent="getFileLink" target="_blank" href="#" >
         <slot></slot>
     </a>
 </template>
@@ -19,13 +19,17 @@ export default {
         const getFileLink = async () => {
             try {
                 const temporaryLink = await fileService.getFileLink(props.id);
-                href.value = temporaryLink
+                let win = window;
+                win.open = function(url) {
+                    win.location = url;
+                    win.focus();
+                }
+
+                win.open(temporaryLink, '_blank');
             } catch (e) {
                 console.log(e);
             } 
         };
-
-        getFileLink();
 
         return {
             href,
