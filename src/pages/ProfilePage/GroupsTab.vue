@@ -315,9 +315,8 @@ export default {
 .users-list-fom-wrapper {
     overflow-x: visible;
     overflow-y: auto;
-    padding: 5px 0 0 5px;
-    margin: 0 0 83px -5px;
-    max-height: 500px;
+    padding: 0 0 0 5px;
+    margin: 0 0 0 -5px;
 }
 
 .max-h-240 {
