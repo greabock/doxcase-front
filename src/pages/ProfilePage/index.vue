@@ -49,7 +49,7 @@
 
 
                                 <div v-if="user?.role === 'admin'">
-                                    <div v-show="pageContent === 'users'" class="sCabinetMain__body">
+                                    <div v-if="pageContent === 'users'" class="sCabinetMain__body">
                                         <!-- Users block -->
                                         <users-tab
                                             :currentUser="user"
@@ -58,7 +58,7 @@
                                 </div>
 
                             <div v-if="user?.role === 'admin'">
-                                <div v-show="pageContent === 'groups'" class="sCabinetMain__body">
+                                <div v-if="pageContent === 'groups'" class="sCabinetMain__body">
                                     <!-- Users block -->
                                     <groups-tab></groups-tab>
                                 </div>
