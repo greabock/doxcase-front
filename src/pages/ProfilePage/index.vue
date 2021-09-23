@@ -58,7 +58,8 @@
                                 </div>
 
                             <div v-if="user?.role === 'admin'">
-                                <div v-if="pageContent === 'groups'" class="sCabinetMain__body">
+                                <div v-if="pageContent === 'groups'"
+                                     class="sCabinetMain__body groups-tab-cont-wrapper">
                                     <!-- Users block -->
                                     <groups-tab></groups-tab>
                                 </div>
@@ -117,5 +118,8 @@ export default {
 .nav-link.active {
     background: #f7f7f7;
     border-color: #f7f7f7; 
+}
+.groups-tab-cont-wrapper{
+    padding-bottom: 120px;
 }
 </style>
