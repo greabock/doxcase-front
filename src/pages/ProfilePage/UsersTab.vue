@@ -65,7 +65,7 @@
                 </tr>
             </tbody>
         </table>
-        <div class="users-list-loader" v-if="loading">Смена прав пользователя...</div>
+        <div class="users-list-loader" v-if="loading"><span class="spinner-border"></span></div>
         <div class="error-message" v-if="error">
             <div>Ошибка при смене прав пользователя</div>
             <button class="btn btn-danger" @click="skipError">Продолжить</button>

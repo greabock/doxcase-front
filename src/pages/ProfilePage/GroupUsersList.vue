@@ -2,29 +2,32 @@
     <div
         v-if="currentGroup?.users"
     >
-        <div
-            class="h3 mb-3"
-        >{{currentGroup?.name}}
-        </div>
-        <div class="search-block">
-            <div class="search-block__input-wrap form-group">
-                <input
-                    v-model="searchUsersValue"
-                    class="search-block__input form-control"
-                    name="text"
-                    type="text"
-                    placeholder="Поиск"
-                />
+        <div class="users-group-title-search">
+            <div
+                class="h3 mb-3 users-group-group-title"
+            >{{currentGroup?.name}}
             </div>
-            <!-- +e.input-wrap-->
-            <button class="search-block__btn" @click.stop.prevent type="submit">
-                <svg class="icon icon-search">
-                    <use xlink:href="/img/svg/sprite.svg#search"></use>
-                </svg>
-            </button>
+            <div class="search-block">
+                <div class="search-block__input-wrap form-group">
+                    <input
+                        v-model="searchUsersValue"
+                        class="search-block__input form-control"
+                        name="text"
+                        type="text"
+                        placeholder="Поиск"
+                    />
+                </div>
+                <!-- +e.input-wrap-->
+                <button class="search-block__btn" @click.stop.prevent type="submit">
+                    <svg class="icon icon-search">
+                        <use xlink:href="/img/svg/sprite.svg#search"></use>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div
             class="users-list-fom-wrapper sSections__col col-lg-auto col-md"
+            id="users-group-list"
         >
             <template
                 v-for='user in filteredSortedGroupUsers'
@@ -37,7 +40,7 @@
                     class="custom-input__input form-check-input"
                     type="checkbox"
                     :value="user"
-                    v-model="groupUsersList"
+                    v-model="updatedGroupUsers"
                 /><span class="custom-input__text form-check-label"
                 >{{ user.name }}</span
                 >
@@ -54,14 +57,14 @@
                     class="custom-input__input form-check-input"
                     type="checkbox"
                     :value="user"
-                    v-model="groupUsersList"
+                    v-model="updatedGroupUsers"
                 /><span class="custom-input__text form-check-label"
                 >{{ user.name }}</span
                 >
                 </label>
             </template>
         </div>
-        <div class="sAddDocs__footer">
+        <div class="sAddDocs__footer user-groups-footer-buttons">
             <div class="container-fluid d-flex">
                 <VButton class="btn-save" @click="updateGroup"> Сохранить изменения</VButton>
                 <VButton class="ms-2" outline @click="cancelUpdate"> Отмена </VButton>
@@ -71,7 +74,7 @@
 </template>
 
 <script>
-import {ref, watch, computed} from 'vue';
+import {ref, watch, computed, onMounted, onUnmounted} from 'vue';
 import VButton from '@/ui/VButton';
 import groupService from '@/services/group.service';
 
@@ -101,26 +104,25 @@ export default {
     setup(props, {emit}) {
 
         const currentGroup = ref({...props.propGroup});
-        const searchUsersValue = ref('');
         const groupUsersList = ref([...props.propGroup.users]);
-        const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, props.propGroup.users)]);
+        const updatedGroupUsers = ref([...props.propGroup.users]);
+        const ungroupUsersList = ref([...defineUngroupUsers(props.allUsers, groupUsersList.value)]);
+        const searchUsersValue = ref('');
 
         watch(() => props.propGroup, (newVal) => {
             currentGroup.value = newVal;
             groupUsersList.value = newVal.users;
-            ungroupUsersList.value = defineUngroupUsers(props.allUsers, currentGroup.value.users);
-        }, {deep: true})
+            updatedGroupUsers.value = newVal.users;
+            ungroupUsersList.value = defineUngroupUsers(props.allUsers, newVal.users);
+        })
 
         const filteredSortedGroupUsers = computed(() => {
-            if (currentGroup.value.users && currentGroup.value.users.length > 0) {
-                return currentGroup.value.users
-                    .map((user) => {
-                        user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
-                        return user;
-                    })
-                    .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
-            }
-                return [];
+            return groupUsersList.value
+                .map((user) => {
+                    user.show = user.show = user.name.toLowerCase().includes(searchUsersValue.value.toLowerCase());
+                    return user;
+                })
+                .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
         })
 
         const filteredSortedUngroupUsers = computed(() => {
@@ -135,7 +137,7 @@ export default {
         const updateGroup = async () => {
             const updatedGroup = {
                 ...currentGroup.value,
-                users: groupUsersList.value.map(user => {
+                users: updatedGroupUsers.value.map(user => {
                     delete user.show;
                     return user;
                 })
@@ -152,6 +154,38 @@ export default {
             emit('cancelUpdate');
         }
 
+        const listHeightHandle = () => {
+
+            const myDiv = document.querySelector('#users-group-list');
+            const topLineHeight = document.querySelector('.topLine').scrollHeight;
+            const headerHeight = document.querySelector('.sCabinetMain__head').scrollHeight;
+            const navTabsHeight = document.querySelector('.nav.nav-tabs').scrollHeight;
+            const groupsButtonsHeight = document.querySelector('.groups-users-buttons').scrollHeight;
+            const groupsAddHeight = document.querySelector('.groups-users-add-button').scrollHeight;
+            const groupsTitleSearchHeight = document.querySelector('.users-group-title-search').scrollHeight;
+            const groupsFooterButtonsHeight = document.querySelector('.user-groups-footer-buttons').scrollHeight;
+            const footerHeight = document.querySelector('.footer').scrollHeight;
+
+            const restHeight = window.innerHeight - topLineHeight - headerHeight - navTabsHeight - groupsButtonsHeight - groupsAddHeight -
+                groupsTitleSearchHeight - groupsFooterButtonsHeight - footerHeight;
+
+            if (restHeight < 350) {
+                myDiv.style.height = '350px';
+            } else {
+                myDiv.style.height = restHeight + 'px';
+            }
+
+            console.log(restHeight);
+        };
+
+        onMounted(() => {
+            window.addEventListener('resize', listHeightHandle);
+            listHeightHandle();
+        });
+        onUnmounted(() => {
+            window.removeEventListener('resize', listHeightHandle);
+        })
+
         return {
             groupUsersList,
             filteredSortedGroupUsers,
@@ -161,6 +195,7 @@ export default {
             ungroupUsersList,
             updateGroup,
             cancelUpdate,
+            updatedGroupUsers,
         };
     },
 };
