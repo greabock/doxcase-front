@@ -55,7 +55,7 @@ export default {
 <style lang="scss">
 .modal-window__wrapper {
     --carousel-button-svg-stroke-width: 2;
-    z-index: 1000;
+    z-index: 1201;
     position: fixed;
     top: 0;
     left: 0;
