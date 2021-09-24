@@ -15,7 +15,7 @@
                                         <button
                                             v-if="canUpdate"
                                             @click="edit"
-                                            class="sCardHead__aside-btn btn-outline-primary"
+                                            class="sCardHead__aside-btn btn-primary"
                                             type="button"
                                         >
                                             Редактировать материал
@@ -27,6 +27,18 @@
                                             type="button"
                                         >
                                             !
+                                        </button>
+                                    </div>
+                                    </div>
+                                <div class='row'>
+                                    <div class="col">
+                                        <button
+                                            v-if="canUpdate"
+                                            class="sCardHead__aside-btn btn-outline-primary"
+                                            type="button"
+                                            @click="isShow = true"
+                                        >
+                                            Удалить материал
                                         </button>
                                     </div>
                                 </div>
