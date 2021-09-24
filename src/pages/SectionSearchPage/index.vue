@@ -140,9 +140,11 @@
                             <span class="spinner-border"></span>
                         </div>
                     </div>
-                    <div class="col-aside col-lg-auto d-flex flex-column">
+                    <div
+                        id="sort-aside-node"
+                        class="col-aside col-lg-auto d-flex flex-column"
+                    >
                         <div
-                            ref="sortAsideNode"
                             class="sSearchResult__aside"
                             :class="{'active': isMobileSort}"
                         >
@@ -181,7 +183,7 @@
 
 <!-- Сортировка по дате -->
                                     <div
-                                        v-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
+                                        v-show="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
                                         @click="toggleSort('created_at','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -200,7 +202,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'desc'"
+                                        v-show="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'desc'"
                                         @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -219,7 +221,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="fullQueryObject.sort.field === 'name'"
+                                        v-show="fullQueryObject.sort.field === 'name'"
                                         @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -239,7 +241,7 @@
                                     </div>
 <!-- Сортировка по алфавиту -->
                                     <div
-                                        v-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'asc'"
+                                        v-show="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'asc'"
                                         @click="toggleSort('name','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -258,7 +260,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'desc'"
+                                        v-show="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'desc'"
                                         @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -277,7 +279,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-if="fullQueryObject.sort.field === 'created_at'"
+                                        v-show="fullQueryObject.sort.field === 'created_at'"
                                         @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -369,7 +371,16 @@ export default {
 //Моб. отображение___________________________
         const sortAsideNode = ref(() => null);
         const isMobileSort = ref(false);
+        const hideMobileSort = (e) => {
+            const sortContainer = document.querySelector('#sort-aside-node');
+            const openMobileSortButton = document.querySelector('.sSearchResult__btn-toggle--js');
+            console.log(e.target);
+            if(!sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
+                isMobileSort.value = false;
+            }
+        }
         const isModSelectorsVisible = ref(false);
+
 
 // Выдача поиска_______________________
         const materials = ref([]);
@@ -492,6 +503,7 @@ export default {
                 isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
                 await updateSearchPage(router.currentRoute.value.params.id);
+                window.addEventListener('click', (e) => hideMobileSort(e));
             } catch(e) {
                 console.log(e)
             }
