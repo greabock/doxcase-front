@@ -492,7 +492,6 @@ export default {
 
 // Подгрузка при скролле_________________________________________
         const addSearch = async () => {
-            console.log('intersected');
             isPreloaderShown.value = true;
             if (currentPage.value < totalPages.value) {
                 try {
