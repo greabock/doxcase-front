@@ -59,7 +59,10 @@
                                     class="filter-info__left"
                                 >Фильтры<span class="text-danger ms-2">{{Object.keys(fullQueryObject.selectors).length || ''}}</span>
                                 </div>
-                                <div class="filter-info__clear btn-info">
+                                <div
+                                    @click="resetSelectors"
+                                    class="filter-info__clear btn-info"
+                                >
                                     <svg class="icon icon-close ">
                                         <use xlink:href="/img/svg/sprite.svg#close"></use>
                                     </svg>очистить
@@ -430,8 +433,10 @@ export default {
             fullQueryObject.search = '';
         };
         const resetSelectors = () => {
-            section.value.felds = [...section.value.fields];
-            fullQueryObject.selectors = [];
+            if (Object.keys(fullQueryObject.selectors).length > 0) {
+                section.value.felds = [...section.value.fields];
+                fullQueryObject.selectors = [];
+            }
         };
 
         const showResetSelectors = computed(() => {

@@ -1,6 +1,7 @@
 <template>
     <div
-        v-if="modelValue" class="modal-window__wrapper"
+        v-if="modelValue"
+        class="modal-window__wrapper"
         ref="wrapper"
         @click="wrapperClickHandler"
     >
@@ -34,6 +35,7 @@ export default {
       const wrapper = ref(null);
       const wrapperClickHandler = (e) => {
         if (e.target === wrapper.value) {
+          ctx.emit('update:modelValue', false);
           ctx.emit('close');
         }
       }
