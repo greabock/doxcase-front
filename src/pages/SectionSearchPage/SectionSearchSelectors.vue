@@ -2,7 +2,11 @@
     <div class="customs-select">
         <div v-if="selectorOptionsArr">
             <div class="row">
-                <div v-for="item of selectorOptionsArr" :key="item?.id" class="col-auto">
+                <div
+                    v-for="item of selectorOptionsArr"
+                    :key="item?.id"
+                    class="col-auto filter-selector-wrapper"
+                >
                     <div v-if="item" class="customs-select__input-wrap form-group">
                         <FilterSelect
                             class="mb-3"
@@ -166,4 +170,9 @@ export default {
 .customs-select__input-wrap .form-control-md {
     padding: 1.2rem 1rem 0.5rem;
  }
+@media (max-width: 991px) {
+    .filter-selector-wrapper {
+        width: 100%;
+    }
+}
 </style>

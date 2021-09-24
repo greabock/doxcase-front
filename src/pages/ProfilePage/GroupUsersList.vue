@@ -174,7 +174,6 @@ export default {
             } else {
                 myDiv.style.height = restHeight + 'px';
             }
-            console.log(restHeight);
         };
 
         onMounted(() => {

@@ -144,7 +144,6 @@ export default {
         });
 
         const addNewField = ({title, selectedObj, required, multiSelect}) => {
-            console.log(selectedObj);
             let typeOfField;
             if (multiSelect) {
                 typeOfField = {

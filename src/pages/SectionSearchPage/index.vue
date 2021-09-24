@@ -42,7 +42,10 @@
                                 </div>
                             </div>
                             <div class="col-auto d-lg-none">
-                                <div class="sSearchResult__btn-toggle sSearchResult__btn-toggle--js">
+                                <div
+                                    @click="isMobileSort = true"
+                                    class="sSearchResult__btn-toggle sSearchResult__btn-toggle--js"
+                                >
                                     <svg class="icon icon-sort ">
                                         <use xlink:href="/img/svg/sprite.svg#sort"></use>
                                     </svg>
@@ -51,7 +54,10 @@
                         </div>
                         <div class="d-lg-none">
                             <div class="filter-info">
-                                <div class="filter-info__left">Фильтры<span class="text-danger ms-2">4</span>
+                                <div
+                                    @click="isModSelectorsVisible = true"
+                                    class="filter-info__left"
+                                >Фильтры<span class="text-danger ms-2">{{Object.keys(fullQueryObject.selectors).length || ''}}</span>
                                 </div>
                                 <div class="filter-info__clear btn-info">
                                     <svg class="icon icon-close ">
@@ -60,9 +66,9 @@
                                 </div>
                             </div>
                         </div>
+<!-- Селекторы -->
                         <div class="d-lg-block d-none">
                             <div class="">
- <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
                                     :fieldsArray="filteredSectionFields"
@@ -83,6 +89,35 @@
                                 </div>
                             </div>
                         </div>
+<!-- Моб. селекторы -->
+                        <mob-modal-window
+                            v-model="isModSelectorsVisible"
+                            maxWidth="600px"
+                        >
+                            <div class="modal-window__header mb-0">
+                                <h3>Фильтры</h3>
+                            </div>
+                                <div>
+                                    <section-search-selectors
+                                        :allSections="allSections"
+                                        :fieldsArray="filteredSectionFields"
+                                        @updateSelectors="updateSelectorHandler"
+                                        @isSelectsLoading = "setSelectsLoading"
+                                    ></section-search-selectors>
+                                </div>
+                                <div class="mb-3">
+                                    <div
+                                        v-if="showResetSelectors"
+                                        class="sSearchResult__btn-text">
+                                        <svg class="icon icon-close ">
+                                            <use xlink:href="/img/svg/sprite.svg#close"></use>
+                                        </svg>
+                                        <span
+                                            @click='resetSelectorsNSearch'
+                                            class="ms-2">очистить фильтр</span>
+                                    </div>
+                                </div>
+                        </mob-modal-window>
 
  <!-- Результаты поиска -->
                         <search-results
@@ -103,7 +138,11 @@
                         </div>
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
-                        <div class="sSearchResult__aside">
+                        <div
+                            ref="sortAsideNode"
+                            class="sSearchResult__aside"
+                            :class="{'active': isMobileSort}"
+                        >
                             <div class="sSearchResult__aside-head">
                                 <div class="row">
                                     <div class="col">
@@ -113,12 +152,17 @@
                                             </svg>
                                             <span
                                                 @click="resetFilters"
-                                                class="ms-2">очистить фильтр
+                                                class="ms-2"
+                                            >очистить фильтр
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-auto d-lg-none">
-                                        <div class="sSearchResult__btn-text sSearchResult__btn-text--close-js"> <span class="me-2">Скрыть</span>
+                                        <div
+                                            @click="isMobileSort = false"
+                                            class="sSearchResult__btn-text sSearchResult__btn-text--close-js"
+                                        >
+                                            <span class="me-2">Скрыть</span>
                                             <svg class="icon icon-chevron-right ">
                                                 <use xlink:href="/img/svg/sprite.svg#chevron-right"></use>
                                             </svg>
@@ -278,6 +322,7 @@
 <script>
 import {onMounted, ref, computed, watch, reactive} from 'vue';
 import Loader from '@/components/Loader';
+import MobModalWindow from '@/components/MobModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
@@ -297,6 +342,7 @@ export default {
       CheckboxFilters,
       SearchResults,
       DateFilters,
+      MobModalWindow
     },
     setup() {
 
@@ -317,6 +363,10 @@ export default {
                 return []
             }
         })
+//Моб. отображение___________________________
+        const sortAsideNode = ref(() => null);
+        const isMobileSort = ref(false);
+        const isModSelectorsVisible = ref(false);
 
 // Выдача поиска_______________________
         const materials = ref([]);
@@ -485,6 +535,9 @@ export default {
             queryObject,
             setSelectsLoading,
             isSelectsLoading,
+            sortAsideNode,
+            isMobileSort,
+            isModSelectorsVisible,
         }
     },
 }
