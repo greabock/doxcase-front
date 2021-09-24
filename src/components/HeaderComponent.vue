@@ -187,4 +187,9 @@ export default {
 .z-index-10 {
     z-index:10 !important;
 }
+@media (max-width: 974px) {
+    .topLine {
+        z-index: 10;
+    }
+}
 </style>
