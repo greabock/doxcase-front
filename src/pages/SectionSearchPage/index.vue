@@ -54,7 +54,10 @@
                         </div>
                         <div class="d-lg-none">
                             <div class="filter-info">
-                                <div class="filter-info__left">Фильтры<span class="text-danger ms-2">{{selectorsLength}}</span>
+                                <div
+                                    @click="isModSelectorsVisible = true"
+                                    class="filter-info__left"
+                                >Фильтры<span class="text-danger ms-2">{{Object.keys(fullQueryObject.selectors).length || ''}}</span>
                                 </div>
                                 <div class="filter-info__clear btn-info">
                                     <svg class="icon icon-close ">
@@ -63,9 +66,9 @@
                                 </div>
                             </div>
                         </div>
+<!-- Селекторы -->
                         <div class="d-lg-block d-none">
                             <div class="">
- <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
                                     :fieldsArray="filteredSectionFields"
@@ -86,6 +89,35 @@
                                 </div>
                             </div>
                         </div>
+<!-- Моб. селекторы -->
+                        <mob-modal-window
+                            v-model="isModSelectorsVisible"
+                            maxWidth="600px"
+                        >
+                            <div class="modal-window__header mb-0">
+                                <h3>Фильтры</h3>
+                            </div>
+                                <div>
+                                    <section-search-selectors
+                                        :allSections="allSections"
+                                        :fieldsArray="filteredSectionFields"
+                                        @updateSelectors="updateSelectorHandler"
+                                        @isSelectsLoading = "setSelectsLoading"
+                                    ></section-search-selectors>
+                                </div>
+                                <div class="mb-3">
+                                    <div
+                                        v-if="showResetSelectors"
+                                        class="sSearchResult__btn-text">
+                                        <svg class="icon icon-close ">
+                                            <use xlink:href="/img/svg/sprite.svg#close"></use>
+                                        </svg>
+                                        <span
+                                            @click='resetSelectorsNSearch'
+                                            class="ms-2">очистить фильтр</span>
+                                    </div>
+                                </div>
+                        </mob-modal-window>
 
  <!-- Результаты поиска -->
                         <search-results
@@ -290,6 +322,7 @@
 <script>
 import {onMounted, ref, computed, watch, reactive} from 'vue';
 import Loader from '@/components/Loader';
+import MobModalWindow from '@/components/MobModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
@@ -309,6 +342,7 @@ export default {
       CheckboxFilters,
       SearchResults,
       DateFilters,
+      MobModalWindow
     },
     setup() {
 
@@ -332,16 +366,7 @@ export default {
 //Моб. отображение___________________________
         const sortAsideNode = ref(() => null);
         const isMobileSort = ref(false);
-        const selectorsLength = computed(() => {
-            return filteredSectionFields.value
-                .filter(
-                        (field) =>
-                            field.type.name === 'Enum' ||
-                            field.type.name === 'Dictionary' ||
-                            field.type.name === 'Select' ||
-                            field.type.name === 'List'
-                    ).length
-        });
+        const isModSelectorsVisible = ref(false);
 
 // Выдача поиска_______________________
         const materials = ref([]);
@@ -512,7 +537,7 @@ export default {
             isSelectsLoading,
             sortAsideNode,
             isMobileSort,
-            selectorsLength,
+            isModSelectorsVisible,
         }
     },
 }
