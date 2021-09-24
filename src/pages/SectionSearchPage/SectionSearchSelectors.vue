@@ -16,6 +16,11 @@
                         />
                     </div>
                 </div>
+                <div
+                    v-if="!filteredFields.length"
+                    class='d-lg-none'>
+                    Фильтры не добавлены
+                </div>
             </div>
         </div>
     </div>
@@ -161,6 +166,7 @@ export default {
 
         return {
             selectorOptionsArr,
+            filteredFields,
         };
     },
 };
@@ -170,7 +176,8 @@ export default {
 .customs-select__input-wrap .form-control-md {
     padding: 1.2rem 1rem 0.5rem;
  }
-@media (max-width: 991px) {
+
+@media (max-width: 974px) {
     .filter-selector-wrapper {
         width: 100%;
     }

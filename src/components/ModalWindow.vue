@@ -1,6 +1,7 @@
 <template>
     <div
-        v-if="modelValue" class="modal-window__wrapper"
+        v-if="modelValue"
+        class="modal-window__wrapper"
         ref="wrapper"
         @click="wrapperClickHandler"
     >
@@ -34,6 +35,7 @@ export default {
       const wrapper = ref(null);
       const wrapperClickHandler = (e) => {
         if (e.target === wrapper.value) {
+          ctx.emit('update:modelValue', false);
           ctx.emit('close');
         }
       }
@@ -53,7 +55,7 @@ export default {
 <style lang="scss">
 .modal-window__wrapper {
     --carousel-button-svg-stroke-width: 2;
-    z-index: 1000;
+    z-index: 1201;
     position: fixed;
     top: 0;
     left: 0;

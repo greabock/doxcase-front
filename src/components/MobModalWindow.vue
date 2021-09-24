@@ -1,8 +1,9 @@
 <template>
     <div
-        v-show="modelValue" class="modal-window__wrapper"
-        ref="wrapper"
+        v-show="modelValue"
         @click="wrapperClickHandler"
+        class="modal-window__wrapper"
+        id="mob-modal-wrapper"
     >
         <div
             class="modal-window__cont fancybox__content"
@@ -19,7 +20,6 @@
     </div>
 </template>
 <script>
-import {ref} from 'vue';
 
 export default {
     props: {
@@ -31,9 +31,9 @@ export default {
     },
     emits: ['close', 'update:modelValue'],
     setup(props, ctx) {
-        const wrapper = ref(null);
         const wrapperClickHandler = (e) => {
-            if (e.target === wrapper.value) {
+            if (e.target.id === 'mob-modal-wrapper') {
+                ctx.emit('update:modelValue', false);
                 ctx.emit('close');
             }
         }
@@ -43,7 +43,6 @@ export default {
         };
         return {
             close,
-            wrapper,
             wrapperClickHandler,
         };
     },
@@ -68,12 +67,11 @@ export default {
     display: flex;
     position: relative;
     flex-direction: column;
-    max-width: 500px;
     background-color: #fff;
     padding: 32px;
     border-radius: 5px;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
-    margin: 1rem auto;
+    margin: 5vh auto;
 }
 .modal-window__header {
     display: flex;

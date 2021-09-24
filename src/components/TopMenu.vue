@@ -59,7 +59,7 @@ props: {
         default: () => []
     }
 },
-    emits: ['updateIsDropdownShow'],
+    emits: ['updateIsDropdownShow', 'toggleIsMobileActive'],
 setup(props, {emit}) {
 
     const sectionsInDropdown = ref([]);

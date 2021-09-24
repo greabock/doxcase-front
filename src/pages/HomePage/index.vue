@@ -39,24 +39,37 @@
                                 </div>
                             </div>
                             <div class="col-auto d-lg-none">
-                                <div class="sSearchResult__btn-toggle sSearchResult__btn-toggle--js">
+                                <div
+                                    @click="isMobileSort = true"
+                                    class="sSearchResult__btn-toggle sSearchResult__btn-toggle--js"
+                                >
                                     <svg class="icon icon-sort">
                                         <use xlink:href="/img/svg/sprite.svg#sort"></use>
                                     </svg>
                                 </div>
                             </div>
                         </div>
-                        <div class="d-lg-none">
+                        <div
+                            v-show="Object.keys(section).length > 0"
+                            class="d-lg-none"
+                        >
                             <div class="filter-info">
-                                <div class="filter-info__left">Фильтры<span class="text-danger ms-2">4</span></div>
-                                <div class="filter-info__clear btn-info">
+                                <div
+                                    @click="isModSelectorsVisible = true"
+                                    class="filter-info__left"
+                                >Фильтры<span class="text-danger ms-2">{{Object.keys(fullQueryObject.selectors).length || ''}}</span>
+                                </div>
+                                <div
+                                    @click="resetSelectors"
+                                    class="filter-info__clear btn-info"
+                                >
                                     <svg class="icon icon-close">
-                                        <use xlink:href="/img/svg/sprite.svg#close"></use></svg
-                                    >очистить
+                                        <use xlink:href="/img/svg/sprite.svg#close"></use>
+                                    </svg>очистить
                                 </div>
                             </div>
                         </div>
-                        <!-- Переключатели разделов -->
+<!-- Переключатели разделов -->
                         <div v-if="allSections?.length" class="sSearchResult__btns py-3">
                             <section-search-radio :key="13234" v-model="currentSectionId"> </section-search-radio>
                             <section-search-radio
@@ -67,10 +80,9 @@
                             >
                             </section-search-radio>
                         </div>
-
+<!-- Селекторы -->
                         <div class="d-lg-block d-none">
                             <div class="">
-                                <!-- Селекторы -->
                                 <section-search-selectors
                                     :allSections="allSections"
                                     :fieldsArray="filteredSectionFields"
@@ -87,8 +99,37 @@
                                 </div>
                             </div>
                         </div>
+<!-- Моб. селекторы -->
+                        <mob-modal-window
+                            v-model="isModSelectorsVisible"
+                            maxWidth="600px"
+                        >
+                            <div class="modal-window__header mb-0">
+                                <h3>Фильтры</h3>
+                            </div>
+                            <div>
+                                <section-search-selectors
+                                    :allSections="allSections"
+                                    :fieldsArray="filteredSectionFields"
+                                    @updateSelectors="updateSelectorHandler"
+                                    @isSelectsLoading = "setSelectsLoading"
+                                ></section-search-selectors>
+                            </div>
+                            <div class="mb-3">
+                                <div
+                                    v-if="showResetSelectors"
+                                    class="sSearchResult__btn-text">
+                                    <svg class="icon icon-close ">
+                                        <use xlink:href="/img/svg/sprite.svg#close"></use>
+                                    </svg>
+                                    <span
+                                        @click='resetSelectorsNSearch'
+                                        class="ms-2">очистить фильтр</span>
+                                </div>
+                            </div>
+                        </mob-modal-window>
 
-                        <!-- Результаты поиска -->
+<!-- Результаты поиска -->
                         <search-results
                             :allSections="allSections"
                             :materialsArr="materials"
@@ -103,7 +144,10 @@
                             <span class="spinner-border"></span>
                         </div>
                     </div>
-                    <div class="col-aside col-lg-auto d-flex flex-column">
+                    <div
+                        id="sort-aside-node"
+                        class="col-aside col-lg-auto d-flex flex-column"
+                    >
                         <div
                             class="sSearchResult__aside"
                             :class="{'active': isMobileSort}"
@@ -142,9 +186,9 @@
                                 <div class="sSearchResult__aside-group">
                                     <div class="fw-500 pb-3">Сортировать</div>
 
-                                    <!-- Сортировка по дате -->
+<!-- Сортировка по дате -->
                                     <div
-                                        v-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
+                                        v-show="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'asc'"
                                         @click="toggleSort('created_at','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -163,7 +207,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'desc'"
+                                        v-show="fullQueryObject.sort.field === 'created_at' && fullQueryObject.sort.direction === 'desc'"
                                         @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -182,7 +226,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="fullQueryObject.sort.field === 'name'"
+                                        v-show="fullQueryObject.sort.field === 'name'"
                                         @click="toggleSort('created_at','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -200,9 +244,9 @@
                                         <div class="sSearchResult__filter-result-text">сначала новые
                                         </div>
                                     </div>
-                                    <!-- Сортировка по алфавиту -->
+<!-- Сортировка по алфавиту -->
                                     <div
-                                        v-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'asc'"
+                                        v-show="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'asc'"
                                         @click="toggleSort('name','desc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -221,7 +265,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-else-if="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'desc'"
+                                        v-show="fullQueryObject.sort.field === 'name' && fullQueryObject.sort.direction === 'desc'"
                                         @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -240,7 +284,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        v-if="fullQueryObject.sort.field === 'created_at'"
+                                        v-show="fullQueryObject.sort.field === 'created_at'"
                                         @click="toggleSort('name','asc')"
                                         class="sSearchResult__filter-item">
                                         <div class="sSearchResult__filter-btns">
@@ -313,8 +357,9 @@
     </main>
 </template>
 <script>
-import {onMounted, ref, computed, watch, reactive} from 'vue';
+import {onMounted, ref, computed, watch, reactive, onUnmounted} from 'vue';
 import Loader from '@/components/Loader';
+import MobModalWindow from '@/components/MobModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
 import searchService from '@/services/search.service';
@@ -336,6 +381,7 @@ export default {
         SearchResults,
         SectionSearchRadio,
         DateFilters,
+        MobModalWindow,
     },
     setup() {
         const isLoading = ref(false);
@@ -359,8 +405,16 @@ export default {
             }
         })
         const store = useStore();
-//Моб. отобраение___________________________
+//Моб. отображение___________________________
         const isMobileSort = ref(false);
+        const hideMobileSort = (e) => {
+            const sortContainer = document.querySelector('#sort-aside-node');
+            const openMobileSortButton = document.querySelector('.sSearchResult__btn-toggle--js');
+            if(!sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
+                isMobileSort.value = false;
+            }
+        }
+        const isModSelectorsVisible = ref(false);
 
 // Выдача поиска_______________
         const materials = ref([]);
@@ -429,9 +483,9 @@ export default {
             }
         };
         const resetSelectors = () => {
-            fullQueryObject.selectors = [];
-            if (section.value.fields) {
-                section.value.fields = [...section.value.fields]
+            if (Object.keys(fullQueryObject.selectors).length && section.value.fields) {
+                section.value.fields = [...section.value.fields];
+                fullQueryObject.selectors = [];
             }
         };
 
@@ -491,10 +545,15 @@ export default {
         onMounted(async () => {
             try {
                 allSections.value = await sectionsService.getSections();
+                window.addEventListener('click', (e) => hideMobileSort(e));
             } catch (e) {
                 console.log(e);
             }
         });
+        onUnmounted(() => {
+            window.removeEventListener('click', hideMobileSort);
+        });
+
 
         const handleSearch = async () => {
             await updateMaterialsAndFiles(currentSectionId.value, queryObject.value);
@@ -550,6 +609,7 @@ export default {
             currentPage,
             isPreloaderShown,
             isMobileSort,
+            isModSelectorsVisible,
         };
     },
 };
