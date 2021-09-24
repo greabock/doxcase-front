@@ -325,7 +325,7 @@
 </template>
 
 <script>
-import {onMounted, ref, computed, watch, reactive} from 'vue';
+import {onMounted, onUnmounted, ref, computed, watch, reactive} from 'vue';
 import Loader from '@/components/Loader';
 import MobModalWindow from '@/components/MobModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
@@ -369,12 +369,10 @@ export default {
             }
         })
 //Моб. отображение___________________________
-        const sortAsideNode = ref(() => null);
         const isMobileSort = ref(false);
         const hideMobileSort = (e) => {
             const sortContainer = document.querySelector('#sort-aside-node');
             const openMobileSortButton = document.querySelector('.sSearchResult__btn-toggle--js');
-            console.log(e.target);
             if(!sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
                 isMobileSort.value = false;
             }
@@ -503,10 +501,13 @@ export default {
                 isLoading.value = true;
                 allSections.value = await sectionsService.getSections();
                 await updateSearchPage(router.currentRoute.value.params.id);
-                window.addEventListener('click', (e) => hideMobileSort(e));
+                window.addEventListener('click', hideMobileSort);
             } catch(e) {
                 console.log(e)
             }
+        });
+        onUnmounted(() => {
+           window.removeEventListener('click', hideMobileSort);
         });
 
 // Подгрузка при скролле__________________________________________________
@@ -552,7 +553,6 @@ export default {
             queryObject,
             setSelectsLoading,
             isSelectsLoading,
-            sortAsideNode,
             isMobileSort,
             isModSelectorsVisible,
         }
