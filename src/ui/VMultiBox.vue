@@ -95,7 +95,6 @@ export default {
             }
 
             if (!root.value.contains(event.target)) {
-                console.log(event)
                 isActive.value = false;
                 privateValue.value = null;
             }

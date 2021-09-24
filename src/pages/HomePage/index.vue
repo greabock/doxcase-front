@@ -104,7 +104,10 @@
                         </div>
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
-                        <div class="sSearchResult__aside">
+                        <div
+                            class="sSearchResult__aside"
+                            :class="{'active': isMobileSort}"
+                        >
                             <div class="sSearchResult__aside-head">
                                 <div class="row">
                                     <div class="col">
@@ -112,11 +115,18 @@
                                             <svg class="icon icon-close">
                                                 <use xlink:href="/img/svg/sprite.svg#close"></use>
                                             </svg>
-                                            <span @click="resetFilters" class="ms-2">очистить фильтр </span>
+                                            <span
+                                                @click="resetFilters"
+                                                class="ms-2"
+                                            >очистить фильтр
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-auto d-lg-none">
-                                        <div class="sSearchResult__btn-text sSearchResult__btn-text--close-js">
+                                        <div
+                                            @click="isMobileSort = false"
+                                            class="sSearchResult__btn-text sSearchResult__btn-text--close-js"
+                                        >
                                             <span class="me-2">Скрыть</span>
                                             <svg class="icon icon-chevron-right">
                                                 <use xlink:href="/img/svg/sprite.svg#chevron-right"></use>
@@ -348,10 +358,11 @@ export default {
                 return []
             }
         })
-
         const store = useStore();
+//Моб. отобраение___________________________
+        const isMobileSort = ref(false);
 
- // Выдача поиска_______________
+// Выдача поиска_______________
         const materials = ref([]);
         const files = ref([]);
 
@@ -538,6 +549,7 @@ export default {
             totalPages,
             currentPage,
             isPreloaderShown,
+            isMobileSort,
         };
     },
 };

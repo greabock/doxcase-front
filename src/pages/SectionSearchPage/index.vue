@@ -42,7 +42,10 @@
                                 </div>
                             </div>
                             <div class="col-auto d-lg-none">
-                                <div class="sSearchResult__btn-toggle sSearchResult__btn-toggle--js">
+                                <div
+                                    @click="isMobileSort = true"
+                                    class="sSearchResult__btn-toggle sSearchResult__btn-toggle--js"
+                                >
                                     <svg class="icon icon-sort ">
                                         <use xlink:href="/img/svg/sprite.svg#sort"></use>
                                     </svg>
@@ -51,7 +54,7 @@
                         </div>
                         <div class="d-lg-none">
                             <div class="filter-info">
-                                <div class="filter-info__left">Фильтры<span class="text-danger ms-2">4</span>
+                                <div class="filter-info__left">Фильтры<span class="text-danger ms-2">{{selectorsLength}}</span>
                                 </div>
                                 <div class="filter-info__clear btn-info">
                                     <svg class="icon icon-close ">
@@ -103,7 +106,11 @@
                         </div>
                     </div>
                     <div class="col-aside col-lg-auto d-flex flex-column">
-                        <div class="sSearchResult__aside">
+                        <div
+                            ref="sortAsideNode"
+                            class="sSearchResult__aside"
+                            :class="{'active': isMobileSort}"
+                        >
                             <div class="sSearchResult__aside-head">
                                 <div class="row">
                                     <div class="col">
@@ -113,12 +120,17 @@
                                             </svg>
                                             <span
                                                 @click="resetFilters"
-                                                class="ms-2">очистить фильтр
+                                                class="ms-2"
+                                            >очистить фильтр
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-auto d-lg-none">
-                                        <div class="sSearchResult__btn-text sSearchResult__btn-text--close-js"> <span class="me-2">Скрыть</span>
+                                        <div
+                                            @click="isMobileSort = false"
+                                            class="sSearchResult__btn-text sSearchResult__btn-text--close-js"
+                                        >
+                                            <span class="me-2">Скрыть</span>
                                             <svg class="icon icon-chevron-right ">
                                                 <use xlink:href="/img/svg/sprite.svg#chevron-right"></use>
                                             </svg>
@@ -317,6 +329,19 @@ export default {
                 return []
             }
         })
+//Моб. отображение___________________________
+        const sortAsideNode = ref(() => null);
+        const isMobileSort = ref(false);
+        const selectorsLength = computed(() => {
+            return filteredSectionFields.value
+                .filter(
+                        (field) =>
+                            field.type.name === 'Enum' ||
+                            field.type.name === 'Dictionary' ||
+                            field.type.name === 'Select' ||
+                            field.type.name === 'List'
+                    ).length
+        });
 
 // Выдача поиска_______________________
         const materials = ref([]);
@@ -485,6 +510,9 @@ export default {
             queryObject,
             setSelectsLoading,
             isSelectsLoading,
+            sortAsideNode,
+            isMobileSort,
+            selectorsLength,
         }
     },
 }
