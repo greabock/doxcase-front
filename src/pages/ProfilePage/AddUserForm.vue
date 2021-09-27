@@ -57,35 +57,36 @@
                 class="form-wrap__input-title"
             >Пароль
             </span>
-            <span
-                class="pass-show-toggler"
-                @click="isShowPass = !isShowPass"
-            ><img
-                width="20"
-                height="20"
-                :src="isShowPass ? '/img/svg/invisible.svg' : '/img/svg/visibility.svg'"
-            >
-            </span>
-            <input
-              v-show="!isShowPass"
-              v-model="passwordValue"
-              class="form-wrap__input form-control"
-              type="password"
-              name="newUserPassword"
-              placeholder="Введите"
-              autocomplete="off"
-              maxLength="30"
-          />
-            <input
-                v-show="isShowPass"
-                v-model="passwordValue"
-                class="form-wrap__input form-control"
-                type="text"
-                name="newUserPassword"
-                placeholder="Введите"
-                autocomplete="off"
-                maxLength="30"
-            />
+              <span class="password-input-wrapper">
+                <span
+                    class="pass-show-toggler"
+                    @click="isShowPass = !isShowPass"
+                >
+                    <img width="20" height="20"
+                    :src="isShowPass ? '/img/svg/visibility.svg' : '/img/svg/invisible.svg'"
+                    >
+                </span>
+                <input
+                  v-show="!isShowPass"
+                  v-model="passwordValue"
+                  class="form-wrap__input form-control"
+                  type="password"
+                  name="newUserPassword"
+                  placeholder="Введите"
+                  autocomplete="off"
+                  maxLength="30"
+                />
+                <input
+                    v-show="isShowPass"
+                    v-model="passwordValue"
+                    class="form-wrap__input form-control"
+                    type="text"
+                    name="newUserPassword"
+                    placeholder="Введите"
+                    autocomplete="off"
+                    maxLength="30"
+                />
+              </span>
           </label>
             <span class="validation-error">{{passwordError}}</span>
         </div>
@@ -214,11 +215,18 @@ export default {
 .validation-error{
   color:#ff0000;
 }
+.password-input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
 .pass-show-toggler{
   z-index: 10;
   position: absolute;
-  top: 39px;
-  right: 10px;
+  right: 15px;
+}
+.pass-show-toggler IMG {
+    display: block;
 }
 .validation-error {
   display: block;
