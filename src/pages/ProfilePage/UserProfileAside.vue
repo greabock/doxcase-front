@@ -24,8 +24,6 @@
             </div>
             <div class="col">
                 <div class="h1">{{ user?.name }}</div>
-<!--                <div class="small mb-1"><strong>Отдел:</strong> Департамент логистики</div>-->
-<!--                <div class="small mb-1"><strong>Должность:</strong> Менеджер</div>-->
                 <div class="small mb-1">
                     <a href="#">{{ user?.email }}</a>
                 </div>
