@@ -12,19 +12,7 @@
             @delete="setGroupToRemove(group)"
         />
     </div>
-<!--        <button-->
-<!--            v-for="group in allGroups"-->
-<!--            @click="currentGroup = group"-->
-<!--            class="btn-filter"-->
-<!--            :class="{active: group.id === currentGroup.id}"-->
-<!--            :key="group?.id"-->
-<!--        >-->
-<!--            {{ group?.name }}-->
-<!--            <svg @click.stop="() => setGroupToRemove(group)" class="icon icon-close">-->
-<!--                <use xlink:href="/img/svg/sprite.svg#close"></use>-->
-<!--            </svg>-->
-<!--        </button>-->
-<!--    </div>-->
+
     <div class="mb-4 groups-users-add-button">
         <div @click="isAddModalVisible = true" class="btn-add">
             <div class="btn-add__plus"></div>
@@ -307,6 +295,9 @@ export default {
 </script>
 
 <style>
+.btn {
+    align-items: center;
+}
 .modal_search-block {
     position: relative;
     margin-bottom: 20px;
