@@ -27,7 +27,7 @@ axiosInstance.interceptors.response.use(
     (r) => r,
     (error) => {
         if (error.response.status === 401) {
-            window.location.replace('/auth')
+            // window.location.replace('/auth')
         }
 
         throw error

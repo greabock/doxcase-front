@@ -30,7 +30,7 @@
                     <a href="#">{{ user?.email }}</a>
                 </div>
             </div>
-            <div class="sCabinetAside__footer mt-3 d-none d-lg-block">
+            <div class="sCabinetAside__footer mt-3">
                 <span @click="handleLogout" style="cursor: pointer" class="text-body small">Выйти из аккаунта</span>
             </div>
         </div>
