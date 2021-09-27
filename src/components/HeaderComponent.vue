@@ -180,6 +180,7 @@ export default {
 <style scoped>
 .topLine {
     z-index: 2;
+    padding: 5px 0;
 }
 .logo-div {
     cursor:pointer;
@@ -190,6 +191,11 @@ export default {
 @media (max-width: 974px) {
     .topLine {
         z-index: 10;
+    }
+}
+@media (max-width: 575px) {
+    .topLine {
+        padding: 5px 0;
     }
 }
 </style>
