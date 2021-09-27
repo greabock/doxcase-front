@@ -18,7 +18,7 @@ deploy_dev:
 deploy_release:
   script:
     # Deploy release branch
-    - ssh -o StrictHostKeyChecking=no kb_admin@knowledge.oktadi.ru "cd /var/www/knowledge/frontend/ && git fetch --all && git reset --hard origin/release && cp .env src/globals.js && npm install && npm run build"
+    - ssh -o StrictHostKeyChecking=no kb_admin@knowledge.oktadi.ru "cd /var/www/knowledge/frontend/ && git fetch --all && git reset --hard origin/release && npm install && npm run build"
   only:
     - release
 
