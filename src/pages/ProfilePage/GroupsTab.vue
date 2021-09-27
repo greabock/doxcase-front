@@ -3,26 +3,22 @@
     <div
         class="btns-group-sm groups-users-buttons"
     >
-        <button
+        <VBox
             v-for="group in allGroups"
-            @click="currentGroup = group"
-            class="btn-filter"
-            :class="{active: group.id === currentGroup.id}"
             :key="group?.id"
-        >
-            {{ group?.name }}
-            <svg @click.stop="() => setGroupToRemove(group)" class="icon icon-close">
-                <use xlink:href="/img/svg/sprite.svg#close"></use>
-            </svg>
-        </button>
+            :title="group?.name"
+            :active="group.id === currentGroup.id"
+            @click="currentGroup = group"
+            @delete="setGroupToRemove(group)"
+        />
     </div>
+
     <div class="mb-4 groups-users-add-button">
         <div @click="isAddModalVisible = true" class="btn-add">
             <div class="btn-add__plus"></div>
             <div class="btn-add__text">Добавить группу</div>
         </div>
     </div>
-
     <group-users-list
         :allUsers="allUsers"
         :propGroup="currentGroup"
@@ -126,6 +122,7 @@
 <script>
 import {ref, computed, onMounted} from 'vue';
 import VButton from '@/ui/VButton';
+import VBox from '@/ui/VBox';
 import ModalWindow from '@/components/ModalWindow';
 import GroupUsersList from '@/pages/ProfilePage/GroupUsersList';
 import * as yup from 'yup';
@@ -138,7 +135,8 @@ export default {
     components: {
         VButton,
         ModalWindow,
-        GroupUsersList
+        GroupUsersList,
+        VBox
     },
     setup() {
 
@@ -297,6 +295,9 @@ export default {
 </script>
 
 <style>
+.btn {
+    align-items: center;
+}
 .modal_search-block {
     position: relative;
     margin-bottom: 20px;

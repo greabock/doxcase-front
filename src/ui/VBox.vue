@@ -31,6 +31,7 @@ export default {
     font-weight: 400;
     font-size: 14px;
     padding: 0.25em 0.625rem;
+    margin-bottom: 0.5em;
     border: none;
     background-color: #e3eafe;
     color: #1d47ce;

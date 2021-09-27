@@ -209,7 +209,7 @@ INPUT::placeholder {
 .sAddDocs__footer {
     margin-bottom:-25px;
     margin-left: -32px;
-    padding-left: 15px;
+    padding-left: 35px;
 }
 .search-block {
     position: relative;
