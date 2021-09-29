@@ -30,6 +30,10 @@
             </div>
             <div class="sCabinetAside__footer mt-3">
                 <span @click="handleLogout" style="cursor: pointer" class="text-body small">Выйти из аккаунта</span>
+                <br />
+                <br />
+                <button
+                    @click="deleteLicense" class="btn btn-sm btn-danger">Обнулить лицензию</button>
             </div>
         </div>
     </div>
@@ -38,6 +42,7 @@
 <script>
 import {useAuth} from '@/hooks/useAuth';
 import {computed} from 'vue';
+import licenseService from '@/services/license.service';
 
 export default {
     props: {
@@ -55,9 +60,14 @@ export default {
             }
         });
 
+        const deleteLicense = async () => {
+            await licenseService.deleteLicense();
+        }
+
         return {
             handleLogout,
             avatar,
+            deleteLicense
         };
     },
 };

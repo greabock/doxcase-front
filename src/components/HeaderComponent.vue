@@ -1,4 +1,7 @@
 <template>
+    <key-alert>
+
+    </key-alert>
     <div
         class="topLine section"
         id="topLine"
@@ -105,12 +108,14 @@ import {useRoute} from 'vue-router';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
+import KeyAlert from '@/components/KeyAlert';
 
 export default {
     components: {
         LogoIcon,
         LogoIconSmall,
         TopMenu,
+        KeyAlert
     },
     setup() {
         const store = useStore();
@@ -154,6 +159,7 @@ export default {
     );
 
         onMounted(async () => {
+             await store.dispatch('user/fetchLicenseExpiresAt')
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
         });

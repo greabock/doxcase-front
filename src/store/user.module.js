@@ -1,8 +1,10 @@
 import authService from '@/services/auth.service';
+import licenseService from '@/services/license.service';
 
 export const userModule = {
     state: () => ({
         user: null,
+        licenseExpiresAt: null
     }),
     getters: {
         getUser(state) {
@@ -19,6 +21,9 @@ export const userModule = {
         setUser(state, arg) {
             state.user = arg;
         },
+        setExpiresAt(state, arg) {
+            state.licenseExpiresAt = arg;
+        }
     },
     actions: {
         async fetchUserData({commit}) {
@@ -29,6 +34,16 @@ export const userModule = {
                 console.log(e);
             }
         },
+        async fetchLicenseExpiresAt({commit}) {
+            try {
+                const license = await licenseService.getLicense();
+                if (license && license.expires_at) {
+                    commit('setExpiresAt', license.expires_at);
+                }
+            } catch(e) {
+                console.log(e);
+            }
+        }
     },
     namespaced: true,
 };
