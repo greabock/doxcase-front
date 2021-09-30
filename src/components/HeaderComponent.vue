@@ -107,11 +107,12 @@
 <script>
 import {ref, computed, onMounted, onUnmounted} from 'vue';
 import {useStore} from 'vuex';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
 import KeyAlert from '@/components/KeyAlert';
+import licenseService from '@/services/license.service';
 
 export default {
     components: {
@@ -123,6 +124,7 @@ export default {
     setup() {
         const store = useStore();
         const route = useRoute();
+        const router = useRouter();
 
         const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
@@ -165,11 +167,15 @@ export default {
         let updateLicenseInterval = null;
 
         onMounted(async () => {
+            const license = await licenseService.getLicense();
+            if (!license || !license.expires_at) {
+                await router.push('/license');
+            }
+            store.commit('user/setLicense', license);
              updateLicenseInterval = setInterval( () => {
                  store.dispatch('user/fetchLicenseInfo')
                 console.log('interval');
              }, 3600000);
-             await store.dispatch('user/fetchLicenseInfo');
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
         });

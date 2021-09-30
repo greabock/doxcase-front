@@ -1,6 +1,5 @@
 <template>
     <div
-        @click="closeModal"
         ref="root"
         v-if="isFieldModalVisible" class="mock-modal__wrapper"
     >
