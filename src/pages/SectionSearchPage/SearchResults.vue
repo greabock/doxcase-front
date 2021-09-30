@@ -31,11 +31,6 @@
                         </router-link>
                     </div>
                     <div class="text-dark small">Опубликовано {{ snippet.created_at }}
-                        <span class="d-sm-none text-primary">
-                            <svg class="icon icon-doc ">
-                                <use xlink:href="/img/svg/sprite.svg#doc"></use>
-                            </svg>25
-                        </span>
                     </div>
                 </div>
                 <div
@@ -110,11 +105,6 @@
                         </div>
                     </FileLink>
                     <div class="text-dark small">Опубликовано {{formatDate(file.file.created_at)}}
-                        <span class="d-sm-none text-primary">
-                            <svg class="icon icon-doc ">
-                                <use xlink:href="/img/svg/sprite.svg#doc"></use>
-                            </svg>25
-                        </span>
                     </div>
                 </div>
             </div>
@@ -145,7 +135,6 @@
 
 <script>
 import {computed} from 'vue';
-import {API_URL} from '@/globals';
 import FileLink  from '@/components/FileLink'
 
 export default {
@@ -266,7 +255,6 @@ export default {
             materialsSnippetsArr,
             createMaterialSnippet,
             formatDate,
-            API_URL,
         }
     }
 

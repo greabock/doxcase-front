@@ -15,7 +15,7 @@
                                         <button
                                             v-if="canUpdate"
                                             @click="edit"
-                                            class="sCardHead__aside-btn btn-outline-primary"
+                                            class="sCardHead__aside-btn btn-primary"
                                             type="button"
                                         >
                                             Редактировать материал
@@ -23,10 +23,23 @@
                                     </div>
                                     <div class="col-auto">
                                         <button
+                                            @click="isMobAside = true"
                                             class="sCardHead__toggle-aside sCardHead__toggle-aside--js"
                                             type="button"
                                         >
                                             !
+                                        </button>
+                                    </div>
+                                    </div>
+                                <div class='row'>
+                                    <div class="col">
+                                        <button
+                                            v-if="canUpdate"
+                                            class="sCardHead__aside-btn btn-outline-primary"
+                                            type="button"
+                                            @click="isShow = true"
+                                        >
+                                            Удалить материал
                                         </button>
                                     </div>
                                 </div>
@@ -57,8 +70,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-aside col-lg-auto d-flex flex-column">
-                        <div class="sCardHead__aside">
+                    <div
+                        id="mob-aside-wrapper"
+                        class="col-aside col-lg-auto d-flex flex-column"
+                    >
+                        <div
+                            :class="{'active': isMobAside}"
+                            class="sCardHead__aside"
+                        >
                             <button
                                 v-if="canUpdate"
                                 class="sCardHead__aside-btn btn-primary"
@@ -99,7 +118,7 @@
 </template>
 
 <script>
-import {computed, ref} from 'vue';
+import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useStore} from 'vuex';
 import {useRoute, useRouter} from 'vue-router';
 import {format} from 'date-fns';
@@ -270,6 +289,25 @@ export default {
             router.push(`/material-edit/${sectionId}/${materialId}`);
         };
 
+        const isMobAside = ref(false);
+        const hideMobAside = (e) => {
+            const mobAside = document.querySelector('#mob-aside-wrapper');
+            const toggleButton = document.querySelector('.sCardHead__toggle-aside');
+
+            console.log(mobAside.contains(e.target), toggleButton.contains(e.target));
+            if(!mobAside.contains(e.target) && !toggleButton.contains(e.target)) {
+                isMobAside.value = false;
+            }
+        }
+
+        onMounted(() => {
+            window.addEventListener('click', hideMobAside);
+        })
+
+        onUnmounted(() => {
+            window.removeEventListener('click', hideMobAside);
+        })
+
         return {
             edit,
             isShow,
@@ -281,6 +319,7 @@ export default {
             files,
             topBlocks,
             canUpdate,
+            isMobAside,
         };
     },
 };

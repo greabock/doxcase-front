@@ -19,6 +19,7 @@ export function useAuth() {
             localStorage.setItem('role', user.role);
             await router.push('/');
         } catch (e) {
+            error.value = e.message;
             loading.value = false;
         }
     };
@@ -37,6 +38,10 @@ export function useAuth() {
         }
     };
 
+    const skipError = () => {
+      error.value = null;
+    };
+
     return {
         handleLogin,
         handleLogout,
@@ -45,5 +50,6 @@ export function useAuth() {
         error,
         router,
         store,
+        skipError,
     };
 }
