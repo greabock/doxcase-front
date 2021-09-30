@@ -25,6 +25,6 @@ deploy_release:
 deploy_master:
   script:
     # Deploy master branch
-    - ssh -o StrictHostKeyChecking=no knowledge@doxcase-demo.oktadi.ru "cd ~/doxcase-demo.oktadi.ru/data/node-builder && git fetch --all && git reset --hard origin/master && cp .env src/globals.js && docker-compose up node-builder"
+    - ssh -o StrictHostKeyChecking=no knowledge@doxcase-demo.oktadi.ru "cd ~/doxcase-demo.oktadi.ru/data/node-builder && git fetch --all && git reset --hard origin/master && docker-compose up node-builder"
   only:
     - master
