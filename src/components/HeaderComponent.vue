@@ -1,6 +1,7 @@
 <template>
-    <key-alert>
-
+    <key-alert
+        :licenseInfo="licenseInfo"
+    >
     </key-alert>
     <div
         class="topLine section"
@@ -152,20 +153,28 @@ export default {
         const avatar = computed(() => {
                 if (user.value?.photo !== null ) {
                 return user.value?.photo;
-            } else {
-                return '/img/@1x/avatar-2.png'
+                } else {
+                    return '/img/@1x/avatar-2.png'
+                }
             }
-        }
-    );
+        );
+
+        const licenseInfo = computed(() => store.getters['user/getLicenseInfo']);
+        let updateLicenseInterval = null;
 
         onMounted(async () => {
-             await store.dispatch('user/fetchLicenseExpiresAt')
+             updateLicenseInterval = setInterval( () => {
+                 store.dispatch('user/fetchLicenseInfo')
+                console.log('interval');
+             }, 3600000);
+             await store.dispatch('user/fetchLicenseInfo');
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
         });
 
         onUnmounted(async () => {
             await store.commit('sections/setSections', []);
+            clearInterval(updateLicenseInterval);
         });
 
         return {
@@ -178,6 +187,7 @@ export default {
             changeAtFirst,
             isDropdownShow,
             updateIsDropdownShow,
+            licenseInfo,
         };
     },
 };

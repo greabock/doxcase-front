@@ -1,11 +1,20 @@
 <template>
-    <div class='key-alert-wrapper'>
+    <div
+        class='key-alert-wrapper'
+        :class="{
+        'alert-visible': alertType !== 'not_expired',
+        'license-expired': alertType === 'expired'
+        }"
+    >
         <div class='container-fluid'>
-            <div class='row'>
+            <div
+                v-if="alertType === 'pre_expired'"
+                class='row'
+            >
                 <div class='col'>
                     <img class="alert-icon" src="/img/svg/alert.svg" />
                     <span>
-                        Истекает срок действия лицензии 24.09.2021 г. Для продления свяжитесь по почте sample@sample.com
+                        Истекает срок действия лицензии {{formatDate(licenseEnd)}} г. Для продления свяжитесь по почте sample@sample.com
                     </span>
                 </div>
                 <div
@@ -13,6 +22,24 @@
                     @click="isKeyModal = true"
                 >
                     <img class="key-icon" src="/img/svg/key.svg" />
+                    Введите ключ
+                </div>
+            </div>
+            <div
+                v-if="alertType !== 'expired'"
+                class='row'
+            >
+                <div class='col expired-license'>
+                    <img class="alert-icon" src="/img/svg/alert_white.svg" />
+                    <span>
+                        Срок действия лицензии истек. Для продления свяжитесь по почте sample@sample.com
+                    </span>
+                </div>
+                <div
+                    class='col-auto key-modal-toggle'
+                    @click="isKeyModal = true"
+                >
+                    <img class="key-icon" src="/img/svg/key_white.svg" />
                     Введите ключ
                 </div>
             </div>
@@ -52,18 +79,54 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import ModalWindow from '@/components/ModalWindow';
 import VButton from '@/ui/VButton';
 import {useField, useForm} from 'vee-validate';
 import * as yup from 'yup';
+import {formatDate} from '@/utils/date.helpers'
 
 export default {
+    props: {
+        licenseInfo: {
+            type: Object || null
+        }
+    },
     components: {
         ModalWindow,
         VButton
     },
-    setup() {
+    setup(props) {
+        const licenseEnd = computed(() => {
+            if (props.licenseInfo && props.licenseInfo.expires_at) {
+                const dateArr =  props.licenseInfo.expires_at.split('-');
+                dateArr[1] = dateArr[1] - 1;
+                return new Date(...dateArr);
+            }
+            return null;
+        });
+
+        const currentTime = computed(() => {
+            if (props.licenseInfo && props.licenseInfo.current_date) {
+                const dateArr = props.licenseInfo.current_date.split('-');
+                dateArr[1] = dateArr[1] - 1;
+                return new Date(...dateArr);
+            }
+            return null;
+        });
+
+        const alertType = computed(() => {
+            if (!props.licenseInfo) {
+                return 'not_expired';
+            }
+            if ((licenseEnd.value - currentTime.value <= 0)) {
+                return 'expired';
+            } else if ((licenseEnd.value - currentTime.value <= 432000000)) {
+                return 'pre_expired';
+            } else {
+                return 'not_expired';
+            }
+        });
         const isKeyModal = ref(false);
 
         const schema = yup.object({
@@ -90,14 +153,17 @@ export default {
             prodKeyValue,
             prodKeyError,
             formMeta,
-            submitHandle
+            submitHandle,
+            alertType,
+            licenseEnd,
+            formatDate
         }
     }
 };
 </script>
 <style scoped>
 .key-alert-wrapper {
-    display: flex;
+    display: none;
     position: relative;
     z-index: 1000;
     align-items: center;
@@ -105,6 +171,9 @@ export default {
     font-size: 13px;
     color: #000;
     background-color: #FFDA59;
+}
+.alert-visible {
+    display:flex;
 }
 .alert-icon {
     display: inline-flex;
@@ -123,5 +192,10 @@ export default {
 }
 .modal-window__buttons {
     padding-top: 0;
+}
+
+.license-expired.key-alert-wrapper {
+    background-color: #FF6459;
+    color:#fff;
 }
 </style>

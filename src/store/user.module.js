@@ -4,7 +4,7 @@ import licenseService from '@/services/license.service';
 export const userModule = {
     state: () => ({
         user: null,
-        licenseExpiresAt: null
+        licenseInfo: null,
     }),
     getters: {
         getUser(state) {
@@ -16,13 +16,16 @@ export const userModule = {
             }
             return '/img/@1x/avatar-2.png';
         },
+        getLicenseInfo(state) {
+            return state.licenseInfo;
+        }
     },
     mutations: {
         setUser(state, arg) {
             state.user = arg;
         },
-        setExpiresAt(state, arg) {
-            state.licenseExpiresAt = arg;
+        setLicense(state, arg) {
+            state.licenseInfo = arg;
         }
     },
     actions: {
@@ -34,11 +37,11 @@ export const userModule = {
                 console.log(e);
             }
         },
-        async fetchLicenseExpiresAt({commit}) {
+        async fetchLicenseInfo({commit}) {
             try {
                 const license = await licenseService.getLicense();
                 if (license && license.expires_at) {
-                    commit('setExpiresAt', license.expires_at);
+                    commit('setLicense', license);
                 }
             } catch(e) {
                 console.log(e);
