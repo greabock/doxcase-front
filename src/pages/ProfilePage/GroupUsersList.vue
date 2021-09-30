@@ -167,15 +167,13 @@ export default {
             const footerHeight = document.querySelector('.footer').scrollHeight;
 
             const restHeight = window.innerHeight - topLineHeight - headerHeight - navTabsHeight - groupsButtonsHeight - groupsAddHeight -
-                groupsTitleSearchHeight - groupsFooterButtonsHeight - footerHeight;
+                groupsTitleSearchHeight - groupsFooterButtonsHeight - footerHeight + (-130);
 
-            if (restHeight < 350) {
-                myDiv.style.height = '350px';
+            if (restHeight < 390) {
+                myDiv.style.height = '390px';
             } else {
                 myDiv.style.height = restHeight + 'px';
             }
-
-            console.log(restHeight);
         };
 
         onMounted(() => {
@@ -211,7 +209,7 @@ INPUT::placeholder {
 .sAddDocs__footer {
     margin-bottom:-25px;
     margin-left: -32px;
-    padding-left: 15px;
+    padding-left: 35px;
 }
 .search-block {
     position: relative;
