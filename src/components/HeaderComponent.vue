@@ -17,7 +17,9 @@
                             @click='toggleMenuMobileActive'
                             class="toggle-menu-mobile toggle-menu-mobile--js"
                             :class="{'on': isMenuMobileActive}"
-                        ><span></span></div>
+                        ><span>
+                        </span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
