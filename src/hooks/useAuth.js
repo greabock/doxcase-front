@@ -1,5 +1,6 @@
 import {useRouter} from 'vue-router';
 import AuthService from '@/services/auth.service';
+import licenseService from '@/services/license.service';
 import {ref} from 'vue';
 import {useStore} from 'vuex';
 
@@ -17,9 +18,16 @@ export function useAuth() {
             await store.dispatch('user/fetchUserData');
             const user = store.getters['user/getUser'];
             localStorage.setItem('role', user.role);
-            await router.push('/');
+            const license = await licenseService.getLicense();
+            if (!license || !license.expires_at) {
+                loading.value = false;
+                await router.push('/license');
+            } else {
+                await router.push('/');
+            }
         } catch (e) {
             error.value = e.message;
+        } finally{
             loading.value = false;
         }
     };
