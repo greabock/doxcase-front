@@ -15,6 +15,7 @@ import SectionSearchPage from '@/pages/SectionSearchPage';
 import {adminGuard, authGuard} from '@/guards/guards';
 import AzurePage from '@/pages/AzurePage';
 import ForbiddenPage from '@/pages/ForbiddenPage';
+import LicensePage from '@/pages/LicensePage';
 // import FileLinkPage from '@/pages/FileLinkPage';
 
 const routes = [
@@ -41,6 +42,12 @@ const routes = [
         path: '/oauth/login',
         name: 'AzurePageRoute',
         components: {default: AzurePage},
+        meta: {title:'Doxcase'}
+    },
+    {
+        path: '/license',
+        name: 'LicensePageRoute',
+        components: {default: LicensePage},
         meta: {title:'Doxcase'}
     },
     {

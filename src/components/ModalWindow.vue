@@ -3,7 +3,6 @@
         v-if="modelValue"
         class="modal-window__wrapper"
         ref="wrapper"
-        @click="wrapperClickHandler"
     >
         <div
             class="modal-window__cont fancybox__content"

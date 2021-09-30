@@ -1,4 +1,9 @@
 <template>
+    <key-alert
+        :userRole="user?.role"
+        :licenseInfo="licenseInfo"
+    >
+    </key-alert>
     <div
         class="topLine section"
         id="topLine"
@@ -13,7 +18,9 @@
                             @click='toggleMenuMobileActive'
                             class="toggle-menu-mobile toggle-menu-mobile--js"
                             :class="{'on': isMenuMobileActive}"
-                        ><span></span></div>
+                        ><span>
+                        </span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-auto col text-center">
@@ -101,20 +108,24 @@
 <script>
 import {ref, computed, onMounted, onUnmounted} from 'vue';
 import {useStore} from 'vuex';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
+import KeyAlert from '@/components/KeyAlert';
+import licenseService from '@/services/license.service';
 
 export default {
     components: {
         LogoIcon,
         LogoIconSmall,
         TopMenu,
+        KeyAlert
     },
     setup() {
         const store = useStore();
         const route = useRoute();
+        const router = useRouter();
 
         const changeAtFirst = () => store.dispatch('search/increaseAtFirst');
         const sectionsInHeader = computed(() => {
@@ -147,19 +158,32 @@ export default {
         const avatar = computed(() => {
                 if (user.value?.photo !== null ) {
                 return user.value?.photo;
-            } else {
-                return '/img/@1x/avatar-2.png'
+                } else {
+                    return '/img/@1x/avatar-2.png'
+                }
             }
-        }
-    );
+        );
+
+        const licenseInfo = computed(() => store.getters['user/getLicenseInfo']);
+        let updateLicenseInterval = null;
 
         onMounted(async () => {
+            const license = await licenseService.getLicense();
+            if (!license || !license.expires_at) {
+                await router.push('/license');
+            }
+            store.commit('user/setLicense', license);
+             updateLicenseInterval = setInterval( () => {
+                 store.dispatch('user/fetchLicenseInfo')
+                console.log('interval');
+             }, 3600000);
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
         });
 
         onUnmounted(async () => {
             await store.commit('sections/setSections', []);
+            clearInterval(updateLicenseInterval);
         });
 
         return {
@@ -172,6 +196,7 @@ export default {
             changeAtFirst,
             isDropdownShow,
             updateIsDropdownShow,
+            licenseInfo,
         };
     },
 };
