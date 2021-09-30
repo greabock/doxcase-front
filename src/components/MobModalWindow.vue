@@ -1,7 +1,6 @@
 <template>
     <div
         v-show="modelValue"
-        @click="wrapperClickHandler"
         class="modal-window__wrapper"
         id="mob-modal-wrapper"
     >
