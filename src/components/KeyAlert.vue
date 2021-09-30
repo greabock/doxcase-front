@@ -18,6 +18,7 @@
                     </span>
                 </div>
                 <div
+                    v-if="userRole === 'admin'"
                     class='col-auto key-modal-toggle'
                     @click="isKeyModal = true"
                 >
@@ -26,7 +27,7 @@
                 </div>
             </div>
             <div
-                v-if="alertType !== 'expired'"
+                v-if="alertType === 'expired'"
                 class='row'
             >
                 <div class='col expired-license'>
@@ -36,6 +37,7 @@
                     </span>
                 </div>
                 <div
+                    v-if="userRole === 'admin'"
                     class='col-auto key-modal-toggle'
                     @click="isKeyModal = true"
                 >
@@ -54,6 +56,7 @@
             <h3>Активация продукта</h3>
         </div>
         <p class='alert-form-text'>Для продления свяжитесь по почте sample@sample.com или по номеру телефона +7 985 998 99 88</p>
+
         <form @submit="submitHandle">
             <div class="form-wrap__input-wrap form-group">
                 <label
@@ -63,16 +66,25 @@
                         class="form-wrap__input form-control"
                         type="text"
                         placeholder="Введите ключ"
+                        @input="skipError"
                     />
                 </label>
                 <span class="validation-error">{{prodKeyError}}</span>
+            </div>
+            <div
+                v-if="error"
+                class="form-error-wrapper">Неверный ключ
             </div>
             <div class="modal-window__buttons">
                 <v-button
                     class="w-100"
                     :class="{'disabled': !formMeta.valid}"
+                    :disabled="loading"
                     type='submit'
-                >Активировать</v-button>
+                >
+                    <span v-show="loading" class="spinner-border spinner-border-sm"></span>
+                    Активировать
+                </v-button>
             </div>
         </form>
     </modal-window>
@@ -81,15 +93,20 @@
 <script>
 import {ref, computed} from 'vue';
 import ModalWindow from '@/components/ModalWindow';
-import VButton from '@/ui/VButton';
 import {useField, useForm} from 'vee-validate';
 import * as yup from 'yup';
 import {formatDate} from '@/utils/date.helpers'
+import VButton from '@/ui/VButton';
+import licenseService from '@/services/license.service';
+import {useStore} from 'vuex';
 
 export default {
     props: {
         licenseInfo: {
             type: Object || null
+        },
+        userRole: {
+            type: String || undefined
         }
     },
     components: {
@@ -97,6 +114,10 @@ export default {
         VButton
     },
     setup(props) {
+
+        const store = useStore()
+        const loading = ref(false);
+        const error = ref(null);
         const licenseEnd = computed(() => {
             if (props.licenseInfo && props.licenseInfo.expires_at) {
                 const dateArr =  props.licenseInfo.expires_at.split('-');
@@ -127,23 +148,36 @@ export default {
                 return 'not_expired';
             }
         });
+
         const isKeyModal = ref(false);
 
         const schema = yup.object({
             prodKey: yup.string().required('Добавьте ключ'),
         });
 
-        const {handleSubmit, meta: formMeta} = useForm({
+        const skipError = () => {
+            error.value = null;
+        }
+
+        const {handleSubmit, meta: formMeta, resetForm} = useForm({
             validationSchema: schema,
         });
 
         const {value: prodKeyValue, errorMessage: prodKeyError} = useField('prodKey');
 
-        const submitHandle = handleSubmit(async (values) => {
+        const submitHandle = handleSubmit(async ({prodKey}) => {
             try {
-                await console.log('sending request', values);
+                loading.value = true;
+                await licenseService.sendLicense(prodKey);
+                const license = await licenseService.getLicense();
+                store.commit('user/setLicense', license);
+                isKeyModal.value = false;
+                resetForm();
             } catch (e) {
-                    console.log(e.message)
+                error.value = 'Неверный ключ';
+                console.log(e.message)
+            } finally {
+                loading.value = false;
             }
         });
 
@@ -156,7 +190,10 @@ export default {
             submitHandle,
             alertType,
             licenseEnd,
-            formatDate
+            formatDate,
+            loading,
+            skipError,
+            error
         }
     }
 };
@@ -197,5 +234,10 @@ export default {
 .license-expired.key-alert-wrapper {
     background-color: #FF6459;
     color:#fff;
+}
+.form-error-wrapper {
+    display: block;
+    margin: 0 0 10px;
+    color:#ff0000;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
     <key-alert
+        :userRole="user?.role"
         :licenseInfo="licenseInfo"
     >
     </key-alert>

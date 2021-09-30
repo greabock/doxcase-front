@@ -32,8 +32,9 @@
                 <span @click="handleLogout" style="cursor: pointer" class="text-body small">Выйти из аккаунта</span>
                 <br />
                 <br />
-                <button
-                    @click="deleteLicense" class="btn btn-sm btn-danger">Обнулить лицензию</button>
+<!--                <button-->
+<!--                    @click="deleteLicense" class="btn btn-sm btn-danger">Обнулить лицензию-->
+<!--                </button>-->
             </div>
         </div>
     </div>
