@@ -1,10 +1,12 @@
 import authService from '@/services/auth.service';
 import licenseService from '@/services/license.service';
+import {defineIsEditAllowed} from '@/utils/date.helpers';
 
 export const userModule = {
     state: () => ({
         user: null,
         licenseInfo: null,
+        isEditAllowed: true
     }),
     getters: {
         getUser(state) {
@@ -18,6 +20,9 @@ export const userModule = {
         },
         getLicenseInfo(state) {
             return state.licenseInfo;
+        },
+        getIsEditAllowed(state) {
+            return state.isEditAllowed;
         }
     },
     mutations: {
@@ -26,6 +31,9 @@ export const userModule = {
         },
         setLicense(state, arg) {
             state.licenseInfo = arg;
+        },
+        setIsEditAllowed(state, arg) {
+            state.isEditAllowed = arg;
         }
     },
     actions: {
@@ -40,8 +48,9 @@ export const userModule = {
         async fetchLicenseInfo({commit}) {
             try {
                 const license = await licenseService.getLicense();
-                if (license && license.expires_at) {
+                if (license && license.expires_at && license.current_date) {
                     commit('setLicense', license);
+                    commit('setIsEditAllowed', defineIsEditAllowed(license.expires_at, license.current_date));
                 }
             } catch(e) {
                 console.log(e);

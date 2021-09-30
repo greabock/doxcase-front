@@ -75,7 +75,7 @@
                                             </svg>
                                         </div>
                                         <div
-                                            v-if="user?.role === 'admin' || user?.role === 'moderator'"
+                                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                             @click="setSectionToRemove(section)"
                                             class="btn-edit-sm btn-danger"
                                         >
@@ -178,6 +178,7 @@ export default {
     setup() {
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
+        const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
         const router = useRouter();
         const initSections = ref([]);
         const sections = ref([]);
@@ -266,6 +267,7 @@ export default {
             sectionToRemove,
             setSectionToRemove,
             removeSection,
+            isEditAllowed,
         };
     },
 };

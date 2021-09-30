@@ -157,7 +157,8 @@ export default {
         const store = useStore();
         const canUpdate = computed(() => {
             const user = store.getters['user/getUser'];
-            return user?.role === 'admin' || user?.role === 'moderator';
+            const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
+            return (user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed;
         });
 
         const getData = async (sectionId, materialId) => {

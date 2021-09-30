@@ -169,8 +169,7 @@ export default {
             try {
                 loading.value = true;
                 await licenseService.sendLicense(prodKey);
-                const license = await licenseService.getLicense();
-                store.commit('user/setLicense', license);
+                await store.dispatch('user/fetchLicenseInfo');
                 isKeyModal.value = false;
                 resetForm();
             } catch (e) {
