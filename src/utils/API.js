@@ -23,6 +23,16 @@ axiosInstance.interceptors.response.use(
       throw error
     }
   )
+axiosInstance.interceptors.response.use(
+    (r) => r,
+    (error) => {
+        if (error.response.status === 402) {
+            window.location.replace('/')
+        }
+
+        throw error
+    }
+)
 
 // axiosInstance.interceptors.response.use(
 //     (r) => r,

@@ -11,3 +11,10 @@ export const formatDate = (dateString) => {
 
     return `${myDay}.${myMonth}.${year}`;
 }
+
+export const defineIsEditAllowed = (dateStr1, dateStr2) => {
+    if (!dateStr1 || !dateStr2) {
+        return false;
+    }
+    return (new Date(...dateStr1.split('-'))) > (new Date(...dateStr2.split('-')));
+ }
