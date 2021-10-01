@@ -9,7 +9,9 @@
                         <VBreadcrumb :list="breadcrumbs" />
                         <h1>{{ title }}</h1>
                         <div class="sCardHead__content">
-                            <div class="d-lg-none pt-1">
+                            <div
+                                v-if="isEditAllowed"
+                                class="d-lg-none pt-1">
                                 <div class="row">
                                     <div class="col">
                                         <button
@@ -44,6 +46,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="sCardHead__head">
                                 <div class="row">
                                     <template v-for="(block, i) of topBlocks" :key="i">
@@ -71,6 +74,7 @@
                         </div>
                     </div>
                     <div
+                        v-if="isEditAllowed"
                         id="mob-aside-wrapper"
                         class="col-aside col-lg-auto d-flex flex-column"
                     >
@@ -153,8 +157,8 @@ export default {
                 name: 'Главная',
             },
         ]);
-
         const store = useStore();
+        const isEditAllowed = computed(() => store.getters['users/getIsEditAllowed']);
         const canUpdate = computed(() => {
             const user = store.getters['user/getUser'];
             const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
@@ -321,6 +325,7 @@ export default {
             topBlocks,
             canUpdate,
             isMobAside,
+            isEditAllowed,
         };
     },
 };
