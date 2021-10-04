@@ -97,6 +97,8 @@ export default {
         const user = computed(() => store.getters['user/getUser']);
         const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
 
+
+
         function switchPageContent(to) {
             pageContent.value = to;
         }

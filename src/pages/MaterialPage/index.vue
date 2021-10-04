@@ -9,13 +9,11 @@
                         <VBreadcrumb :list="breadcrumbs" />
                         <h1>{{ title }}</h1>
                         <div class="sCardHead__content">
-                            <div
-                                v-if="isEditAllowed"
-                                class="d-lg-none pt-1">
+                            <div class="d-lg-none pt-1">
                                 <div class="row">
                                     <div class="col">
                                         <button
-                                            v-if="canUpdate"
+                                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                             @click="edit"
                                             class="sCardHead__aside-btn btn-primary"
                                             type="button"
@@ -36,7 +34,7 @@
                                 <div class='row'>
                                     <div class="col">
                                         <button
-                                            v-if="canUpdate"
+                                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                             class="sCardHead__aside-btn btn-outline-primary"
                                             type="button"
                                             @click="isShow = true"
@@ -46,7 +44,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="sCardHead__head">
                                 <div class="row">
                                     <template v-for="(block, i) of topBlocks" :key="i">
@@ -74,7 +71,6 @@
                         </div>
                     </div>
                     <div
-                        v-if="isEditAllowed"
                         id="mob-aside-wrapper"
                         class="col-aside col-lg-auto d-flex flex-column"
                     >
@@ -83,7 +79,7 @@
                             class="sCardHead__aside"
                         >
                             <button
-                                v-if="canUpdate"
+                                v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                 class="sCardHead__aside-btn btn-primary"
                                 type="button"
                                 @click="edit"
@@ -91,7 +87,7 @@
                                 Редактировать материал
                             </button>
                             <button
-                                v-if="canUpdate"
+                                v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                 class="sCardHead__aside-btn btn-outline-primary"
                                 type="button"
                                 @click="isShow = true"
@@ -157,12 +153,13 @@ export default {
                 name: 'Главная',
             },
         ]);
+
         const store = useStore();
-        const isEditAllowed = computed(() => store.getters['users/getIsEditAllowed']);
-        const canUpdate = computed(() => {
-            const user = store.getters['user/getUser'];
-            const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
-            return (user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed;
+        const isEditAllowed = computed(() => {
+            return store.getters['user/getIsEditAllowed'];
+        });
+        const user = computed(() => {
+            return store.getters['user/getUser'];
         });
 
         const getData = async (sectionId, materialId) => {
@@ -323,9 +320,9 @@ export default {
             lists,
             files,
             topBlocks,
-            canUpdate,
             isMobAside,
             isEditAllowed,
+            user,
         };
     },
 };

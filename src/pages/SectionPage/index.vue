@@ -288,6 +288,7 @@ export default {
         const allGroups = ref([]);
 
         const router = useRouter();
+
         const section = ref({});
         const sortedFields = computed(() => {
             if (section.value.fields) {
@@ -426,7 +427,6 @@ export default {
 
         onMounted(async () => {
             try{
-                isLoading.value = true;
                 initSection = await sectionsService.getSectionObject(router.currentRoute.value.params.id);
                 section.value = initSection;
                 allEnums.value = await enumService.getEnums();
