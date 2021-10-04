@@ -9,17 +9,23 @@
         <div class='container-fluid'>
             <div
                 v-if="alertType === 'pre_expired'"
-                class='row'
+                class='row license-expired__row'
             >
-                <div class='col'>
+                <div class='col expired-license'>
                     <img class="alert-icon" src="/img/svg/alert.svg" />
                     <span>
-                        Истекает срок действия лицензии {{formatDate(licenseEnd)}} г. Для продления свяжитесь по почте sample@sample.com
+                        Срок действия лицензии истекает {{formatDate(licenseEnd)}} г. Для продления лицензии необходимо отправить запрос на адрес
+                        <a
+                            class='alert-email-pre_expired'
+                            href="mailto:doxcase@oktadi.ru?subject=%D0%9F%D1%80%D0%BE%D0%B4%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D0%B8%20DoxCase&body=---%20%D0%94%D0%B0%D0%BD%D0%BD%D0%B0%D1%8F%20%D1%81%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%B8%D1%81%D1%8C%D0%BC%D0%B0%20%D1%81%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B0%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%2C%20%D0%B7%D0%B0%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D1%82%D0%B5%20%D0%B5%D1%91%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%20%D0%BE%D1%82%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%BE%D0%B9%20---%0D%0A%0D%0A%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8%3A%0D%0A%D0%92%D0%B0%D1%88%D0%B5%20%D0%B8%D0%BC%D1%8F%20%D0%B8%20%D0%B4%D0%BE%D0%BB%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%8C%3A%0D%0A%D0%A2%D0%B5%D0%BA%D1%81%D1%82%20%D0%92%D0%B0%D1%88%D0%B5%D0%B3%D0%BE%20%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%B0%3A%0D%0A%0D%0A"
+                        >
+                            oxcase@oktadi.ru
+                        </a>
                     </span>
                 </div>
                 <div
                     v-if="userRole === 'admin'"
-                    class='col-auto key-modal-toggle'
+                    class='col-auto key-modal-toggle-pre_expired'
                     @click="isKeyModal = true"
                 >
                     <img class="key-icon" src="/img/svg/key.svg" />
@@ -28,12 +34,18 @@
             </div>
             <div
                 v-if="alertType === 'expired'"
-                class='row'
+                class='row license-expired__row'
             >
                 <div class='col expired-license'>
                     <img class="alert-icon" src="/img/svg/alert_white.svg" />
                     <span>
-                        Срок действия лицензии истек. Для продления свяжитесь по почте sample@sample.com
+                        Срок действия лицензии истек. Функциональность ограничена. Для продления лицензии необходимо отправить запрос на адрес
+                        <a
+                            class="alert-email"
+                            href="mailto:doxcase@oktadi.ru?subject=%D0%9F%D1%80%D0%BE%D0%B4%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D0%B8%20DoxCase&body=---%20%D0%94%D0%B0%D0%BD%D0%BD%D0%B0%D1%8F%20%D1%81%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%B8%D1%81%D1%8C%D0%BC%D0%B0%20%D1%81%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B0%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%2C%20%D0%B7%D0%B0%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D1%82%D0%B5%20%D0%B5%D1%91%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%20%D0%BE%D1%82%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%BE%D0%B9%20---%0D%0A%0D%0A%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8%3A%0D%0A%D0%92%D0%B0%D1%88%D0%B5%20%D0%B8%D0%BC%D1%8F%20%D0%B8%20%D0%B4%D0%BE%D0%BB%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%8C%3A%0D%0A%D0%A2%D0%B5%D0%BA%D1%81%D1%82%20%D0%92%D0%B0%D1%88%D0%B5%D0%B3%D0%BE%20%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%B0%3A%0D%0A%0D%0A"
+                        >
+                            oxcase@oktadi.ru
+                        </a>
                     </span>
                 </div>
                 <div
@@ -55,7 +67,11 @@
         <div class="modal-window__header">
             <h3>Активация продукта</h3>
         </div>
-        <p class='alert-form-text'>Для продления свяжитесь по почте sample@sample.com или по номеру телефона +7 985 998 99 88</p>
+        <p class='alert-form-text'>Для продления лицензии необходимо отправить запрос на адрес <a
+            href="mailto:doxcase@oktadi.ru?subject=%D0%9F%D1%80%D0%BE%D0%B4%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D0%B8%20DoxCase&body=---%20%D0%94%D0%B0%D0%BD%D0%BD%D0%B0%D1%8F%20%D1%81%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%B8%D1%81%D1%8C%D0%BC%D0%B0%20%D1%81%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B0%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%2C%20%D0%B7%D0%B0%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D1%82%D0%B5%20%D0%B5%D1%91%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B4%20%D0%BE%D1%82%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%BE%D0%B9%20---%0D%0A%0D%0A%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8%3A%0D%0A%D0%92%D0%B0%D1%88%D0%B5%20%D0%B8%D0%BC%D1%8F%20%D0%B8%20%D0%B4%D0%BE%D0%BB%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%8C%3A%0D%0A%D0%A2%D0%B5%D0%BA%D1%81%D1%82%20%D0%92%D0%B0%D1%88%D0%B5%D0%B3%D0%BE%20%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%B0%3A%0D%0A%0D%0A"
+        >
+            oxcase@oktadi.ru
+        </a> или обратиться по номеру телефона<br />  +7 495 899 05 50</p>
 
         <form @submit="submitHandle">
             <div class="form-wrap__input-wrap form-group">
@@ -203,7 +219,7 @@ export default {
     position: relative;
     z-index: 1000;
     align-items: center;
-    height: 40px;
+    min-height: 40px;
     font-size: 13px;
     color: #000;
     background-color: #FFDA59;
@@ -238,5 +254,38 @@ export default {
     display: block;
     margin: 0 0 10px;
     color:#ff0000;
+}
+.alert-email {
+    color:#fff;
+}
+.alert-email-pre_expired {
+    color:#000;
+}
+@media (max-width: 974px) {
+    .key-alert-wrapper {
+        font-size: 11px;
+    }
+    .license-expired__row {
+        flex-direction: column;
+    }
+    .key-modal-toggle {
+        padding: 5px 0;
+        text-align: center;
+    }
+    .key-modal-toggle:hover {
+        background-color: #E2594F;
+    }
+    .key-modal-toggle-pre_expired {
+        padding: 5px 0;
+        text-align: center;
+    }
+    .key-modal-toggle-pre_expired:hover {
+        background-color: #ebc43d;
+    }
+
+    .license-expired .expired-license {
+        display: flex;
+        padding: 5px 10px;
+    }
 }
 </style>
