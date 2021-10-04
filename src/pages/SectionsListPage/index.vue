@@ -175,6 +175,9 @@ export default {
         ModalWindow,
         Loader,
     },
+    beforeRouteEnter(to, from) {
+        console.log('to: ', to, 'from: ', from);
+    },
     setup() {
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
@@ -188,6 +191,12 @@ export default {
         watch(sections, (newVal) => {
             store.commit('sections/setSections', newVal);
         }, {deep: true});
+
+        watch(isEditAllowed, (newVal) => {
+            if (newVal === false) {
+                router.push('/');
+            }
+        });
 
         const isSectionsLoading = ref(true);
 

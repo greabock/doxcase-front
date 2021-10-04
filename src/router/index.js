@@ -12,10 +12,10 @@ import SectionCreationPage from '@/pages/SectionCreationPage';
 import SectionPage from '@/pages/SectionPage';
 import MaterialPage from '@/pages/MaterialPage';
 import SectionSearchPage from '@/pages/SectionSearchPage';
-import {adminGuard, authGuard} from '@/guards/guards';
 import AzurePage from '@/pages/AzurePage';
 import ForbiddenPage from '@/pages/ForbiddenPage';
 import LicensePage from '@/pages/LicensePage';
+import {adminGuard, authGuard} from '@/guards/guards';
 // import FileLinkPage from '@/pages/FileLinkPage';
 
 const routes = [

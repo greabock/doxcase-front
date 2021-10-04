@@ -13,7 +13,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <button
-                                            v-if="canUpdate"
+                                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                             @click="edit"
                                             class="sCardHead__aside-btn btn-primary"
                                             type="button"
@@ -34,7 +34,7 @@
                                 <div class='row'>
                                     <div class="col">
                                         <button
-                                            v-if="canUpdate"
+                                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                             class="sCardHead__aside-btn btn-outline-primary"
                                             type="button"
                                             @click="isShow = true"
@@ -79,7 +79,7 @@
                             class="sCardHead__aside"
                         >
                             <button
-                                v-if="canUpdate"
+                                v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                 class="sCardHead__aside-btn btn-primary"
                                 type="button"
                                 @click="edit"
@@ -87,7 +87,7 @@
                                 Редактировать материал
                             </button>
                             <button
-                                v-if="canUpdate"
+                                v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                 class="sCardHead__aside-btn btn-outline-primary"
                                 type="button"
                                 @click="isShow = true"
@@ -155,10 +155,11 @@ export default {
         ]);
 
         const store = useStore();
-        const canUpdate = computed(() => {
-            const user = store.getters['user/getUser'];
-            const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
-            return (user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed;
+        const isEditAllowed = computed(() => {
+            return store.getters['user/getIsEditAllowed'];
+        });
+        const user = computed(() => {
+            return store.getters['user/getUser'];
         });
 
         const getData = async (sectionId, materialId) => {
@@ -319,8 +320,9 @@ export default {
             lists,
             files,
             topBlocks,
-            canUpdate,
             isMobAside,
+            isEditAllowed,
+            user,
         };
     },
 };
