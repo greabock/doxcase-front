@@ -75,7 +75,7 @@
                                             </svg>
                                         </div>
                                         <div
-                                            v-if="user?.role === 'admin' || user?.role === 'moderator'"
+                                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                                             @click="setSectionToRemove(section)"
                                             class="btn-edit-sm btn-danger"
                                         >
@@ -175,9 +175,13 @@ export default {
         ModalWindow,
         Loader,
     },
+    beforeRouteEnter(to, from) {
+        console.log('to: ', to, 'from: ', from);
+    },
     setup() {
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
+        const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
         const router = useRouter();
         const initSections = ref([]);
         const sections = ref([]);
@@ -187,6 +191,12 @@ export default {
         watch(sections, (newVal) => {
             store.commit('sections/setSections', newVal);
         }, {deep: true});
+
+        watch(isEditAllowed, (newVal) => {
+            if (newVal === false) {
+                router.push('/');
+            }
+        });
 
         const isSectionsLoading = ref(true);
 
@@ -266,6 +276,7 @@ export default {
             sectionToRemove,
             setSectionToRemove,
             removeSection,
+            isEditAllowed,
         };
     },
 };

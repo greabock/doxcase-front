@@ -64,7 +64,10 @@
                                     @click="toggleMenuMobileActive"
                                     class="menu-mobile__btn-wrap"
                                 >
-                                    <router-link to="/sections" class="topLine__btn btn-info" v-if="user?.role === 'admin'">
+                                    <router-link
+                                        v-if="(user?.role === 'admin') && isEditAllowed"
+                                        to="/sections" class="topLine__btn btn-info"
+                                    >
                                         <svg class="icon icon-setting">
                                             <use xlink:href="/img/svg/sprite.svg#setting"></use>
                                         </svg>
@@ -86,7 +89,7 @@
                     </div>
                 </div>
                 <div
-                    v-if="user?.role === 'admin' ||  user?.role === 'moderator'"
+                    v-if="(user?.role === 'admin' ||  user?.role === 'moderator') && isEditAllowed"
                     class="col-auto">
                     <router-link
                         :to="materialCreationLink"
@@ -114,6 +117,7 @@ import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
 import KeyAlert from '@/components/KeyAlert';
 import licenseService from '@/services/license.service';
+import {defineIsEditAllowed} from '@/utils/date.helpers';
 
 export default {
     components: {
@@ -155,6 +159,10 @@ export default {
         };
 
         const user = computed(() => store.getters['user/getUser']);
+        const isEditAllowed = computed(() => {
+            return store.getters['user/getIsEditAllowed']
+        });
+
         const avatar = computed(() => {
                 if (user.value?.photo !== null ) {
                 return user.value?.photo;
@@ -173,10 +181,10 @@ export default {
                 await router.push('/license');
             }
             store.commit('user/setLicense', license);
+            store.commit('user/setIsEditAllowed', defineIsEditAllowed(license.expires_at, license.current_date));
              updateLicenseInterval = setInterval( () => {
-                 store.dispatch('user/fetchLicenseInfo')
-                console.log('interval');
-             }, 3600000);
+                store.dispatch('user/fetchLicenseInfo');
+             }, 1800000);
              await store.dispatch('user/fetchUserData');
              await store.dispatch('sections/fetchSections');
         });
@@ -197,6 +205,7 @@ export default {
             isDropdownShow,
             updateIsDropdownShow,
             licenseInfo,
+            isEditAllowed,
         };
     },
 };
