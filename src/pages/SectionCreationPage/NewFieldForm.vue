@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import {ref, watch} from 'vue';
+import {computed, ref, watch} from 'vue';
 import TextField from '@/pages/SectionCreationPage/FieldTypes/TextField';
 import StringField from '@/pages/SectionCreationPage/FieldTypes/StringField';
 import CheckboxField from '@/pages/SectionCreationPage/FieldTypes/CheckboxField';
@@ -124,6 +124,16 @@ export default {
                 setFieldModalVisible(false);
             }
         };
+
+        const bodyNode = document.getElementById('body');
+        const isModalOpened = computed(() => props.isFieldModalVisible);
+        watch(isModalOpened, (newVal) => {
+            if (newVal) {
+                bodyNode.style.overflowY = 'hidden';
+            } else {
+                bodyNode.style.overflowY = 'auto';
+            }
+        });
         return {
             setFieldModalVisible,
             fieldType,
