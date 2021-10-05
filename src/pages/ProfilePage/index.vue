@@ -9,7 +9,7 @@
                     </div>
                     <div class="col col--main">
                         <div
-                            v-if="user?.role === 'admin' || user?.role === 'moderator'"
+                            v-if="(user?.role === 'admin' || user?.role === 'moderator') && isEditAllowed"
                             class="sCabinetMain section"
                             id="sCabinetMain"
                         >
@@ -25,7 +25,7 @@
                                         >Справочники
                                     </span>
                                 </li>
-                                <li v-if="user?.role === 'admin'" class="nav-item">
+                                <li v-if="(user?.role === 'admin') && isEditAllowed" class="nav-item">
                                     <span
                                         @click.prevent="switchPageContent('users')"
                                         class="nav-link"
@@ -33,7 +33,7 @@
                                         >Пользователи
                                     </span>
                                 </li>
-                                <li v-if="user?.role === 'admin'" class="nav-item">
+                                <li v-if="(user?.role === 'admin') && isEditAllowed" class="nav-item">
                                     <span
                                         @click.prevent="switchPageContent('groups')"
                                         class="nav-link"
@@ -48,7 +48,7 @@
                                 </div>
 
 
-                                <div v-if="user?.role === 'admin'">
+                                <div v-if="(user?.role === 'admin') && isEditAllowed">
                                     <div v-if="pageContent === 'users'" class="sCabinetMain__body">
                                         <!-- Users block -->
                                         <users-tab
@@ -57,7 +57,7 @@
                                     </div>
                                 </div>
 
-                            <div v-if="user?.role === 'admin'">
+                            <div v-if="(user?.role === 'admin') && isEditAllowed">
                                 <div v-if="pageContent === 'groups'"
                                      class="sCabinetMain__body groups-tab-cont-wrapper">
                                     <!-- Users block -->
@@ -95,6 +95,9 @@ export default {
         const {handleLogout} = useAuth();
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
+        const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
+
+
 
         function switchPageContent(to) {
             pageContent.value = to;
@@ -105,6 +108,7 @@ export default {
             pageContent,
             switchPageContent,
             user,
+            isEditAllowed,
         };
     },
 };
