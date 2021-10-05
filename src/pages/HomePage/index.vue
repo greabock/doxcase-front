@@ -435,6 +435,12 @@ export default {
 
         const fullQueryObject = reactive(initQueryObject);
 
+        const convertCheckboxes = (arr) => {
+            const checkboxObj = {};
+            arr.forEach((item) => checkboxObj[item] = 1);
+            return checkboxObj
+        }
+
         const queryObject = computed(() => {
             const iterCheckboxes = fullQueryObject.checkboxes.map((item, i, arr) => ({[arr[i]] : 1 })).values();
             let checkboxes = {};
@@ -448,7 +454,7 @@ export default {
                 materials: fullQueryObject.extensions.includes('materials'),
                 extensions: fullQueryObject.extensions.filter(item => item !== 'materials'),
                 filter: {
-                    ...fullQueryObject.checkboxes,
+                    ...convertCheckboxes(fullQueryObject.checkboxes),
                     ...fullQueryObject.selectors,
                     ...fullQueryObject.dateFilters,
                 }
