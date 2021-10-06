@@ -38,7 +38,7 @@
         class="highlight-wrapper"
     >
                 <span v-for="(cont, i) in file.highlights.content"
-                      v-html="`<span>... </span>${cont}`"
+                      v-html="`<span>... </span>${cont}<span> ...</span>`"
                       :key='i'
                       v-show="i < 3"
                 >
@@ -46,6 +46,7 @@
         <div
             class='more-highlights-toggle'
             @click='toggleHighlightsOpen'
+            v-if='file.highlights.content.length > 3'
         >
             Еще {{file.highlights.content.length - 3}} совпадения
         </div>
@@ -54,7 +55,7 @@
         >
             <span
                 v-for="(cont, i) in file.highlights.content"
-                v-html="`<span>... </span>${cont}`"
+                v-html="`<span>... </span>${cont}<span> ...</span>`"
                 :key='i'
                 v-show="i >= 3"
             >
