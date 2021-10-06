@@ -22,7 +22,7 @@
                     Опубликовано {{formatDate(file.file.created_at)}}
                 </span>
                 <span class='connected-with-material'>
-                    Связано с: <router-link :to="`/sections/${file.section.id}/material/${file.material.id}`">{{file.material.name}}</router-link>
+                    Связано с: <router-link target='_blank' :to="`/sections/${file.section.id}/material/${file.material.id}`">{{file.material.name}}</router-link>
                 </span>
 
             </div>
@@ -42,29 +42,38 @@
         v-if="file.highlights.content.length"
         class="highlight-wrapper"
     >
-                <span v-for="(cont, i) in file.highlights.content"
-                      v-html="`<span>... </span>${cont}<span> ...</span>`"
-                      :key='i'
-                      v-show="i < 3"
-                >
-                </span>
+            <p
+                v-for="(cont, i) in file.highlights.content"
+                v-html="`<span>... </span>${cont}<span> ...</span>`"
+                :key='i'
+                v-show="i < 3"
+                class='highlight-p'
+            >
+            </p>
         <div
             class='more-highlights-toggle'
             @click='toggleHighlightsOpen'
-            v-if='file.highlights.content.length > 3'
+            v-if='(file.highlights.content.length > 3) && !isHighlightsOpened'
         >
-            Еще {{file.highlights.content.length - 3}} совпадения
+            Еще совпадений: {{file.highlights.content.length - 3}}
         </div>
         <div
             v-show='isHighlightsOpened'
         >
-            <span
+            <p
                 v-for="(cont, i) in file.highlights.content"
                 v-html="`<span>... </span>${cont}<span> ...</span>`"
                 :key='i'
                 v-show="i >= 3"
+                class='highlight-p'
             >
-            </span>
+            </p>
+            <div
+                class='more-highlights-toggle'
+                @click='toggleHighlightsOpen'
+            >
+                Скрыть
+            </div>
         </div>
     </div>
 </template>
@@ -111,5 +120,8 @@ export default {
 .connected-with-material {
     display: inline-block;
     margin-left: 50px;
+}
+.highlight-p {
+    margin-bottom: 5px;
 }
 </style>
