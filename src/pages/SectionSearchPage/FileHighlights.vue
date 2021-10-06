@@ -18,8 +18,13 @@
                 </div>
             </FileLink>
             <div class="text-dark small">
-                Опубликовано {{formatDate(file.file.created_at)}}
-                <router-link :to="`/sections/${file.section.id}/material/${file.material.id}`">{{file.material.name}}</router-link>
+                <span>
+                    Опубликовано {{formatDate(file.file.created_at)}}
+                </span>
+                <span class='connected-with-material'>
+                    Связано с: <router-link :to="`/sections/${file.section.id}/material/${file.material.id}`">{{file.material.name}}</router-link>
+                </span>
+
             </div>
         </div>
     </div>
@@ -102,5 +107,9 @@ export default {
 .file-extension {
     color: #1d47ce;
     font-size: 14px;
+}
+.connected-with-material {
+    display: inline-block;
+    margin-left: 50px;
 }
 </style>
