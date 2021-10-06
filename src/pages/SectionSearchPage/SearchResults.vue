@@ -1,106 +1,53 @@
 <template>
-    <div
-        v-if="!(materialsSnippetsArr.length ||  filesArr.length)"
-        class="section pt-5"
-    >
-        <div class="sSections__center-empty">
-            <div class="sSections__title-empty h1">Ничего не найдено
-            </div>
-            <p>Уточните ваш запрос</p>
-        </div>
-    </div>
+    <div class='search-results-wrapper'>
 
-    <div class="sSearchResult__items">
+        <loader
+            v-if='isSelectsLoading || isLoading'
+            :bgColor="'#f7f7f7'"
+            :loaderType="'absolute'"
+        >
+        </loader>
+
         <div
-            v-for="snippet in materialsSnippetsArr"
-            :key="snippet.id"
-            class="search-item">
-            <div class="row">
-                <div class="col-auto">
-                    <div class="search-item__icon-wrap">
-                        <img
-                            v-if="snippet.image"
-                            alt='' :src="snippet.image"
-                        />
-                    </div>
+            v-if="!(materialsSnippetsArr.length || filesArr.length)"
+            class="section pt-5"
+        >
+            <div class="sSections__center-empty">
+                <div class="sSections__title-empty h1">Ничего не найдено
                 </div>
-                <div class="col">
-                    <div class="h5">
-                        <router-link :to="`/sections/${snippet.sectionId}/material/${snippet.id}`">
-                        {{ snippet.title}}
-                        </router-link>
-                    </div>
-                    <div class="text-dark small">Опубликовано {{ snippet.created_at }}
-                    </div>
-                </div>
-                <div
-                    v-if="snippet.files_count"
-                    class="col-auto align-self-center d-none d-sm-block">
-                    <div class="text-dark small">Документов: {{ snippet.files_count }}</div>
-                </div>
-                <div class="col-auto align-self-sm-center">
-                    <div
-                        @click="closeToggleHandler"
-                        class="btn-edit-sm btn-primary">
-                        <svg class="icon icon-chevron-down ">
-                            <use xlink:href="/img/svg/sprite.svg#chevron-down"></use>
-                        </svg>
-                    </div>
-                </div>
+                <p>Уточните ваш запрос</p>
+            </div>
+        </div>
+
+        <div class="sSearchResult__items">
+
+            <div
+                v-for="snippet in materialsSnippetsArr"
+                :key="snippet.id"
+            >
+                <material-snippet :snippet="snippet">
+                </material-snippet>
             </div>
 
             <div
-                v-for="(highlight, i) in snippet.highlights"
-                :key="i"
-                class="highlight-wrapper"
+                v-for="(file, i) in filesArr"
+                :key="file.file.name + i"
+                class="search-item"
             >
-<!--                <span class="highlight-title">{{highlight.name}}</span>-->
-            <span
-                v-html="highlight.value"
-                class="highlight-text"
-            >
-            </span>
-
+                <file-snippet :file="file">
+                </file-snippet>
             </div>
 
-            <div class="search-item__dropdown pt-3">
-                <div class="row">
-                    <div
-                        v-for="field in snippet.fields"
-                        :key="field.name"
-                        class="col-lg-6">
-                        <div class="search-item__panel">
-                            <div class="row">
-                                <div class="col-auto text-primary">{{field.name}} </div>
-                                <div class="col">{{field.value}}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
         </div>
-
-<!-- Файлы в выдаче -->
-        <div
-            v-for="(file, i) in filesArr"
-            :key="file.file.name + i"
-            class="search-item">
-
-            <file-highlights
-                :file="file"
-            ></file-highlights>
-
-
-        </div>
-
     </div>
 </template>
 
 <script>
 import {computed} from 'vue';
 import {formatDate} from '@/utils/helpers';
-import FileHighlights from '@/pages/SectionSearchPage/FileHighlights';
+import FileSnippet from '@/pages/SectionSearchPage/FileSnippet';
+import Loader from '@/components/Loader';
+import MaterialSnippet from '@/pages/SectionSearchPage/MaterialSnippet';
 
 export default {
     props: {
@@ -115,17 +62,20 @@ export default {
         filesArr: {
             type: Array,
             default: () => []
-        }
+        },
+        isLoading: {
+            type: Boolean,
+        },
+        isSelectsLoading: {
+            type: Boolean,
+        },
     },
     components: {
-        FileHighlights
+        FileSnippet,
+        MaterialSnippet,
+        Loader
     },
     setup(props) {
-
-        const closeToggleHandler = (e) => {
-            (e.target.closest('.search-item').classList
-                .toggle('search-item--open'));
-        };
 
         const serializeHighLights = (highlight, currentSection) => {
             const highlightsArr = [];
@@ -202,7 +152,6 @@ export default {
          });
 
         return {
-            closeToggleHandler,
             materialsSnippetsArr,
             createMaterialSnippet,
             formatDate,
@@ -213,36 +162,20 @@ export default {
 </script>
 
 <style>
-.search-item--open .search-item__dropdown {
-    display: block;
+.search-results-wrapper {
+    position: relative;
 }
-.search-item__dropdown {
-    display: none;
-}
-.search-item__icon-wrap {
-    width: 50px;
-}
+
 .search-item__icon-wrap IMG {
     max-width: 100%;
     height:auto;
 }
-.highlight-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size:14px;
-    padding-left: 63px;
-    margin: 10px 0 0;
-}
+
 .highlight-wrapper > span {
     margin-bottom: 5px;
 }
 
 .search-item em {
     background-color: #fff5a7;
-}
-.search-item__panel .col-auto {
-    width:auto;
 }
 </style>

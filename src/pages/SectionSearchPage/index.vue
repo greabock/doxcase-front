@@ -1,6 +1,5 @@
 <template>
 
-    <loader v-show="isLoading || isSelectsLoading"></loader>
     <main class="main-block">
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
@@ -127,6 +126,8 @@
                             :allSections="allSections"
                             :materialsArr="materials"
                             :filesArr="files"
+                            :isLoading="isLoading"
+                            :isSelectsLoading="isSelectsLoading"
                         ></search-results>
                         <div
                             v-if="totalPages > 1 && currentPage !== totalPages"
@@ -326,7 +327,6 @@
 
 <script>
 import {onMounted, onUnmounted, ref, computed, watch, reactive} from 'vue';
-import Loader from '@/components/Loader';
 import MobModalWindow from '@/components/MobModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -340,7 +340,6 @@ import DateFilters from "@/pages/SectionSearchPage/DateFilters";
 
 export default {
     components: {
-      Loader,
       VBreadcrumb,
       FilesTypes,
       SectionSearchSelectors,
