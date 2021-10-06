@@ -18,8 +18,13 @@
                 </div>
             </FileLink>
             <div class="text-dark small">
-                Опубликовано {{formatDate(file.file.created_at)}}
-                <router-link :to="`/sections/${file.section.id}/material/${file.material.id}`">{{file.material.name}}</router-link>
+                <span>
+                    Опубликовано {{formatDate(file.file.created_at)}}
+                </span>
+                <span class='connected-with-material'>
+                    Связано с: <router-link :to="`/sections/${file.section.id}/material/${file.material.id}`">{{file.material.name}}</router-link>
+                </span>
+
             </div>
         </div>
     </div>
@@ -38,7 +43,7 @@
         class="highlight-wrapper"
     >
                 <span v-for="(cont, i) in file.highlights.content"
-                      v-html="`<span>... </span>${cont}`"
+                      v-html="`<span>... </span>${cont}<span> ...</span>`"
                       :key='i'
                       v-show="i < 3"
                 >
@@ -46,6 +51,7 @@
         <div
             class='more-highlights-toggle'
             @click='toggleHighlightsOpen'
+            v-if='file.highlights.content.length > 3'
         >
             Еще {{file.highlights.content.length - 3}} совпадения
         </div>
@@ -54,7 +60,7 @@
         >
             <span
                 v-for="(cont, i) in file.highlights.content"
-                v-html="`<span>... </span>${cont}`"
+                v-html="`<span>... </span>${cont}<span> ...</span>`"
                 :key='i'
                 v-show="i >= 3"
             >
@@ -101,5 +107,9 @@ export default {
 .file-extension {
     color: #1d47ce;
     font-size: 14px;
+}
+.connected-with-material {
+    display: inline-block;
+    margin-left: 50px;
 }
 </style>
