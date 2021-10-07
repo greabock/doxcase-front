@@ -18,7 +18,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="fullQueryObject.search"
+                                                v-model="searchLine"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -337,7 +337,7 @@
             <form>
                 <div class="search-block__input-wrap form-group">
                     <input
-                        v-model="fullQueryObject.search"
+                        v-model="searchLine"
                         class="search-block__input form-control"
                         name="text"
                         type="text"
@@ -447,6 +447,8 @@ export default {
             selectors: []
         }
 
+        const searchLine = ref('');
+
         const fullQueryObject = reactive(initQueryObject);
 
         const convertCheckboxes = (arr) => {
@@ -494,6 +496,7 @@ export default {
             fullQueryObject.selectors = [];
             fullQueryObject.search = '';
             resetSelectorOptions();
+            searchLine.value = '';
             if (section.value.fields) {
                 section.value.fields = [...section.value.fields]
             } else {
@@ -547,13 +550,12 @@ export default {
             () => {
                 fullQueryObject.search = '';
                 currentSectionId.value = '';
+                searchLine.value = '';
                 isAtFirst.value = true;
             }
         );
-        watch( queryObject, async (newVal, oldVal) => {
-                if (newVal.search === oldVal.search) {
-                    await updateMaterialsAndFiles(currentSectionId.value, newVal);
-                }
+        watch( queryObject, async (newVal) => {
+               await updateMaterialsAndFiles(currentSectionId.value, newVal);
             },
             {deep: true}
         );
@@ -576,7 +578,7 @@ export default {
 
 
         const handleSearch = async () => {
-            await updateMaterialsAndFiles(currentSectionId.value, queryObject.value);
+            fullQueryObject.search = searchLine.value;
             isAtFirst.value = false;
         };
 
@@ -631,7 +633,8 @@ export default {
             selectorOptionsArr,
             updateSelectorOptionsArr,
             isSearchResultsLoading,
-            filteredFields
+            filteredFields,
+            searchLine
         };
     },
 };
