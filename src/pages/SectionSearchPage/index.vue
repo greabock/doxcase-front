@@ -25,7 +25,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="fullQueryObject.search"
+                                                v-model="searchLine"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -33,8 +33,8 @@
                                         </div>
                                         <!-- +e.input-wrap-->
                                         <button
-                                            @click.prevent="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
-                                            @keyup.enter="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
+                                            @click.prevent="handleSearch"
+                                            @keyup.enter="handleSearch"
                                             class="search-block__btn">
                                             <svg class="icon icon-search ">
                                                 <use xlink:href="/img/svg/sprite.svg#search"></use>
@@ -407,6 +407,8 @@ export default {
             selectors: []
         }
 
+        const searchLine = ref('');
+
         const fullQueryObject = reactive(initQueryObject);
 
         const convertCheckboxes = (arr) => {
@@ -455,6 +457,7 @@ export default {
             fullQueryObject.selectors = [];
             fullQueryObject.search = '';
             resetSelectorOptions();
+            searchLine.value = '';
         };
         const resetSelectors = () => {
             if (Object.keys(fullQueryObject.selectors).length > 0) {
@@ -499,10 +502,8 @@ export default {
             }
         };
 
-        watch( queryObject, (newVal, oldVal) => {
-            if (newVal.search === oldVal.search) {
-                    updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
-                }
+        watch( queryObject, (newVal) => {
+               updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
             },
             {deep: true}
         );
@@ -526,6 +527,10 @@ export default {
         onUnmounted(() => {
            window.removeEventListener('click', hideMobileSort);
         });
+
+        const handleSearch = async () => {
+            fullQueryObject.search = searchLine.value;
+        };
 
 // Подгрузка при скролле__________________________________________________
         const addSearch = async () => {
@@ -573,6 +578,8 @@ export default {
             selectorOptionsArr,
             filteredFields,
             isSearchResultsLoading,
+            searchLine,
+            handleSearch,
         }
     },
 }
