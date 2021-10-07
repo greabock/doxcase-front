@@ -1,5 +1,8 @@
 <template>
-
+    <loader
+        v-if="isLoading"
+    >
+    </loader>
     <main class="main-block">
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
@@ -128,6 +131,7 @@
                             :filesArr="files"
                             :isLoading="isLoading"
                             :isSelectsLoading="isSelectsLoading"
+                            :isMatFilesUpdating="isMatFilesUpdating"
                         ></search-results>
                         <div
                             v-if="totalPages > 1 && currentPage !== totalPages"
@@ -304,7 +308,6 @@
                                     v-model='fullQueryObject.extensions'
                                 >
                                 </files-types>
-
 <!-- Чекбоксы -->
                                 <checkbox-filters
                                     :fieldsArray="filteredSectionFields"
@@ -337,6 +340,7 @@ import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import DateFilters from "@/pages/SectionSearchPage/DateFilters";
+import Loader from "@/components/Loader";
 
 export default {
     components: {
@@ -346,13 +350,15 @@ export default {
       CheckboxFilters,
       SearchResults,
       DateFilters,
-      MobModalWindow
+      MobModalWindow,
+      Loader
     },
     setup() {
 
         const router = useRouter();
         const isLoading = ref(true);
         const isSelectsLoading = ref(false);
+        const isMatFilesUpdating = ref(false);
         const section = ref({});
         const allSections = ref([]);
         const bcTitle = ref('');
@@ -460,7 +466,6 @@ export default {
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (url, queryObject) => {
             try {
-                isLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, queryObject);
                 materials.value = materialsAndFiles.data.materials;
                 files.value = materialsAndFiles.data.files;
@@ -468,8 +473,6 @@ export default {
                 totalPages.value = materialsAndFiles.last_page;
             } catch(e) {
                 console.log(e);
-            } finally {
-                isLoading.value = false;
             }
         }
 
@@ -480,7 +483,6 @@ export default {
                 resetFilters();
                 resetSelectorsNSearch();
                 bcTitle.value = section.value.title;
-
             } catch(e) {
                 console.log(e)
             } finally {
@@ -560,6 +562,7 @@ export default {
             isSelectsLoading,
             isMobileSort,
             isModSelectorsVisible,
+            isMatFilesUpdating,
         }
     },
 }

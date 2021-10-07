@@ -1,8 +1,7 @@
 <template>
     <div class='search-results-wrapper'>
-
         <loader
-            v-if='isSelectsLoading || isLoading'
+            v-if='isMatFilesUpdating'
             :bgColor="'#f7f7f7'"
             :loaderType="'absolute'"
         >
@@ -69,6 +68,9 @@ export default {
         isSelectsLoading: {
             type: Boolean,
         },
+        isMatFilesUpdating: {
+            type: Boolean,
+        }
     },
     components: {
         FileSnippet,
