@@ -1,11 +1,11 @@
 import {computed} from 'vue';
 
-export function useFilteredFields(props) {
+export function useFilteredFields(fieldsArray) {
 
     const filteredFields = computed(() => {
         let fieldsToSelectors;
-        if (props.fieldsArray.length) {
-            fieldsToSelectors = props.fieldsArray
+        if (fieldsArray.value && fieldsArray.value.length) {
+            fieldsToSelectors = fieldsArray.value
                 .filter(
                     (field) =>
                         field.type.name === 'Enum' ||

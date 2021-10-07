@@ -13,6 +13,7 @@
                             :title="item?.title"
                             v-model="item.selectValue"
                             :options="item.options"
+                            @select="updateOptionsHandler"
                         />
                     </div>
                 </div>
@@ -26,51 +27,39 @@
     </div>
 </template>
 <script>
-import {watch} from 'vue';
+
 import FilterSelect from '@/components/FilterSelect';
-import {useFilteredFields} from '@/hooks/SearchHooks/useFilteredFields';
-import {useSelectorOptions} from '@/hooks/SearchHooks/useSelectorOptions';
 
 export default {
     components: {
         FilterSelect,
     },
     props: {
-        fieldsArray: {
+        selectorOptionsArr: {
             type: Array,
-            default: () => [],
+            default: () => []
         },
-        allSections: {
+        filteredFields: {
             type: Array,
-            default: () => [],
-        },
+            default:() => []
+        }
     },
-    emits: ['updateSelectors', 'isSelectsLoading'],
+    emits: ['updateSelectors'],
 
     setup(props, {emit}) {
-        // const selectorOptionsArr = ref([]);
 
-        const {filteredFields} = useFilteredFields(props);
-        const {selectorOptionsArr} = useSelectorOptions(filteredFields);
-
-        watch(
-            selectorOptionsArr,
-            (newOptsArr) => {
-                let newSelectors = {};
-
-                newOptsArr.forEach((item) => {
-                    if (item && item.selectValue && item.selectValue.length) {
-                        newSelectors[item.id] = item.selectValue.map((item) => item.key);
-                    }
-                });
-                emit('updateSelectors', newSelectors);
-            },
-            {deep: true}
-        );
+        const updateOptionsHandler = () => {
+            let newSelectors = {};
+            props.selectorOptionsArr.forEach((item) => {
+                if (item && item.selectValue && item.selectValue.length) {
+                    newSelectors[item.id] = item.selectValue.map((item) => item.key);
+                }
+            });
+            emit('updateSelectors', newSelectors);
+        }
 
         return {
-            selectorOptionsArr,
-            filteredFields,
+            updateOptionsHandler
         };
     },
 };

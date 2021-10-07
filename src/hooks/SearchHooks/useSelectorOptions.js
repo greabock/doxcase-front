@@ -1,8 +1,11 @@
-import {ref, watch} from 'vue';
+import {ref} from 'vue';
 import enumsService from '@/services/enums.service';
 import sectionsService from '@/services/sections.service';
 
 export function useSelectorOptions(filteredFields) {
+
+    const selectorOptionsArr = ref([]);
+
     const createSelectOption = (field, opts, multi) => {
         return {
             selectValue: [],
@@ -50,41 +53,44 @@ export function useSelectorOptions(filteredFields) {
         }
     };
 
-    const selectorOptionsArr = ref([]);
+    const updateSelectorOptionsArr = async () => {
+        selectorOptionsArr.value = await Promise.all(
+            filteredFields.value.map(async (field) => {
+                switch (field.type.name) {
+                    case 'Select':
+                        return createSelectOption(field, field.type.of, false);
 
-    watch(
-        filteredFields,
-        async (newVal) => {
-            selectorOptionsArr.value = await Promise.all(
-                newVal.map(async (field) => {
-                    switch (field.type.name) {
-                        case 'Select':
-                            return createSelectOption(field, field.type.of, false);
+                    case 'Enum':
+                        return await createEnumOption(field, field.type.of, false);
 
-                        case 'Enum':
-                            return await createEnumOption(field, field.type.of, false);
+                    case 'Dictionary':
+                        return await createDictionaryOption(field, field.type.of, false);
 
-                        case 'Dictionary':
-                            return await createDictionaryOption(field, field.type.of, false);
+                    case 'List':
+                        switch (field.type.of.name) {
+                            case 'Select':
+                                return createSelectOption(field, field.type.of.of, true);
 
-                        case 'List':
-                            switch (field.type.of.name) {
-                                case 'Select':
-                                    return createSelectOption(field, field.type.of.of, true);
+                            case 'Enum':
+                                return await createEnumOption(field, field.type.of.of, true);
 
-                                case 'Enum':
-                                    return await createEnumOption(field, field.type.of.of, true);
+                            case 'Dictionary':
+                                return await createDictionaryOption(field, field.type.of.of, true);
+                        }
+                }
+            })
+        );
+    }
 
-                                case 'Dictionary':
-                                    return await createDictionaryOption(field, field.type.of.of, true);
-                            }
-                    }
-                })
-            );
-        },
-        {deep: true}
-    );
+    const resetSelectorOptions = () => {
+        selectorOptionsArr.value.forEach(option => {
+            option.selectValue = [];
+        })
+    }
+
     return {
         selectorOptionsArr,
+        updateSelectorOptionsArr,
+        resetSelectorOptions
     }
 }

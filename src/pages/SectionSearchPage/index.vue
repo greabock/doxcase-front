@@ -75,10 +75,9 @@
                         <div class="d-lg-block d-none">
                             <div class="">
                                 <section-search-selectors
-                                    :allSections="allSections"
-                                    :fieldsArray="filteredSectionFields"
+                                    :selectorOptionsArr="selectorOptionsArr"
+                                    :filteredFields="filteredFields"
                                     @updateSelectors="updateSelectorHandler"
-                                    @isSelectsLoading = "setSelectsLoading"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -341,6 +340,8 @@ import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import DateFilters from "@/pages/SectionSearchPage/DateFilters";
 import Loader from "@/components/Loader";
+import {useFilteredFields} from '@/hooks/SearchHooks/useFilteredFields';
+import {useSelectorOptions} from '@/hooks/SearchHooks/useSelectorOptions';
 
 export default {
     components: {
@@ -373,6 +374,14 @@ export default {
                 return []
             }
         })
+
+        const {filteredFields} = useFilteredFields(filteredSectionFields);
+        const {
+                selectorOptionsArr,
+                updateSelectorOptionsArr,
+                resetSelectorOptions
+                } = useSelectorOptions(filteredFields);
+
 //Моб. отображение___________________________
         const isMobileSort = ref(false);
         const hideMobileSort = (e) => {
@@ -451,11 +460,13 @@ export default {
             section.value.fields = [...section.value.fields]
             fullQueryObject.selectors = [];
             fullQueryObject.search = '';
+            resetSelectorOptions();
         };
         const resetSelectors = () => {
             if (Object.keys(fullQueryObject.selectors).length > 0) {
                 section.value.felds = [...section.value.fields];
                 fullQueryObject.selectors = [];
+                resetSelectorOptions();
             }
         };
 
@@ -480,6 +491,7 @@ export default {
             try {
                 isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(id);
+                await updateSelectorOptionsArr();
                 resetFilters();
                 resetSelectorsNSearch();
                 bcTitle.value = section.value.title;
@@ -503,6 +515,7 @@ export default {
                 await updateSearchPage(router.currentRoute.value.params.id);
             }
         });
+
         onMounted(async () => {
             try {
                 isLoading.value = true;
@@ -563,6 +576,8 @@ export default {
             isMobileSort,
             isModSelectorsVisible,
             isMatFilesUpdating,
+            selectorOptionsArr,
+            filteredFields,
         }
     },
 }
