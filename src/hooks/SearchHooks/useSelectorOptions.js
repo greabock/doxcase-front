@@ -3,7 +3,7 @@ import enumsService from '@/services/enums.service';
 import sectionsService from '@/services/sections.service';
 
 export function useSelectorOptions(filteredFields) {
-
+console.log('filteredFields', filteredFields.value);
     const selectorOptionsArr = ref([]);
 
     const createSelectOption = (field, opts, multi) => {

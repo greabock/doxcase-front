@@ -128,7 +128,8 @@
                             :materialsArr="materials"
                             :filesArr="files"
                             :isSearchResultsLoading="isSearchResultsLoading"
-                        ></search-results>
+                        >
+                        </search-results>
                         <div
                             v-if="totalPages > 1 && currentPage !== totalPages"
                             v-intersection="addSearch"
