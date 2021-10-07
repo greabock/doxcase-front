@@ -1,7 +1,7 @@
 <template>
     <div class='search-results-wrapper'>
         <loader
-            v-if='isMatFilesUpdating'
+            v-if='isSearchResultsLoading'
             :bgColor="'#f7f7f7'"
             :loaderType="'absolute'"
         >
@@ -62,13 +62,7 @@ export default {
             type: Array,
             default: () => []
         },
-        isLoading: {
-            type: Boolean,
-        },
-        isSelectsLoading: {
-            type: Boolean,
-        },
-        isMatFilesUpdating: {
+        isSearchResultsLoading: {
             type: Boolean,
         }
     },

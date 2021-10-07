@@ -103,10 +103,9 @@
                             </div>
                                 <div>
                                     <section-search-selectors
-                                        :allSections="allSections"
-                                        :fieldsArray="filteredSectionFields"
+                                        :selectorOptionsArr="selectorOptionsArr"
+                                        :filteredFields="filteredFields"
                                         @updateSelectors="updateSelectorHandler"
-                                        @isSelectsLoading = "setSelectsLoading"
                                     ></section-search-selectors>
                                 </div>
                                 <div class="mb-3">
@@ -128,9 +127,7 @@
                             :allSections="allSections"
                             :materialsArr="materials"
                             :filesArr="files"
-                            :isLoading="isLoading"
-                            :isSelectsLoading="isSelectsLoading"
-                            :isMatFilesUpdating="isMatFilesUpdating"
+                            :isSearchResultsLoading="isSearchResultsLoading"
                         ></search-results>
                         <div
                             v-if="totalPages > 1 && currentPage !== totalPages"
@@ -358,12 +355,10 @@ export default {
 
         const router = useRouter();
         const isLoading = ref(true);
-        const isSelectsLoading = ref(false);
-        const isMatFilesUpdating = ref(false);
+        const isSearchResultsLoading = ref(false);
         const section = ref({});
         const allSections = ref([]);
         const bcTitle = ref('');
-
         const currentPage = ref(1);
         const totalPages = ref(1);
         const isPreloaderShown = ref(false);
@@ -446,9 +441,7 @@ export default {
         const updateSelectorHandler = (newSelectors) => {
             fullQueryObject.selectors = newSelectors;
         }
-        const setSelectsLoading = (bool) => {
-            isSelectsLoading.value = bool;
-        }
+
 //Сбросы поиска________________________
         const resetFilters = () => {
             fullQueryObject.checkboxes = [];
@@ -477,6 +470,7 @@ export default {
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (url, queryObject) => {
             try {
+                isSearchResultsLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, queryObject);
                 materials.value = materialsAndFiles.data.materials;
                 files.value = materialsAndFiles.data.files;
@@ -484,6 +478,8 @@ export default {
                 totalPages.value = materialsAndFiles.last_page;
             } catch(e) {
                 console.log(e);
+            } finally {
+                isSearchResultsLoading.value = false;
             }
         }
 
@@ -571,13 +567,11 @@ export default {
             filteredSectionFields,
             fullQueryObject,
             queryObject,
-            setSelectsLoading,
-            isSelectsLoading,
             isMobileSort,
             isModSelectorsVisible,
-            isMatFilesUpdating,
             selectorOptionsArr,
             filteredFields,
+            isSearchResultsLoading,
         }
     },
 }
