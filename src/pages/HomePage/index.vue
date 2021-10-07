@@ -1,5 +1,5 @@
 <template>
-    <loader v-show="isLoading || isSelectsLoading"></loader>
+    <loader v-show="isLoading"></loader>
     <main v-if="!isAtFirst" class="main-block">
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
@@ -18,7 +18,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="fullQueryObject.search"
+                                                v-model="searchLine"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -71,7 +71,10 @@
                         </div>
 <!-- Переключатели разделов -->
                         <div v-if="allSections?.length" class="sSearchResult__btns py-3">
-                            <section-search-radio :key="13234" v-model="currentSectionId"> </section-search-radio>
+                            <section-search-radio
+                                :key="13234"
+                                v-model="currentSectionId">
+                            </section-search-radio>
                             <section-search-radio
                                 v-for="section in allSections"
                                 :key="section?.id"
@@ -84,10 +87,9 @@
                         <div class="d-lg-block d-none">
                             <div class="">
                                 <section-search-selectors
-                                    :allSections="allSections"
-                                    :fieldsArray="filteredSectionFields"
+                                    :selectorOptionsArr="selectorOptionsArr"
+                                    :filteredFields="filteredFields"
                                     @updateSelectors="updateSelectorHandler"
-                                    @isSelectsLoading = "setSelectsLoading"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -109,10 +111,9 @@
                             </div>
                             <div>
                                 <section-search-selectors
-                                    :allSections="allSections"
-                                    :fieldsArray="filteredSectionFields"
+                                    :selectorOptionsArr="selectorOptionsArr"
+                                    :filteredFields="filteredFields"
                                     @updateSelectors="updateSelectorHandler"
-                                    @isSelectsLoading = "setSelectsLoading"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -134,7 +135,9 @@
                             :allSections="allSections"
                             :materialsArr="materials"
                             :filesArr="files"
-                        ></search-results>
+                            :isSearchResultsLoading="isSearchResultsLoading"
+                        >
+                        </search-results>
                         <div
                             v-if="totalPages > 1 && currentPage !== totalPages"
                             v-intersection="addSearch"
@@ -334,7 +337,7 @@
             <form>
                 <div class="search-block__input-wrap form-group">
                     <input
-                        v-model="fullQueryObject.search"
+                        v-model="searchLine"
                         class="search-block__input form-control"
                         name="text"
                         type="text"
@@ -370,6 +373,8 @@ import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import SectionSearchRadio from '@/components/SearchSectionRadio';
 import {useStore} from 'vuex';
 import DateFilters from "@/pages/SectionSearchPage/DateFilters";
+import {useFilteredFields} from '@/hooks/SearchHooks/useFilteredFields';
+import {useSelectorOptions} from '@/hooks/SearchHooks/useSelectorOptions';
 
 export default {
     components: {
@@ -384,11 +389,12 @@ export default {
         MobModalWindow,
     },
     setup() {
-        const isLoading = ref(false);
-        const isSelectsLoading = ref(false);
         const isAtFirst = ref(true); // При первом открытии старницы
-        const bcTitle = ref('');
 
+        const isLoading = ref(false);
+        const isSearchResultsLoading = ref(false);
+
+        const bcTitle = ref('');
         const currentSectionId = ref('');
         const section = ref({}); // если идет поиск по секции или {}
         const allSections = ref([]);
@@ -405,6 +411,14 @@ export default {
             }
         })
         const store = useStore();
+
+        const {filteredFields} = useFilteredFields(filteredSectionFields);
+        const {
+            selectorOptionsArr,
+            updateSelectorOptionsArr,
+            resetSelectorOptions
+        } = useSelectorOptions(filteredFields);
+
 //Моб. отображение___________________________
         const isMobileSort = ref(false);
         const hideMobileSort = (e) => {
@@ -432,6 +446,8 @@ export default {
             dateFilters:{},
             selectors: []
         }
+
+        const searchLine = ref('');
 
         const fullQueryObject = reactive(initQueryObject);
 
@@ -468,9 +484,6 @@ export default {
         const updateSelectorHandler = (newSelectors) => {
             fullQueryObject.selectors = newSelectors;
         }
-        const setSelectsLoading = (bool) => {
-            isSelectsLoading.value = bool;
-        }
 
 //Сбросы поиска________________________
         const resetFilters = () => {
@@ -482,6 +495,8 @@ export default {
         const resetSelectorsNSearch = () => {
             fullQueryObject.selectors = [];
             fullQueryObject.search = '';
+            resetSelectorOptions();
+            searchLine.value = '';
             if (section.value.fields) {
                 section.value.fields = [...section.value.fields]
             } else {
@@ -492,6 +507,7 @@ export default {
             if (Object.keys(fullQueryObject.selectors).length && section.value.fields) {
                 section.value.fields = [...section.value.fields];
                 fullQueryObject.selectors = [];
+                resetSelectorOptions();
             }
         };
 
@@ -503,7 +519,7 @@ export default {
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (id, queryObject) => {
             try {
-                isLoading.value = true;
+                isSearchResultsLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(id, queryObject);
                 materials.value = materialsAndFiles.data.materials;
                 files.value = materialsAndFiles.data.files;
@@ -512,7 +528,7 @@ export default {
             } catch (e) {
                 console.log(e);
             } finally {
-                isLoading.value = false;
+                isSearchResultsLoading.value = false;
             }
         };
 
@@ -520,6 +536,7 @@ export default {
             try {
                 isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(id);
+                await updateSelectorOptionsArr();
                 resetSelectors();
                 resetFilters();
             } catch (e) {
@@ -528,26 +545,25 @@ export default {
                 isLoading.value = false;
             }
         };
-        watch(
-            () => store.getters['search/getAtFirst'],
+
+        watch(() => store.getters['search/getAtFirst'],
             () => {
                 fullQueryObject.search = '';
                 currentSectionId.value = '';
+                searchLine.value = '';
                 isAtFirst.value = true;
             }
         );
-        watch(
-            queryObject,
-            async (newVal, oldVal) => {
-                if (newVal.search === oldVal.search) {
-                    await updateMaterialsAndFiles(currentSectionId.value, newVal);
-                }
+        watch( queryObject, async (newVal) => {
+               await updateMaterialsAndFiles(currentSectionId.value, newVal);
             },
             {deep: true}
         );
+
         watch(currentSectionId, async () => {
             await updateSearchPage(currentSectionId.value);
         });
+
         onMounted(async () => {
             try {
                 allSections.value = await sectionsService.getSections();
@@ -562,7 +578,7 @@ export default {
 
 
         const handleSearch = async () => {
-            await updateMaterialsAndFiles(currentSectionId.value, queryObject.value);
+            fullQueryObject.search = searchLine.value;
             isAtFirst.value = false;
         };
 
@@ -608,14 +624,17 @@ export default {
             currentSectionId,
             handleSearch,
             filteredSectionFields,
-            isSelectsLoading,
-            setSelectsLoading,
             fullQueryObject,
             totalPages,
             currentPage,
             isPreloaderShown,
             isMobileSort,
             isModSelectorsVisible,
+            selectorOptionsArr,
+            updateSelectorOptionsArr,
+            isSearchResultsLoading,
+            filteredFields,
+            searchLine
         };
     },
 };
