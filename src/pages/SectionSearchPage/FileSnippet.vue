@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-auto">
+        <div class="col-auto file-icon-wrapper">
             <div class="search-item__icon-wrap">
                 <svg width="16" height="21"
                      viewBox="0 0 16 21" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +17,7 @@
                     {{ file.file.name }}
                 </div>
             </FileLink>
-            <div class="text-dark small mb-3">
+            <div class="text-dark small">
                 <span>
                     Опубликовано {{formatDate(file.file.created_at)}}
                 </span>
@@ -122,9 +122,15 @@ export default {
     margin-left: 50px;
 }
 .highlight-wrapper {
-    padding-left: 40px;
+    padding-top: 10px;
+    padding-left: 65px;
 }
 .highlight-p {
+    font-size:15px;
     margin-bottom: 5px;
+}
+.file-icon-wrapper {
+    text-align: center;
+    width: 65px;
 }
 </style>
