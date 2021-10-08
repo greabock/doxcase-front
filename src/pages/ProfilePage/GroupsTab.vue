@@ -20,7 +20,7 @@
         </div>
     </div>
     <group-users-list
-        :allUsers="allUsers"
+        :allUsers="noAdminUsers"
         :propGroup="currentGroup"
         v-if="currentGroup?.id && allUsers.length > 0"
         @updateGroup="updateGroup"
@@ -143,11 +143,14 @@ export default {
 //Выбор группы________________________
         const allGroups = ref([]);
         const allUsers = ref([]);
+        const noAdminUsers = computed(() => {
+            return [...allUsers.value].filter(user => user.role !== 'admin');
+        })
         const currentGroup = ref({});
         const loading = ref(false);
 
         const sortedFilteredAllUsers = computed(() => {
-            return [...allUsers.value]
+            return [...noAdminUsers.value]
                 .map(user => {
                     user.modalShow = user.name.toLowerCase().includes(searchValue.value.toLowerCase());
                     return user;
@@ -155,7 +158,7 @@ export default {
                 .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1 )
         })
 
-        // Поиск пользователей_________________
+// Поиск пользователей_________________
         const searchValue = ref('');
 
         const fetchAllUsers = async () => {
@@ -280,11 +283,12 @@ export default {
             setGroupToRemove,
             removeGroup,
             searchValue,
-            allUsers,
             submitHandle,
             nameValue,
             nameError,
             formMeta,
+            allUsers,
+            noAdminUsers,
             sortedFilteredAllUsers,
             updateGroup,
             cancelUpdateGroup,

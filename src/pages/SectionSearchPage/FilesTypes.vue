@@ -33,7 +33,7 @@ export default {
             }
     },
     setup(props, {emit}) {
-        const initExtensions = (['materials', 'doc', 'xls', 'xlsx', 'jpg', 'pdf', 'png', 'pptx',]);
+        const initExtensions = (['materials', 'doc','docx', 'xls', 'xlsx', 'jpg', 'pdf', 'png', 'pptx',]);
         const changeHandler = (ext) => {
 
             let updExtensions;
