@@ -19,7 +19,7 @@
     </div>
 </template>
 <script>
-import {ref} from 'vue';
+import {ref, watch, computed} from 'vue';
 
 export default {
     props: {
@@ -42,6 +42,16 @@ export default {
             ctx.emit('update:modelValue', false);
             ctx.emit('close');
         };
+        const bodyNode = document.getElementById('body');
+        const isModalOpened = computed(() => props.modelValue);
+        watch(isModalOpened, (newVal) => {
+            if (newVal) {
+                bodyNode.style.overflowY = 'hidden';
+            } else {
+                bodyNode.style.overflowY = 'auto';
+            }
+        });
+
         return {
           close,
           wrapper,

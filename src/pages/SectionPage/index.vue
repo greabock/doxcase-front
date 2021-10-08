@@ -278,7 +278,17 @@ import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 import {defineAccessType} from '@/utils/section.helpers';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
+    components: {
+        FieldsToFilter,
+        NewFieldForm,
+        FieldsList,
+        UploaderImage,
+        VBreadcrumb,
+        VButton,
+        ModalWindow,
+        Loader,
+        AccessControlForm
+    },
     setup() {
         const isLoading = ref(true);
         let initSection = null;
@@ -370,6 +380,9 @@ export default {
             setFieldModalVisible(false);
         };
         const updateSection = async () => {
+            const newSection = {...section.value};
+            delete newSection.image;
+
             try {
                 isLoading.value = true;
                 if (fileInput.value) {
@@ -378,10 +391,10 @@ export default {
 
                     const imageResp =  await filesService.uploadFiles(formData);
                     if (imageResp) {
-                        section.value.image = imageResp[0].url;
+                        newSection.image = imageResp[0].url;
                     }
                 }
-                await sectionsService.updateSection(section.value);
+                await sectionsService.updateSection(newSection);
                 router.push(`/sections`);
             } catch (e) {
                 console.log(e);
