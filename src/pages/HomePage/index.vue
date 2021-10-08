@@ -28,7 +28,7 @@
                                         <!-- +e.input-wrap-->
                                         <button
                                             @click.prevent="handleSearch"
-                                            @keyup.enter="updateMaterialsAndFiles(currentSectionId, queryObject)"
+                                            @keyup.enter="handleSearch"
                                             class="search-block__btn"
                                         >
                                             <svg class="icon icon-search">
@@ -347,7 +347,7 @@
                 <!-- +e.input-wrap-->
                 <button
                     @click.prevent="handleSearch"
-                    @keyup.enter="updateMaterialsAndFiles(currentSectionId, queryObject)"
+                    @keyup.enter="handleSearch"
                     class="search-block__btn"
                     type="submit"
                 >
@@ -578,7 +578,11 @@ export default {
 
 
         const handleSearch = async () => {
-            fullQueryObject.search = searchLine.value;
+            if (fullQueryObject.search !== searchLine.value) {
+                fullQueryObject.search = searchLine.value;
+            } else {
+                await updateMaterialsAndFiles(currentSectionId.value, queryObject.value);
+            }
             isAtFirst.value = false;
         };
 
