@@ -17,7 +17,7 @@
                     {{ file.file.name }}
                 </div>
             </FileLink>
-            <div class="text-dark small mb-3">
+            <div class="text-dark small">
                 <span>
                     Опубликовано {{formatDate(file.file.created_at)}}
                 </span>
@@ -122,6 +122,7 @@ export default {
     margin-left: 50px;
 }
 .highlight-wrapper {
+    padding-top: 10px;
     padding-left: 65px;
 }
 .highlight-p {
