@@ -88,7 +88,7 @@ export default {
         };
         const newField = ref({...initField, ...props.fieldToChange});
 
-        const allExtensions =  ['doc', 'xls', 'xlsx', 'jpg', 'pdf', 'png', 'pptx',];
+        const allExtensions =  ['doc', 'docx', 'xls', 'xlsx', 'jpg', 'pdf', 'png', 'pptx',];
 
         const schema = yup.object({
             title: yup.string().required(),

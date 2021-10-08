@@ -1,7 +1,14 @@
 <template>
-    <div class="content-loader__wrapper">
+    <div
+        class="content-loader__wrapper"
+        :style="{
+            backgroundColor: bgColor,
+            position: loaderType,
+            zIndex: loaderType === 'fixed' ? 100 : 1,
+            alignItems: loaderType === 'fixed' ? 'center' : 'flex-start'
+        }"
+    >
         <div class="content-loader__cont">
-
             <div class="lds-default">
                 <div></div>
                 <div></div>
@@ -23,7 +30,16 @@
 
 <script>
 export default {
-
+props: {
+    bgColor: {
+        type: String,
+        default: '#fff'
+    },
+    loaderType: {
+        type: String,
+        default: 'fixed'
+    }
+}
 };
 </script>
 

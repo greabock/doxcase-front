@@ -1,6 +1,8 @@
 <template>
-
-    <loader v-show="isLoading || isSelectsLoading"></loader>
+    <loader
+        v-if="isLoading"
+    >
+    </loader>
     <main class="main-block">
         <div class="sSearchResult section" id="sSearchResult">
             <div class="container-fluid">
@@ -23,7 +25,7 @@
                                     <form>
                                         <div class="search-block__input-wrap form-group">
                                             <input
-                                                v-model="fullQueryObject.search"
+                                                v-model="searchLine"
                                                 class="search-block__input form-control"
                                                 name="text"
                                                 type="text"
@@ -31,8 +33,8 @@
                                         </div>
                                         <!-- +e.input-wrap-->
                                         <button
-                                            @click.prevent="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
-                                            @keyup.enter="updateMaterialsAndFiles( $router.currentRoute.value.params.id, queryObject)"
+                                            @click.prevent="handleSearch"
+                                            @keyup.enter="handleSearch"
                                             class="search-block__btn">
                                             <svg class="icon icon-search ">
                                                 <use xlink:href="/img/svg/sprite.svg#search"></use>
@@ -73,10 +75,9 @@
                         <div class="d-lg-block d-none">
                             <div class="">
                                 <section-search-selectors
-                                    :allSections="allSections"
-                                    :fieldsArray="filteredSectionFields"
+                                    :selectorOptionsArr="selectorOptionsArr"
+                                    :filteredFields="filteredFields"
                                     @updateSelectors="updateSelectorHandler"
-                                    @isSelectsLoading = "setSelectsLoading"
                                 ></section-search-selectors>
                             </div>
                             <div class="mb-3">
@@ -102,10 +103,9 @@
                             </div>
                                 <div>
                                     <section-search-selectors
-                                        :allSections="allSections"
-                                        :fieldsArray="filteredSectionFields"
+                                        :selectorOptionsArr="selectorOptionsArr"
+                                        :filteredFields="filteredFields"
                                         @updateSelectors="updateSelectorHandler"
-                                        @isSelectsLoading = "setSelectsLoading"
                                     ></section-search-selectors>
                                 </div>
                                 <div class="mb-3">
@@ -127,7 +127,9 @@
                             :allSections="allSections"
                             :materialsArr="materials"
                             :filesArr="files"
-                        ></search-results>
+                            :isSearchResultsLoading="isSearchResultsLoading"
+                        >
+                        </search-results>
                         <div
                             v-if="totalPages > 1 && currentPage !== totalPages"
                             v-intersection="addSearch"
@@ -303,7 +305,6 @@
                                     v-model='fullQueryObject.extensions'
                                 >
                                 </files-types>
-
 <!-- Чекбоксы -->
                                 <checkbox-filters
                                     :fieldsArray="filteredSectionFields"
@@ -326,7 +327,6 @@
 
 <script>
 import {onMounted, onUnmounted, ref, computed, watch, reactive} from 'vue';
-import Loader from '@/components/Loader';
 import MobModalWindow from '@/components/MobModalWindow';
 import VBreadcrumb from '@/ui/VBreadcrumb';
 import sectionsService from '@/services/sections.service';
@@ -337,27 +337,29 @@ import FilesTypes from '@/pages/SectionSearchPage/FilesTypes';
 import CheckboxFilters from '@/pages/SectionSearchPage/CheckboxFilters';
 import SearchResults from '@/pages/SectionSearchPage/SearchResults';
 import DateFilters from "@/pages/SectionSearchPage/DateFilters";
+import Loader from "@/components/Loader";
+import {useFilteredFields} from '@/hooks/SearchHooks/useFilteredFields';
+import {useSelectorOptions} from '@/hooks/SearchHooks/useSelectorOptions';
 
 export default {
     components: {
-      Loader,
       VBreadcrumb,
       FilesTypes,
       SectionSearchSelectors,
       CheckboxFilters,
       SearchResults,
       DateFilters,
-      MobModalWindow
+      MobModalWindow,
+      Loader
     },
     setup() {
 
         const router = useRouter();
         const isLoading = ref(true);
-        const isSelectsLoading = ref(false);
+        const isSearchResultsLoading = ref(false);
         const section = ref({});
         const allSections = ref([]);
         const bcTitle = ref('');
-
         const currentPage = ref(1);
         const totalPages = ref(1);
         const isPreloaderShown = ref(false);
@@ -368,6 +370,14 @@ export default {
                 return []
             }
         })
+
+        const {filteredFields} = useFilteredFields(filteredSectionFields);
+        const {
+                selectorOptionsArr,
+                updateSelectorOptionsArr,
+                resetSelectorOptions
+                } = useSelectorOptions(filteredFields);
+
 //Моб. отображение___________________________
         const isMobileSort = ref(false);
         const hideMobileSort = (e) => {
@@ -396,6 +406,8 @@ export default {
             dateFilters:{},
             selectors: []
         }
+
+        const searchLine = ref('');
 
         const fullQueryObject = reactive(initQueryObject);
 
@@ -432,9 +444,7 @@ export default {
         const updateSelectorHandler = (newSelectors) => {
             fullQueryObject.selectors = newSelectors;
         }
-        const setSelectsLoading = (bool) => {
-            isSelectsLoading.value = bool;
-        }
+
 //Сбросы поиска________________________
         const resetFilters = () => {
             fullQueryObject.checkboxes = [];
@@ -446,11 +456,14 @@ export default {
             section.value.fields = [...section.value.fields]
             fullQueryObject.selectors = [];
             fullQueryObject.search = '';
+            resetSelectorOptions();
+            searchLine.value = '';
         };
         const resetSelectors = () => {
             if (Object.keys(fullQueryObject.selectors).length > 0) {
                 section.value.felds = [...section.value.fields];
                 fullQueryObject.selectors = [];
+                resetSelectorOptions();
             }
         };
 
@@ -461,7 +474,7 @@ export default {
 // Отправка поискового запроса_____________
         const updateMaterialsAndFiles = async (url, queryObject) => {
             try {
-                isLoading.value = true;
+                isSearchResultsLoading.value = true;
                 const materialsAndFiles = await searchService.searchSectionPost(url, queryObject);
                 materials.value = materialsAndFiles.data.materials;
                 files.value = materialsAndFiles.data.files;
@@ -470,7 +483,7 @@ export default {
             } catch(e) {
                 console.log(e);
             } finally {
-                isLoading.value = false;
+                isSearchResultsLoading.value = false;
             }
         }
 
@@ -478,10 +491,10 @@ export default {
             try {
                 isLoading.value = true;
                 section.value = await sectionsService.getSectionObject(id);
+                await updateSelectorOptionsArr();
                 resetFilters();
                 resetSelectorsNSearch();
                 bcTitle.value = section.value.title;
-
             } catch(e) {
                 console.log(e)
             } finally {
@@ -489,10 +502,8 @@ export default {
             }
         };
 
-        watch( queryObject, (newVal, oldVal) => {
-            if (newVal.search === oldVal.search) {
-                    updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
-                }
+        watch( queryObject, (newVal) => {
+               updateMaterialsAndFiles(router.currentRoute.value.params.id, newVal)
             },
             {deep: true}
         );
@@ -502,6 +513,7 @@ export default {
                 await updateSearchPage(router.currentRoute.value.params.id);
             }
         });
+
         onMounted(async () => {
             try {
                 isLoading.value = true;
@@ -515,6 +527,10 @@ export default {
         onUnmounted(() => {
            window.removeEventListener('click', hideMobileSort);
         });
+
+        const handleSearch = async () => {
+            fullQueryObject.search = searchLine.value;
+        };
 
 // Подгрузка при скролле__________________________________________________
         const addSearch = async () => {
@@ -557,10 +573,13 @@ export default {
             filteredSectionFields,
             fullQueryObject,
             queryObject,
-            setSelectsLoading,
-            isSelectsLoading,
             isMobileSort,
             isModSelectorsVisible,
+            selectorOptionsArr,
+            filteredFields,
+            isSearchResultsLoading,
+            searchLine,
+            handleSearch,
         }
     },
 }
