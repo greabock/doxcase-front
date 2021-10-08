@@ -122,12 +122,14 @@ export default {
     margin-left: 50px;
 }
 .highlight-wrapper {
-    padding-left: 60px;
+    padding-left: 65px;
 }
 .highlight-p {
+    font-size:15px;
     margin-bottom: 5px;
 }
 .file-icon-wrapper {
-    width: 60px;
+    text-align: center;
+    width: 65px;
 }
 </style>
