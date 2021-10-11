@@ -35,6 +35,12 @@
                         placeholder="Название справончика"
                     />
                 </div>
+                <span
+                    v-if="errorMessage"
+                    class="error-message-wrap"
+                >
+                    {{errorMessage}}
+                </span>
                 <button :disabled="!enumFormMeta.valid" type="submit" class="btn btn-primary w-100">
                     <span>Добавить</span>
                 </button>
@@ -58,7 +64,6 @@
 import {onMounted, ref} from 'vue';
 import enumsService from '@/services/enums.service';
 import {useForm, useField} from 'vee-validate';
-import * as yup from 'yup';
 import EnumsItems from '@/pages/ProfilePage/EnumsItems';
 import VButton from '@/ui/VButton';
 import VBox from '@/ui/VBox';
@@ -95,15 +100,21 @@ export default {
             isModalVisible.value = bool;
         };
 
-        const enumSchema = yup.object({
-            enumTitle: yup.string().required().min(2),
-        });
+        const enumSchema = {
+            enumTitle(value) {
+                if (!value || !value.trim()) {
+                    return 'Введите название справочника';
+                }
+                if (enums.value.map(item => item.title).includes(value)) {
+                    return 'Такой справочник уже существует'
+                }
+                return true;
+            }
+        };
 
-        const {handleSubmit, meta: enumFormMeta, setValues} = useForm({validationSchema: enumSchema});
-        const {value: enumTitle} = useField('enumTitle');
-        setValues({
-            enumTitle: '',
-        });
+        const {handleSubmit, meta: enumFormMeta} = useForm({validationSchema: enumSchema});
+        const {value: enumTitle, errorMessage} = useField('enumTitle');
+
         const onEnumSubmit = handleSubmit(async (values, actions) => {
             await addNewEnum(values.enumTitle);
             actions.resetForm();
@@ -164,7 +175,15 @@ export default {
             onEnumSubmit,
             enumTitle,
             enumFormMeta,
+            errorMessage,
         };
     },
 };
 </script>
+<style scoped>
+    .error-message-wrap{
+        display: block;
+        margin-bottom: 10px;
+        color: #ff0000;
+    }
+</style>

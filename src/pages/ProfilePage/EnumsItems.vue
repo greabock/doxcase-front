@@ -30,7 +30,7 @@
                 <Field type="text" name="title" placeholder="Новая позиция" class="block-position__title" />
                 <div class="block-position__btns">
                     <button
-                        :ref="addEnumItemButton"
+                        ref="addEnumItemButton"
                         class="btn-edit-sm btn-success"
                     >
                         <svg class="icon icon-check">
@@ -176,8 +176,8 @@ export default {
         const addEnumsItem = async (title, actions) => {
             try {
                 enumObject.value = await enumsService.addEnumsItem(enumObject.value, title);
-                addEnumItemButton.value?.focus();
                 actions.resetForm();
+                addEnumItemButton.value.blur();
             } catch (e) {
                 console.log(e.message);
             }
