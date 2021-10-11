@@ -105,7 +105,7 @@ export default {
                 if (!value || !value.trim()) {
                     return 'Введите название справочника';
                 }
-                if (enums.value.map(item => item.title).includes(value)) {
+                if (enums.value.map(item => item.title.toLowerCase()).includes(value.toLowerCase())) {
                     return 'Такой справочник уже существует'
                 }
                 return true;

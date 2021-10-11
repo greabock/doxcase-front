@@ -125,7 +125,6 @@ import VButton from '@/ui/VButton';
 import VBox from '@/ui/VBox';
 import ModalWindow from '@/components/ModalWindow';
 import GroupUsersList from '@/pages/ProfilePage/GroupUsersList';
-import * as yup from 'yup';
 import {useField, useForm} from 'vee-validate';
 import usersService from '@/services/users.service';
 import groupService from '@/services/group.service';
@@ -171,9 +170,17 @@ export default {
 
 // Добавление группы__________________
         const isAddModalVisible = ref(false);
-        const schema = yup.object({
-            name: yup.string().required('Поле обязательно для заполнения')
-        });
+        const schema = {
+            name(value) {
+                if (!value || !value.trim()) {
+                    return 'Введите название группы';
+                }
+                if (allGroups.value.map(item => item.name.toLowerCase()).includes(value.toLowerCase())) {
+                    return 'Такая группа уже существует'
+                }
+                return true;
+            }
+        };
 
         const {handleSubmit, meta: formMeta, resetForm} = useForm({
             validationSchema: schema
@@ -366,5 +373,10 @@ max-height: 240px!important;
     right: 0;
     z-index: 1000;
     background-color: rgba(255, 255, 255, 0.5);
+}
+.error-message-wrap{
+    display: block;
+    margin-bottom: 10px;
+    color: #ff0000;
 }
 </style>
