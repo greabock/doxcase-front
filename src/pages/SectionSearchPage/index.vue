@@ -383,7 +383,7 @@ export default {
         const hideMobileSort = (e) => {
             const sortContainer = document.querySelector('#sort-aside-node');
             const openMobileSortButton = document.querySelector('.sSearchResult__btn-toggle--js');
-            if(!sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
+            if(sortContainer && !sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
                 isMobileSort.value = false;
             }
         }
