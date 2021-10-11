@@ -555,6 +555,7 @@ export default {
             }
         );
         watch( queryObject, async (newVal) => {
+               searchLine.value = fullQueryObject.search;
                await updateMaterialsAndFiles(currentSectionId.value, newVal);
             },
             {deep: true}
@@ -562,6 +563,7 @@ export default {
 
         watch(currentSectionId, async () => {
             await updateSearchPage(currentSectionId.value);
+
         });
 
         onMounted(async () => {
