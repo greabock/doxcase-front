@@ -136,6 +136,7 @@ setup(props, {emit}) {
     z-index: 10;
     position: absolute;
     top: 0;
+    padding-left: 15px;
     background-color: #fff;
 }
 .menu li {

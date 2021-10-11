@@ -349,7 +349,9 @@ max-height: 240px!important;
 }
 
 .users-list-fom-wrapper .form-check {
-    padding-left:25px;
+    padding-top: 5px;
+    padding-left: 25px;
+    margin-bottom: 11px;
 }
 .users-list-fom-wrapper .form-check-input {
     width: 1.5em;
