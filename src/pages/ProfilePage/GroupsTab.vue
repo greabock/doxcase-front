@@ -47,6 +47,7 @@
     <modal-window
         v-model="isAddModalVisible"
         maxWidth="600px"
+        @close="closeModalHandle"
     >
         <div class="modal-window__header">
             <h3>Создание группы пользователей</h3>
@@ -95,13 +96,15 @@
                     <label
                         v-show="user.modalShow"
                         class="groups-users-list__item custom-input form-check"
-                    ><input
-                        class="custom-input__input form-check-input"
-                        type="checkbox"
-                        v-model="user.is"
-                    /><span class="custom-input__text form-check-label"
-                    >{{ user.name }}</span
                     >
+                        <input
+                            class="custom-input__input form-check-input"
+                            type="checkbox"
+                            v-model="user.is"
+                        />
+                        <span class="custom-input__text form-check-label">
+                            {{ user.name }}
+                        </span>
                     </label>
                 </template>
             </div>
@@ -218,6 +221,12 @@ export default {
            }
         });
 
+        const closeModalHandle = () => {
+            resetForm();
+            searchValue.value = '';
+            sortedFilteredAllUsers.value.forEach(user => user.is = false);
+        }
+
 // Удаление группы____________________
         const isRemoveModalVisible = ref(false);
         const groupToRemove = ref(null);
@@ -300,6 +309,7 @@ export default {
             updateGroup,
             cancelUpdateGroup,
             loading,
+            closeModalHandle,
         }
     }
 };

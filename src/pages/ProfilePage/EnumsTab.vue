@@ -25,7 +25,9 @@
             <h3>Новый справочник</h3>
         </div>
         <div class="form-cont">
-            <form @submit="onEnumSubmit">
+            <form
+                @submit="onEnumSubmit"
+            >
                 <div class="form-wrap__input-wrap form-group">
                     <input
                         v-model="enumTitle"
