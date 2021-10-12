@@ -49,29 +49,39 @@
                             </div>
                         </div>
                     </div>
-                    <div v-for="(field, i) of fields" :key="i" class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">
-                                    {{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}
+                    <div class="fields-loader-wrapper" >
+                        <loader
+                            v-if="isFieldsLoaderShown"
+                            :bgColor="'#f7f7f7'"
+                            :loaderType="'absolute'"
+                        >
+                        </loader>
+                    </div>
+                    <div v-if="!isFieldsLoaderShown">
+                        <div v-for="(field, i) of fields" :key="i" class="input-line">
+                            <div class="row">
+                                <div class="col-md-auto">
+                                    <div class="input-line__title">
+                                        {{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}
+                                    </div>
                                 </div>
-                            </div>
-                            <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
-                                <div class="input-line__input-wrap form-group">
-                                    <component
-                                        :class="
-                                            field.type == 'Wiki' || field.type == 'Text'
-                                                ? 'text-area'
-                                                : 'input-line__input'
-                                        "
-                                        :is="components[field.type]"
-                                        v-model="field.value"
-                                        v-bind="field.props"
-                                    >
-                                        {{ field.title }}
-                                    </component>
+                                <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
+                                    <div class="input-line__input-wrap form-group">
+                                        <component
+                                            :class="
+                                                field.type == 'Wiki' || field.type == 'Text'
+                                                    ? 'text-area'
+                                                    : 'input-line__input'
+                                            "
+                                            :is="components[field.type]"
+                                            v-model="field.value"
+                                            v-bind="field.props"
+                                        >
+                                            {{ field.title }}
+                                        </component>
+                                    </div>
+                                    <!-- +e.input-wrap-->
                                 </div>
-                                <!-- +e.input-wrap-->
                             </div>
                         </div>
                     </div>
@@ -109,7 +119,6 @@
         <!-- end sAddDocs-->
     </main>
     <loader v-if="isLoaderShown">
-
     </loader>
 
 </template>
@@ -167,6 +176,7 @@ export default {
         const {value: name, errorMessage: error, handleChange} = useField('name', yup.string().required());
 
         const isLoaderShown = ref(false);
+        const isFieldsLoaderShown = ref(false);
         const sectionOptions = ref([]);
         const sectionValue = ref(null);
         const fields = ref([]);
@@ -192,7 +202,7 @@ export default {
         const isNew = ref(true);
 
         const setFields = async (sectionObject, materials) => {
-            isLoaderShown.value = true;
+            isFieldsLoaderShown.value = true;
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
@@ -239,7 +249,7 @@ export default {
 
             fields.value = f;
 
-            isLoaderShown.value = false;
+            isFieldsLoaderShown.value = false;
         };
 
         const getData = async () => {
@@ -305,7 +315,6 @@ export default {
                         key: sectionObject.id,
                         name: sectionObject.title,
                     }
-                    
                     await setFields(sectionObject);
                 }
             }
@@ -477,6 +486,7 @@ export default {
             error,
             handleChange,
             isLoaderShown,
+            isFieldsLoaderShown,
         };
     },
 };
@@ -504,5 +514,8 @@ export default {
 
 .sNewMaterial {
     padding-bottom: 0;
+}
+.fields-loader-wrapper {
+    position: relative;
 }
 </style>
