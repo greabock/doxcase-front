@@ -18,14 +18,21 @@
     </div>
 
     <!-- New Enum Add Form -->
-    <EnumsItems v-if="activeEnumId" :enumId="activeEnumId" />
+    <enums-items v-if="activeEnumId" :enumId="activeEnumId" >
+    </enums-items>
 
-    <ModalWindow v-model="isModalVisible" maxWidth="400px">
+    <modal-window
+        v-model="isModalVisible"
+        maxWidth="400px"
+        @close="resetForm"
+    >
         <div class="modal-window__header">
             <h3>Новый справочник</h3>
         </div>
         <div class="form-cont">
-            <form @submit="onEnumSubmit">
+            <form
+                @submit="onEnumSubmit"
+            >
                 <div class="form-wrap__input-wrap form-group">
                     <input
                         v-model="enumTitle"
@@ -46,10 +53,13 @@
                 </button>
             </form>
         </div>
-    </ModalWindow>
+    </modal-window>
 
     <!-- Remove enum alert -->
-    <ModalWindow v-model="isRemoveAlertVisible" maxWidth="400px">
+    <modal-window
+        v-model="isRemoveAlertVisible"
+        maxWidth="400px"
+    >
         <div class="modal-window__header">
             <h3>Удаление справочника</h3>
         </div>
@@ -58,7 +68,7 @@
             <v-button class="w-100" @click="removeEnum(enumToRemove?.id)">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
         </div>
-    </ModalWindow>
+    </modal-window>
 </template>
 <script>
 import {onMounted, ref} from 'vue';
@@ -112,7 +122,7 @@ export default {
             }
         };
 
-        const {handleSubmit, meta: enumFormMeta} = useForm({validationSchema: enumSchema});
+        const {handleSubmit, meta: enumFormMeta, resetForm} = useForm({validationSchema: enumSchema});
         const {value: enumTitle, errorMessage} = useField('enumTitle');
 
         const onEnumSubmit = handleSubmit(async (values, actions) => {
@@ -176,6 +186,7 @@ export default {
             enumTitle,
             enumFormMeta,
             errorMessage,
+            resetForm,
         };
     },
 };
