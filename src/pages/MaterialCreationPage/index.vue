@@ -108,6 +108,10 @@
         </section>
         <!-- end sAddDocs-->
     </main>
+    <loader v-if="isLoaderShown">
+
+    </loader>
+
 </template>
 
 <script>
@@ -125,6 +129,7 @@ import VTextEditor from '@/ui/VTextEditor';
 import VText from '@/ui/VText';
 import VButton from '@/ui/VButton';
 import VButtonFileLoader from '@/ui/VButtonFileLoader';
+import Loader from '@/components/Loader';
 
 import ItemEdit from './ItemEdit';
 import ItemFile from './ItemFile';
@@ -156,10 +161,12 @@ export default {
         ItemEdit,
         ItemFile,
         FilesContainer,
+        Loader,
     },
     setup() {
         const {value: name, errorMessage: error, handleChange} = useField('name', yup.string().required());
 
+        const isLoaderShown = ref(false);
         const sectionOptions = ref([]);
         const sectionValue = ref(null);
         const fields = ref([]);
@@ -185,6 +192,7 @@ export default {
         const isNew = ref(true);
 
         const setFields = async (sectionObject, materials) => {
+            isLoaderShown.value = true;
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
@@ -230,9 +238,14 @@ export default {
             const f = await useFields(fieldList, materials, sectionValue.value || sectionId);
 
             fields.value = f;
+
+            isLoaderShown.value = false;
         };
 
         const getData = async () => {
+
+            isLoaderShown.value = true;
+
             if (sectionId && materialId) {
                 isNew.value = false;
 
@@ -260,7 +273,7 @@ export default {
                     },
                 ];
 
-                setFields(sectionObject, material);
+                await setFields(sectionObject, material);
                 name.value = material.name;
             } else {
                 isNew.value = true;
@@ -293,9 +306,11 @@ export default {
                         name: sectionObject.title,
                     }
                     
-                    setFields(sectionObject);
+                    await setFields(sectionObject);
                 }
             }
+
+            isLoaderShown.value = false;
         };
 
         getData();
@@ -304,7 +319,7 @@ export default {
             if (section) {
                 const sectionObject = await sectionsService.getSectionObject(section.key);
     
-                setFields(sectionObject);
+                await setFields(sectionObject);
                 return
             } 
 
@@ -461,6 +476,7 @@ export default {
             back,
             error,
             handleChange,
+            isLoaderShown,
         };
     },
 };
