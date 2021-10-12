@@ -90,7 +90,9 @@
         </div>
         <!-- end sNewMaterial-->
         <!-- start sAddDocs-->
-        <section class="sAddDocs section" id="sAddDocs">
+        <section
+            v-if="!isFieldsLoaderShown"
+            class="sAddDocs section" id="sAddDocs">
             <div v-if="files.length" class="container-fluid">
                 <h2>Работа с документами</h2>
                 <ul class="nav nav-tabs">
