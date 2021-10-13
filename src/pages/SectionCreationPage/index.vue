@@ -158,10 +158,12 @@
                                 <!-- Поле Название раздела -->
 
                                 <fields-list
+                                    @change-title="isTitleModal = true"
                                     @change-field="setFieldToChange"
                                     @sort-field-down="sortFieldDown"
                                     @sort-field-up="sortFieldUp"
                                     @remove-field="setFieldToRemove"
+                                    :config="section.config"
                                     :fieldsArr="sortedFields"
                                     :allSections="allSections"
                                     :allEnums="allEnums"
@@ -195,6 +197,18 @@
                 </div>
             </div>
         </section>
+
+<!-- Управление заголовком полей -->
+        <modal-window
+            v-model="isTitleModal"
+            maxWidth="600px"
+        >
+            <title-field
+                :config='section.config'
+                @updateTitle="updateTitle"
+            >
+            </title-field>
+        </modal-window>
 
         <new-field-form
             :isFieldModalVisible="isFieldModalVisible"
@@ -268,9 +282,10 @@ import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
 import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 import {defineAccessType} from '@/utils/section.helpers';
+import TitleField from '@/pages/SectionCreationPage/FieldTypes/TitleField';
 
 export default {
-    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm},
+    components: {FieldsToFilter, NewFieldForm, FieldsList, UploaderImage, VBreadcrumb, VButton, ModalWindow, Loader, AccessControlForm, TitleField},
         setup() {
         let initSection = {
             id: uuidv4(),
@@ -282,7 +297,11 @@ export default {
             fields: [],
             access: 'all',
             users: [],
-            groups: []
+            groups: [],
+            config: {
+                name: "Название материала",
+                description: "Введите название материала"
+            }
         };
         const isLoading = ref(false);
         const allSections = ref([]);
@@ -354,6 +373,12 @@ export default {
         const updateAccessHandle = (accessObj) => {
             updateGroupsNUsers(accessObj);
             isAccessModal.value = false;
+        }
+// Заголовок поля___________________
+        const isTitleModal = ref(false);
+        const updateTitle = (newConfig) => {
+            section.value.config = newConfig;
+            isTitleModal.value = false;
         }
 
 //Добавление поля___________________
@@ -476,6 +501,8 @@ export default {
             accessType,
             allUsers,
             allGroups,
+            isTitleModal,
+            updateTitle,
         };
     },
 };
