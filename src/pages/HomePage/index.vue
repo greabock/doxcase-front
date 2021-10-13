@@ -595,7 +595,7 @@ export default {
                 try {
                     const materialsAndFiles = await searchService.searchSectionPost(
                         `${currentSectionId.value}/?page=${currentPage.value + 1}`,
-                        queryObject
+                        queryObject.value
                     );
                     materials.value = [...materials.value, ...materialsAndFiles.data.materials];
                     files.value = [...files.value, ...materialsAndFiles.data.files];
