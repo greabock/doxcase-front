@@ -18,6 +18,17 @@ class usersService {
            throw new Error('Ошибка добавления пользователя');
         }
     };
+    updateUser = async (id, user) => {
+        try {
+            const res = await axiosInstance.patch(`/users/${id}`, user);
+            return res.data;
+        } catch(e) {
+            if (e.response && e.response.status === 422) {
+                throw new Error('email occupied')
+            }
+            throw new Error('Ошибка обновления пользователя');
+        }
+    };
     removeUser = async (id) => {
         try {
             return await axiosInstance.delete(`/users/${id}`);
