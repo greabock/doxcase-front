@@ -33,7 +33,7 @@
                     <div v-if="sectionValue || !isNew" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">Наименование</div>
+                                <div class="input-line__title">{{sectionConfig?.name}}</div>
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
@@ -41,7 +41,7 @@
                                         @blur="handleChange"
                                         v-model="name"
                                         class="input-line__input"
-                                        placeholder="Введите текст"
+                                        :placeholder="sectionConfig?.description"
                                         :error="error"
                                     />
                                 </div>
@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
@@ -179,6 +179,8 @@ export default {
 
         const isLoaderShown = ref(false);
         const isFieldsLoaderShown = ref(false);
+        const allSections = ref([]);
+        const currentSection = ref(null);
         const sectionOptions = ref([]);
         const sectionValue = ref(null);
         const fields = ref([]);
@@ -202,6 +204,20 @@ export default {
         };
 
         const isNew = ref(true);
+
+        const sectionConfig = computed(() => {
+            if (sectionValue.value && sectionValue.value.key && allSections.value.length > 0) {
+                return allSections.value
+                    .find(section => section.id === sectionValue.value.key).config;
+
+            } else if (currentSection.value !== null) {
+                       return currentSection.value.config;
+            }
+            return {
+                name:'',
+                description:''
+            }
+        })
 
         const setFields = async (sectionObject, materials) => {
             isFieldsLoaderShown.value = true;
@@ -267,6 +283,7 @@ export default {
                 try {
                     material = await materialService.getMaterial(sectionId, materialId);
                     sectionObject = await sectionsService.getSectionObject(sectionId);
+                    currentSection.value = sectionObject;
                 } catch(e) {
                     router.push('/')
                 }
@@ -290,6 +307,7 @@ export default {
             } else {
                 isNew.value = true;
                 const sections = await sectionsService.getSections();
+                allSections.value = sections;
 
                 sectionOptions.value = sections.map((s) => ({
                     key: s.id,
@@ -324,7 +342,7 @@ export default {
             isLoaderShown.value = false;
         };
 
-        getData();
+         getData();
 
         const selectSection = async (section) => {
             if (section) {
@@ -489,6 +507,9 @@ export default {
             handleChange,
             isLoaderShown,
             isFieldsLoaderShown,
+            sectionConfig,
+            currentSection,
+            allSections
         };
     },
 };

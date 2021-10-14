@@ -53,44 +53,6 @@
                     </label>
                     <span class="validation-error">{{emailError}}{{emailOccupied}}</span>
                 </div>
-                <div class="form-wrap__input-wrap form-group">
-                    <label>
-                        <span class="form-wrap__input-title">
-                            Пароль
-                        </span>
-                        <span class="password-input-wrapper">
-                            <span
-                                class="pass-show-toggler"
-                                @click="isShowPass = !isShowPass"
-                            >
-                                <img width="20" height="20"
-                                     :src="isShowPass ? '/img/svg/visibility.svg' : '/img/svg/invisible.svg'"
-                                >
-                            </span>
-                            <input
-                                v-show="!isShowPass"
-                                v-model="passwordValue"
-                                class="form-wrap__input form-control"
-                                type="password"
-                                name="newUserPassword"
-                                placeholder="Введите"
-                                autocomplete="off"
-                                maxLength="30"
-                            />
-                            <input
-                                v-show="isShowPass"
-                                v-model="passwordValue"
-                                class="form-wrap__input form-control"
-                                type="text"
-                                name="newUserPassword"
-                                placeholder="Введите"
-                                autocomplete="off"
-                                maxLength="30"
-                            />
-                         </span>
-                    </label>
-                    <span class="validation-error">{{passwordError}}</span>
-                </div>
                 <button
                     :disabled="!formMeta.valid  || emailOccupied"
                     class="btn btn-primary w-100"
@@ -134,9 +96,6 @@ export default {
             role: yup.object().required('Поле обязательно для заполнения'),
             email: yup.string().email( 'Пожалуйста, введите корректный email-адрес')
                 .required('Поле обязательно для заполнения'),
-            password: yup.string()
-                .min(6, "Длина пароля не менее 6 символов")
-                .required('Поле обязательно для заполнения')
         });
 
         const {handleSubmit, meta: formMeta, setValues} = useForm({
@@ -149,7 +108,6 @@ export default {
         const {value: nameValue, errorMessage: nameError} = useField('name');
         const {value: roleValue} = useField('role');
         const {value: emailValue, errorMessage: emailError} = useField('email');
-        const {value: passwordValue, errorMessage: passwordError} = useField('password');
         const roleOptions = [
             {key: 'admin', name: "Администратор"},
             {key: 'moderator', name: "Модератор"},
@@ -164,7 +122,6 @@ export default {
             name: props.user.name,
             role:  defineRoleOption(props.user.role),
             email: props.user.email,
-            password: '',
         });
 
         const fileInput = ref(null);
@@ -214,7 +171,6 @@ export default {
             formMeta,
             emailValue,
             nameValue,
-            passwordValue,
             roleValue,
             submitHandle,
             roleOptions,
@@ -222,7 +178,6 @@ export default {
             fileInput,
             nameError,
             emailError,
-            passwordError,
             isShowPass,
             emailOccupied,
         };
