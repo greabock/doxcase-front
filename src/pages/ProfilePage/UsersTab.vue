@@ -42,7 +42,7 @@
                 <tr v-for="user in searchedFilteredUsers" :key="user?.id">
                     <td class="fw-500">{{ user.name }}</td>
                     <td>
-                        <div class="sCabinetMain__input-wrap form-group">
+                        <div class="sCabinetMain__input-wrap form-group user-edit-buttons">
                             <select
                                 @change="switchUserRole($event.target.value, user)"
                                 v-model="user.role"
@@ -54,7 +54,18 @@
                                 <option value="user">Пользователь</option>
                             </select>
 
-                            <div @click="setUserToRemoveHandler(user)" class="btn-edit-sm btn-danger">
+                            <div
+                                @click.stop="serUserToEdit(user)"
+                                class="btn-edit-sm btn-secondary">
+                                <svg class="icon icon-edit">
+                                    <use xlink:href="/img/svg/sprite.svg#edit"></use>
+                                </svg>
+                            </div>
+
+                            <div
+                                @click="setUserToRemoveHandler(user)"
+                                class="btn-edit-sm btn-danger"
+                            >
                                 <svg class="icon icon-basket">
                                     <use xlink:href="/img/svg/sprite.svg#basket"></use>
                                 </svg>
@@ -71,14 +82,26 @@
             <button class="btn btn-danger" @click="skipError">Продолжить</button>
         </div>
     </div>
-  <modal-window
-    v-model="isModalVisible"
-  >
-    <add-user-form
-      @addNewUser="addNewUserHandle"
-      @closeModal="isModalVisible = false"
-    ></add-user-form>
-  </modal-window>
+<!-- Создание пользователя -->
+      <modal-window
+        v-model="isModalVisible"
+      >
+        <add-user-form
+          @addNewUser="addNewUserHandle"
+          @closeModal="isModalVisible = false"
+        ></add-user-form>
+      </modal-window>
+
+<!-- Редактирование пользователя -->
+    <modal-window
+        v-model="isEditUserModal"
+    >
+        <edit-user-form
+            :user="userToEdit"
+            @updateUser="updateUserHandle"
+            @closeModal="isEditUserModal = false"
+        ></edit-user-form>
+    </modal-window>
 
     <!-- Удаление группы -->
     <modal-window
@@ -102,12 +125,14 @@ import usersService from '@/services/users.service';
 import ModalWindow from "@/components/ModalWindow";
 import AddUserForm from '@/pages/ProfilePage/AddUserForm';
 import VButton from '@/ui/VButton';
+import EditUserForm from '@/pages/ProfilePage/EditUserForm';
 
 export default {
   components: {
     ModalWindow,
     AddUserForm,
     VButton,
+    EditUserForm,
   },
     props: {
       currentUser: {
@@ -162,8 +187,23 @@ export default {
         const addNewUserHandle = (user) => {
             usersList.value = [...usersList.value, user];
         }
+// Редактирование пользователя__________________________
+        const userToEdit = ref({});
+        const isEditUserModal = ref(false);
+        const serUserToEdit = (user) => {
+            userToEdit.value = user;
+            isEditUserModal.value = true;
+        }
+        const updateUserHandle = (user) => {
+            const idx = usersList.value.findIndex(u => u.id === user.id);
+            usersList.value = [
+                ...usersList.value.slice(0, idx),
+                user,
+                ...usersList.value.slice(idx + 1)
+            ];
+        }
 
-//Удаление пользователя________________________________
+// Удаление пользователя________________________________
         const isRemoveModalVisible = ref(false);
         const userToRemove = ref(null);
         const setUserToRemove = (user) => {
@@ -199,7 +239,11 @@ export default {
             isRemoveModalVisible,
             userToRemove,
             removeUser,
-            setUserToRemoveHandler
+            setUserToRemoveHandler,
+            serUserToEdit,
+            isEditUserModal,
+            userToEdit,
+            updateUserHandle,
         };
     },
 };
@@ -238,5 +282,18 @@ export default {
 }
 .sCabinetMain__input-wrap select {
     margin-right: 5px;
+}
+.user-edit-buttons .btn-secondary {
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+.user-edit-buttons .btn-danger {
+    flex-shrink: 0;
+}
+.sCabinetMain table td:nth-child(2){
+    width:220px;
+}
+.sCabinetMain table .sCabinetMain__input-wrap {
+    width:auto
 }
 </style>

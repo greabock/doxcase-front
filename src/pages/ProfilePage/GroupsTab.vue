@@ -47,6 +47,7 @@
     <modal-window
         v-model="isAddModalVisible"
         maxWidth="600px"
+        @close="closeModalHandle"
     >
         <div class="modal-window__header">
             <h3>Создание группы пользователей</h3>
@@ -95,13 +96,15 @@
                     <label
                         v-show="user.modalShow"
                         class="groups-users-list__item custom-input form-check"
-                    ><input
-                        class="custom-input__input form-check-input"
-                        type="checkbox"
-                        v-model="user.is"
-                    /><span class="custom-input__text form-check-label"
-                    >{{ user.name }}</span
                     >
+                        <input
+                            class="custom-input__input form-check-input"
+                            type="checkbox"
+                            v-model="user.is"
+                        />
+                        <span class="custom-input__text form-check-label">
+                            {{ user.name }}
+                        </span>
                     </label>
                 </template>
             </div>
@@ -125,7 +128,6 @@ import VButton from '@/ui/VButton';
 import VBox from '@/ui/VBox';
 import ModalWindow from '@/components/ModalWindow';
 import GroupUsersList from '@/pages/ProfilePage/GroupUsersList';
-import * as yup from 'yup';
 import {useField, useForm} from 'vee-validate';
 import usersService from '@/services/users.service';
 import groupService from '@/services/group.service';
@@ -171,9 +173,17 @@ export default {
 
 // Добавление группы__________________
         const isAddModalVisible = ref(false);
-        const schema = yup.object({
-            name: yup.string().required('Поле обязательно для заполнения')
-        });
+        const schema = {
+            name(value) {
+                if (!value || !value.trim()) {
+                    return 'Введите название группы';
+                }
+                if (allGroups.value.map(item => item.name.toLowerCase()).includes(value.toLowerCase())) {
+                    return 'Такая группа уже существует'
+                }
+                return true;
+            }
+        };
 
         const {handleSubmit, meta: formMeta, resetForm} = useForm({
             validationSchema: schema
@@ -210,6 +220,12 @@ export default {
                console.log(e);
            }
         });
+
+        const closeModalHandle = () => {
+            resetForm();
+            searchValue.value = '';
+            sortedFilteredAllUsers.value.forEach(user => user.is = false);
+        }
 
 // Удаление группы____________________
         const isRemoveModalVisible = ref(false);
@@ -293,6 +309,7 @@ export default {
             updateGroup,
             cancelUpdateGroup,
             loading,
+            closeModalHandle,
         }
     }
 };
@@ -342,7 +359,9 @@ max-height: 240px!important;
 }
 
 .users-list-fom-wrapper .form-check {
-    padding-left:25px;
+    padding-top: 5px;
+    padding-left: 25px;
+    margin-bottom: 11px;
 }
 .users-list-fom-wrapper .form-check-input {
     width: 1.5em;
@@ -366,5 +385,10 @@ max-height: 240px!important;
     right: 0;
     z-index: 1000;
     background-color: rgba(255, 255, 255, 0.5);
+}
+.error-message-wrap{
+    display: block;
+    margin-bottom: 10px;
+    color: #ff0000;
 }
 </style>

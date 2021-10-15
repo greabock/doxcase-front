@@ -33,7 +33,7 @@
                     <div v-if="sectionValue || !isNew" class="input-line">
                         <div class="row">
                             <div class="col-md-auto">
-                                <div class="input-line__title">Наименование</div>
+                                <div class="input-line__title">{{sectionConfig?.name}}</div>
                             </div>
                             <div class="col">
                                 <div class="input-line__input-wrap form-group">
@@ -41,7 +41,7 @@
                                         @blur="handleChange"
                                         v-model="name"
                                         class="input-line__input"
-                                        placeholder="Введите текст"
+                                        :placeholder="sectionConfig?.description"
                                         :error="error"
                                     />
                                 </div>
@@ -49,29 +49,39 @@
                             </div>
                         </div>
                     </div>
-                    <div v-for="(field, i) of fields" :key="i" class="input-line">
-                        <div class="row">
-                            <div class="col-md-auto">
-                                <div class="input-line__title">
-                                    {{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}
+                    <div class="fields-loader-wrapper" >
+                        <loader
+                            v-if="isFieldsLoaderShown"
+                            :bgColor="'#f7f7f7'"
+                            :loaderType="'absolute'"
+                        >
+                        </loader>
+                    </div>
+                    <div v-if="!isFieldsLoaderShown">
+                        <div v-for="(field, i) of fields" :key="i" class="input-line">
+                            <div class="row">
+                                <div class="col-md-auto">
+                                    <div class="input-line__title">
+                                        {{ field.type == 'Boolean' ? 'Чекбокс' : field.title }}
+                                    </div>
                                 </div>
-                            </div>
-                            <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
-                                <div class="input-line__input-wrap form-group">
-                                    <component
-                                        :class="
-                                            field.type == 'Wiki' || field.type == 'Text'
-                                                ? 'text-area'
-                                                : 'input-line__input'
-                                        "
-                                        :is="components[field.type]"
-                                        v-model="field.value"
-                                        v-bind="field.props"
-                                    >
-                                        {{ field.title }}
-                                    </component>
+                                <div :class="['col', {'d-flex align-items-center': field.type == 'Boolean'}]">
+                                    <div class="input-line__input-wrap form-group">
+                                        <component
+                                            :class="
+                                                field.type == 'Wiki' || field.type == 'Text'
+                                                    ? 'text-area'
+                                                    : 'input-line__input'
+                                            "
+                                            :is="components[field.type]"
+                                            v-model="field.value"
+                                            v-bind="field.props"
+                                        >
+                                            {{ field.title }}
+                                        </component>
+                                    </div>
+                                    <!-- +e.input-wrap-->
                                 </div>
-                                <!-- +e.input-wrap-->
                             </div>
                         </div>
                     </div>
@@ -80,7 +90,9 @@
         </div>
         <!-- end sNewMaterial-->
         <!-- start sAddDocs-->
-        <section class="sAddDocs section" id="sAddDocs">
+        <section
+            v-if="!isFieldsLoaderShown"
+            class="sAddDocs section" id="sAddDocs">
             <div v-if="files.length" class="container-fluid">
                 <h2>Работа с документами</h2>
                 <ul class="nav nav-tabs">
@@ -108,10 +120,13 @@
         </section>
         <!-- end sAddDocs-->
     </main>
+    <loader v-if="isLoaderShown">
+    </loader>
+
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 
 import VBreadcrumb from '@/ui/VBreadcrumb';
@@ -125,6 +140,7 @@ import VTextEditor from '@/ui/VTextEditor';
 import VText from '@/ui/VText';
 import VButton from '@/ui/VButton';
 import VButtonFileLoader from '@/ui/VButtonFileLoader';
+import Loader from '@/components/Loader';
 
 import ItemEdit from './ItemEdit';
 import ItemFile from './ItemFile';
@@ -156,10 +172,15 @@ export default {
         ItemEdit,
         ItemFile,
         FilesContainer,
+        Loader,
     },
     setup() {
         const {value: name, errorMessage: error, handleChange} = useField('name', yup.string().required());
 
+        const isLoaderShown = ref(false);
+        const isFieldsLoaderShown = ref(false);
+        const allSections = ref([]);
+        const currentSection = ref(null);
         const sectionOptions = ref([]);
         const sectionValue = ref(null);
         const fields = ref([]);
@@ -184,7 +205,22 @@ export default {
 
         const isNew = ref(true);
 
+        const sectionConfig = computed(() => {
+            if (sectionValue.value && sectionValue.value.key && allSections.value.length > 0) {
+                return allSections.value
+                    .find(section => section.id === sectionValue.value.key).config;
+
+            } else if (currentSection.value !== null) {
+                       return currentSection.value.config;
+            }
+            return {
+                name:'',
+                description:''
+            }
+        })
+
         const setFields = async (sectionObject, materials) => {
+            isFieldsLoaderShown.value = true;
             const isFiles = (f) =>
                 f.type.name == 'File' || (f.type.name == 'List' && f.type.of && f.type.of.name == 'File');
 
@@ -230,9 +266,14 @@ export default {
             const f = await useFields(fieldList, materials, sectionValue.value || sectionId);
 
             fields.value = f;
+
+            isFieldsLoaderShown.value = false;
         };
 
         const getData = async () => {
+
+            isLoaderShown.value = true;
+
             if (sectionId && materialId) {
                 isNew.value = false;
 
@@ -242,6 +283,7 @@ export default {
                 try {
                     material = await materialService.getMaterial(sectionId, materialId);
                     sectionObject = await sectionsService.getSectionObject(sectionId);
+                    currentSection.value = sectionObject;
                 } catch(e) {
                     router.push('/')
                 }
@@ -260,11 +302,12 @@ export default {
                     },
                 ];
 
-                setFields(sectionObject, material);
+                await setFields(sectionObject, material);
                 name.value = material.name;
             } else {
                 isNew.value = true;
                 const sections = await sectionsService.getSections();
+                allSections.value = sections;
 
                 sectionOptions.value = sections.map((s) => ({
                     key: s.id,
@@ -292,19 +335,20 @@ export default {
                         key: sectionObject.id,
                         name: sectionObject.title,
                     }
-                    
-                    setFields(sectionObject);
+                    await setFields(sectionObject);
                 }
             }
+
+            isLoaderShown.value = false;
         };
 
-        getData();
+         getData();
 
         const selectSection = async (section) => {
             if (section) {
                 const sectionObject = await sectionsService.getSectionObject(section.key);
     
-                setFields(sectionObject);
+                await setFields(sectionObject);
                 return
             } 
 
@@ -461,6 +505,11 @@ export default {
             back,
             error,
             handleChange,
+            isLoaderShown,
+            isFieldsLoaderShown,
+            sectionConfig,
+            currentSection,
+            allSections
         };
     },
 };
@@ -488,5 +537,8 @@ export default {
 
 .sNewMaterial {
     padding-bottom: 0;
+}
+.fields-loader-wrapper {
+    position: relative;
 }
 </style>

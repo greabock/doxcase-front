@@ -29,7 +29,10 @@
             <Form @submit="addEnumsItem" :validation-schema="newEnumItemSchema">
                 <Field type="text" name="title" placeholder="Новая позиция" class="block-position__title" />
                 <div class="block-position__btns">
-                    <button class="btn-edit-sm btn-success">
+                    <button
+                        ref="addEnumItemButton"
+                        class="btn-edit-sm btn-success"
+                    >
                         <svg class="icon icon-check">
                             <use xlink:href="/img/svg/sprite.svg#check"></use>
                         </svg>
@@ -168,10 +171,13 @@ export default {
                 console.log(e.message);
             }
         };
+
+        const addEnumItemButton = ref(null);
         const addEnumsItem = async (title, actions) => {
             try {
                 enumObject.value = await enumsService.addEnumsItem(enumObject.value, title);
                 actions.resetForm();
+                addEnumItemButton.value.blur();
             } catch (e) {
                 console.log(e.message);
             }
@@ -231,6 +237,7 @@ export default {
             changeEnumItemSchema,
             changeEnumsItem,
             itemToChangeFieldValue,
+            addEnumItemButton,
         };
     },
 };

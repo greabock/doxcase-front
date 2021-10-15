@@ -18,14 +18,21 @@
     </div>
 
     <!-- New Enum Add Form -->
-    <EnumsItems v-if="activeEnumId" :enumId="activeEnumId" />
+    <enums-items v-if="activeEnumId" :enumId="activeEnumId" >
+    </enums-items>
 
-    <ModalWindow v-model="isModalVisible" maxWidth="400px">
+    <modal-window
+        v-model="isModalVisible"
+        maxWidth="400px"
+        @close="resetForm"
+    >
         <div class="modal-window__header">
             <h3>Новый справочник</h3>
         </div>
         <div class="form-cont">
-            <form @submit="onEnumSubmit">
+            <form
+                @submit="onEnumSubmit"
+            >
                 <div class="form-wrap__input-wrap form-group">
                     <input
                         v-model="enumTitle"
@@ -35,15 +42,24 @@
                         placeholder="Название справончика"
                     />
                 </div>
+                <span
+                    v-if="errorMessage"
+                    class="error-message-wrap"
+                >
+                    {{errorMessage}}
+                </span>
                 <button :disabled="!enumFormMeta.valid" type="submit" class="btn btn-primary w-100">
                     <span>Добавить</span>
                 </button>
             </form>
         </div>
-    </ModalWindow>
+    </modal-window>
 
     <!-- Remove enum alert -->
-    <ModalWindow v-model="isRemoveAlertVisible" maxWidth="400px">
+    <modal-window
+        v-model="isRemoveAlertVisible"
+        maxWidth="400px"
+    >
         <div class="modal-window__header">
             <h3>Удаление справочника</h3>
         </div>
@@ -52,13 +68,12 @@
             <v-button class="w-100" @click="removeEnum(enumToRemove?.id)">Удалить</v-button>
             <v-button :outline="true" class="w-100" @click="setRemoveAlertVisible(false)">Отменить</v-button>
         </div>
-    </ModalWindow>
+    </modal-window>
 </template>
 <script>
 import {onMounted, ref} from 'vue';
 import enumsService from '@/services/enums.service';
 import {useForm, useField} from 'vee-validate';
-import * as yup from 'yup';
 import EnumsItems from '@/pages/ProfilePage/EnumsItems';
 import VButton from '@/ui/VButton';
 import VBox from '@/ui/VBox';
@@ -95,15 +110,21 @@ export default {
             isModalVisible.value = bool;
         };
 
-        const enumSchema = yup.object({
-            enumTitle: yup.string().required().min(2),
-        });
+        const enumSchema = {
+            enumTitle(value) {
+                if (!value || !value.trim()) {
+                    return 'Введите название справочника';
+                }
+                if (enums.value.map(item => item.title.toLowerCase()).includes(value.toLowerCase())) {
+                    return 'Такой справочник уже существует'
+                }
+                return true;
+            }
+        };
 
-        const {handleSubmit, meta: enumFormMeta, setValues} = useForm({validationSchema: enumSchema});
-        const {value: enumTitle} = useField('enumTitle');
-        setValues({
-            enumTitle: '',
-        });
+        const {handleSubmit, meta: enumFormMeta, resetForm} = useForm({validationSchema: enumSchema});
+        const {value: enumTitle, errorMessage} = useField('enumTitle');
+
         const onEnumSubmit = handleSubmit(async (values, actions) => {
             await addNewEnum(values.enumTitle);
             actions.resetForm();
@@ -164,7 +185,16 @@ export default {
             onEnumSubmit,
             enumTitle,
             enumFormMeta,
+            errorMessage,
+            resetForm,
         };
     },
 };
 </script>
+<style scoped>
+    .error-message-wrap{
+        display: block;
+        margin-bottom: 10px;
+        color: #ff0000;
+    }
+</style>
