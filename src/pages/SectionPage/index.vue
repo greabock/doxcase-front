@@ -165,10 +165,12 @@
                                 <!-- Поле Название раздела -->
 
                                 <fields-list
+                                    @change-title="isTitleModal = true"
                                     @change-field="setFieldToChange"
                                     @sort-field-down="sortFieldDown"
                                     @sort-field-up="sortFieldUp"
                                     @remove-field="setFieldToRemove"
+                                    :config="section.config"
                                     :fieldsArr="sortedFields"
                                     :allSections="allSections"
                                     :allEnums="allEnums"
@@ -206,6 +208,18 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Управление заголовком полей -->
+            <modal-window
+                v-model="isTitleModal"
+                maxWidth="600px"
+            >
+                <title-field
+                    :config="section.config"
+                    @updateTitle="updateTitle"
+                >
+                </title-field>
+            </modal-window>
 
             <new-field-form
                 :isFieldModalVisible="isFieldModalVisible"
@@ -276,6 +290,7 @@ import VButton from '@/ui/VButton';
 import ModalWindow from '@/components/ModalWindow';
 import AccessControlForm from '@/pages/SectionCreationPage/AccessControlForm';
 import {defineAccessType} from '@/utils/section.helpers';
+import TitleField from '@/pages/SectionCreationPage/FieldTypes/TitleField';
 
 export default {
     components: {
@@ -287,7 +302,8 @@ export default {
         VButton,
         ModalWindow,
         Loader,
-        AccessControlForm
+        AccessControlForm,
+        TitleField
     },
     setup() {
         const isLoading = ref(true);
@@ -363,7 +379,12 @@ export default {
             updateGroupsNUsers(accessObj);
             isAccessModal.value = false;
         }
-
+// Заголовок поля___________________
+        const isTitleModal = ref(false);
+        const updateTitle = (newConfig) => {
+            section.value.config = newConfig;
+            isTitleModal.value = false;
+        }
 //Добавление поля___________________
         const addNewField = (newField) => {
             const itemToUpdate = section.value.fields?.find((item) => item.id === newField.id);
@@ -485,6 +506,8 @@ export default {
             isAccessModal,
             allUsers,
             allGroups,
+            isTitleModal,
+            updateTitle,
         };
     },
 };

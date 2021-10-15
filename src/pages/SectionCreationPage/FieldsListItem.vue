@@ -21,7 +21,7 @@
             <div class="sSectionMain__content">{{ fieldsViewModel?.type_view }}</div>
         </div>
         <div class="col-12 d-lg-none pb-3"></div>
-        <div class="col-lg-auto">
+        <div class="col-lg-auto fields-edit-buttons-wrap">
             <div class="sSectionMain__btn-control">
                 <div
                     @click.stop="changeField(field)"
@@ -236,6 +236,9 @@ export default {
 </script>
 
 <style>
+.fields-edit-buttons-wrap {
+    display: flex;
+}
 @media (min-width: 991px) {
     .sSectionMain__col-title {
         width: 25%;

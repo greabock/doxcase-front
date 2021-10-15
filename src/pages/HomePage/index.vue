@@ -424,7 +424,7 @@ export default {
         const hideMobileSort = (e) => {
             const sortContainer = document.querySelector('#sort-aside-node');
             const openMobileSortButton = document.querySelector('.sSearchResult__btn-toggle--js');
-            if(!sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
+            if(sortContainer && !sortContainer.contains(e.target) && !openMobileSortButton.contains(e.target)) {
                 isMobileSort.value = false;
             }
         }
@@ -555,6 +555,7 @@ export default {
             }
         );
         watch( queryObject, async (newVal) => {
+               searchLine.value = fullQueryObject.search;
                await updateMaterialsAndFiles(currentSectionId.value, newVal);
             },
             {deep: true}
@@ -562,6 +563,7 @@ export default {
 
         watch(currentSectionId, async () => {
             await updateSearchPage(currentSectionId.value);
+
         });
 
         onMounted(async () => {
@@ -593,7 +595,7 @@ export default {
                 try {
                     const materialsAndFiles = await searchService.searchSectionPost(
                         `${currentSectionId.value}/?page=${currentPage.value + 1}`,
-                        queryObject
+                        queryObject.value
                     );
                     materials.value = [...materials.value, ...materialsAndFiles.data.materials];
                     files.value = [...files.value, ...materialsAndFiles.data.files];

@@ -14,4 +14,12 @@ export default {
     name: 'App',
 };
 </script>
+<style>
+    .btn-secondary {
+        border-color: #ddd;
+    }
+    .btn-secondary:hover {
+        border-color: #ddd;
+    }
+</style>
 
