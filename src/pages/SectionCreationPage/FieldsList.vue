@@ -17,7 +17,7 @@
                 <div class="sSectionMain__content">Короткое текстовое поле</div>
             </div>
             <div class="col-12 d-lg-none pb-3"></div>
-            <div class="col-lg-auto">
+            <div class="col-lg-auto fields-edit-buttons-wrap">
                  <div class="sSectionMain__btn-control">
                         <div
                             @click.stop="changeTitle"
@@ -101,4 +101,7 @@ export default {
 </script>
 
 <style scoped>
+.fields-edit-buttons-wrap {
+    display: flex;
+}
 </style>
