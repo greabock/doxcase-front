@@ -47,10 +47,19 @@
                                 </div>
                                 <!-- +e.input-wrap-->
                                 <p class="fw-500">Изображение раздела</p>
-                                <uploader-image
-                                    v-model="fileInput"
-                                    :preview="section.image"
-                                />
+                                <div class="uploader-image-wrapper">
+                                    <uploader-image
+                                        v-model="fileInput"
+                                        :preview="section.image"
+                                    />
+                                    <span
+                                        v-if='section.image && !fileInput'
+                                        class='text-danger'
+                                        @click="removeImagePreview"
+                                    >
+                                        Удалить
+                                    </span>
+                                </div>
                                 <div class="mb-3">
                                     <label class="custom-input form-check"
                                     ><input
@@ -327,6 +336,9 @@ export default {
         const resetForm = () => {
             router.push('/sections');
         };
+        const removeImagePreview = () => {
+            section.value = {...section.value, image: null} ;
+        }
 
         const isFieldModalVisible = ref(false);
         const setFieldModalVisible = (bool) => {
@@ -401,8 +413,6 @@ export default {
             setFieldModalVisible(false);
         };
         const updateSection = async () => {
-            const newSection = {...section.value};
-            delete newSection.image;
 
             try {
                 isLoading.value = true;
@@ -412,10 +422,10 @@ export default {
 
                     const imageResp =  await filesService.uploadFiles(formData);
                     if (imageResp) {
-                        newSection.image = imageResp[0].url;
+                        section.value = {...section.value, image: imageResp[0].url};
                     }
                 }
-                await sectionsService.updateSection(newSection);
+                await sectionsService.updateSection(section.value);
                 router.push(`/sections`);
             } catch (e) {
                 console.log(e);
@@ -508,6 +518,7 @@ export default {
             allGroups,
             isTitleModal,
             updateTitle,
+            removeImagePreview,
         };
     },
 };
@@ -579,5 +590,15 @@ export default {
 }
 .carousel__button svg {
     filter:none;
+}
+.uploader-image-wrapper {
+    display: flex;
+    align-items: center;
+}
+.uploader-image-wrapper > SPAN {
+    display: block;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    margin-left: 24px;
 }
 </style>

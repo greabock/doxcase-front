@@ -292,7 +292,7 @@ export default {
             title: '',
             is_dictionary: true,
             is_navigation: true,
-            image: '/img/empty.png',
+            image: null,
             sort_index: 0,
             fields: [],
             access: 'all',
