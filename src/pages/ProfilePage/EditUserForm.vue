@@ -9,11 +9,23 @@
                   <span class="form-wrap__input-title">
                       Изображение профиля
                   </span>
-                    <uploader-image
-                        v-model="fileInput"
-                        :preview="user.photo"
-                        @click.stop.prevent
-                    ></uploader-image>
+
+                    <div class="uploader-image-wrapper">
+                        <uploader-image
+                            v-model="fileInput"
+                            :preview="userPhoto"
+                            @click.stop.prevent
+                        ></uploader-image>
+                        <span
+                            v-if='userPhoto && !fileInput'
+                            class='text-danger'
+                            @click="removeUserPhoto"
+                        >
+                           Удалить
+                        </span>
+                    </div>
+
+
                 </div>
 
                 <div class="form-wrap__input-wrap form-group">
@@ -90,6 +102,10 @@ export default {
 
         const isLoading = ref(false);
         const isShowPass = ref(false);
+        const userPhoto = ref(props.user.photo);
+        const removeUserPhoto = () => {
+            userPhoto.value = null;
+        }
 
         const schema = yup.object({
             name: yup.string().required('Поле обязательно для заполнения'),
@@ -125,17 +141,14 @@ export default {
         });
 
         const fileInput = ref(null);
-        const photoUrl = ref(null);
 
         const emailOccupied = ref(null);
         const updateUser = async (user, newPhoto) => {
             const userData = {
                 ...user,
                 role: user.role.key,
+                photo: newPhoto
             };
-            if (newPhoto) {
-                userData.photo = newPhoto;
-            }
             return await usersService.updateUser(props.user.id, userData);
         };
 
@@ -147,10 +160,10 @@ export default {
                     formData.append('files[]', fileInput.value)
 
                     const imageResp = await filesService.uploadFiles(formData);
-                    photoUrl.value = imageResp[0].url;
+                    userPhoto.value = imageResp[0].url;
                 }
 
-                const userResp = await updateUser(values, photoUrl.value);
+                const userResp = await updateUser(values, userPhoto.value);
                 emit('updateUser', userResp.data);
                 isLoading.value = false;
                 emit('closeModal');
@@ -180,6 +193,8 @@ export default {
             emailError,
             isShowPass,
             emailOccupied,
+            userPhoto,
+            removeUserPhoto,
         };
     },
 };
@@ -205,6 +220,16 @@ export default {
 .validation-error {
     display: block;
     margin-top: 5px;
+}
+.uploader-image-wrapper {
+    display: flex;
+    align-items: center;
+}
+.uploader-image-wrapper > SPAN {
+    display: block;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    margin-left: 24px;
 }
 </style>
 

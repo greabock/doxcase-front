@@ -101,7 +101,4 @@ export default {
 </script>
 
 <style scoped>
-.fields-edit-buttons-wrap {
-    display: flex;
-}
 </style>

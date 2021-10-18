@@ -238,6 +238,7 @@ export default {
 <style>
 .fields-edit-buttons-wrap {
     display: flex;
+    align-items: center;
 }
 @media (min-width: 991px) {
     .sSectionMain__col-title {
