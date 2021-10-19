@@ -12,14 +12,14 @@
                 placeholder="Введите ключ" />
             <ErrorMessage name="prodKey" class="error-feedback" />
         </div>
-        <div
-            v-if="error"
-            class="form-error-wrapper error-feedback">Неверный ключ
-        </div>
         <v-button :disabled="loading" class="w-100">
             <span v-show="loading" class="spinner-border spinner-border-sm"></span>
             <span>Активировать</span>
         </v-button>
+        <div
+            v-if="error"
+            class="form-error-wrapper error-feedback">Неверный ключ
+        </div>
     </Form>
 </template>
 
@@ -65,7 +65,7 @@ export default {
 .error-feedback {
     display: block;
     padding-top: 5px;
-    color: #00d600;
+    color: #ff5454;
 }
 .form-error-wrapper {
     display: flex;

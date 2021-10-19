@@ -82,7 +82,7 @@ export default {
 .error-feedback {
     display: block;
     padding-top: 5px;
-    color: #00d600;
+    color: #ff5454;
 }
 .form-error-wrapper {
     display: flex;
