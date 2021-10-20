@@ -123,7 +123,7 @@ export default async function useFields(fields, materials) {
                 bodyFormData.append('files[]', file);
                 const data = await fileService.uploadFiles(bodyFormData);
                 const [img] = data
-                return img.url
+                return img.signed
             }
 
             return fieldCreate({
