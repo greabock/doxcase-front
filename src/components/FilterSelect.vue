@@ -137,11 +137,10 @@ $blue: #1d47ce;
 
 .select__element {
     width: 100%;
-    border: 1px solid red;
     background: #fff;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.06);
     border-radius: 5px;
-    border-color: #d6d6d6;
+    border: 1px solid #d6d6d6;
     padding: 0.5rem 1rem;
 }
 
