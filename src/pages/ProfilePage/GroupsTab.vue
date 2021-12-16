@@ -353,7 +353,7 @@ max-height: 240px!important;
     background: #c4c4c4;        /* цвет дорожки */
 }
 .users-list-fom-wrapper::-webkit-scrollbar-thumb {
-    background-color: #1D47CE;    /* цвет плашки */
+    background-color: var(--bs-primary);    /* цвет плашки */
     border-radius: 3px;       /* закругления плашки */
     border: 0;  /* padding вокруг плашки */
 }
@@ -375,7 +375,7 @@ max-height: 240px!important;
 }
 .users-list-loader {
     position: absolute;
-    color: #394dce;
+    color: var(--bs-primary);
     display: flex;
     align-items: center;
     justify-content: center;

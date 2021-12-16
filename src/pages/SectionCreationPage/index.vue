@@ -587,12 +587,12 @@ export default {
 .section-creation-access__avalible {
     display: block;
     margin-right: 3px;
-    color:#6E6E6E;
+    color: var(--bs-dark);
 }
 .section-creation-access__avalible-value {
     display: block;
     margin-right: 30px;
-    color: #1D47CE;
+    color: var(--bs-primary);
 }
 .section-creation__header {
     margin-bottom: 20px;

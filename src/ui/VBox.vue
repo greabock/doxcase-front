@@ -33,8 +33,8 @@ export default {
     padding: 0.25em 0.625rem;
     margin-bottom: 0.5em;
     border: none;
-    background-color: #e3eafe;
-    color: #1d47ce;
+    background-color: var(--bs-info);
+    color: var(--bs-primary);
     transition: 0.3s;
     display: inline-flex;
     align-items: center;
@@ -42,12 +42,12 @@ export default {
 
 .active.box,
 .box:hover {
-    background-color: #1d47ce;
+    background-color: var(--bs-primary);
     color: #fff;
 }
 
 .delete {
-    stroke: #1d47ce;
+    stroke: var(--bs-primary);
     cursor: pointer;
     width: 12px;
     margin-left: 10px;

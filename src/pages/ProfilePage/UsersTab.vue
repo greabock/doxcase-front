@@ -251,7 +251,7 @@ export default {
 <style scoped>
 .users-list-loader {
     position: absolute;
-    color: #394dce;
+    color: var(--bs-primary);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -64,7 +64,7 @@ export default {
 
 <style lang="scss" scoped>
 .form-wrap__icon-add-wrap {
-    background: #e3eafe;
+    background: var(--bs-info);
     border-radius: 5px;
     width: 40px;
     height: 40px;

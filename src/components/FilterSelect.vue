@@ -129,7 +129,7 @@ export default {
 
 <style lang="scss" scoped>
 // @import './scss/variable';
-$blue: #1d47ce;
+$blue: var(--bs-primary);
 
 .select__container {
     position: relative;
@@ -193,7 +193,7 @@ $blue: #1d47ce;
 .select-list__item {
     margin: 0;
     cursor: pointer;
-    color: $blue;
+    color: var(--bs-primary);
     padding: 0.5rem 2.5rem 0.5rem 1rem;
     position: relative;
     font-size: 15px;
@@ -203,18 +203,18 @@ $blue: #1d47ce;
     }
 
     &_active {
-        color: $blue;
+        color: var(--bs-primary);
     }
 }
 
 .select-list__not-data {
     margin: 0;
     padding: 0.2rem 1rem;
-    color: rgba($blue, 0.5);
+    color: rgba(var(--bs-primary), 0.5);
 }
 
 .select__icon {
-    stroke: $blue;
+    stroke: var(--bs-primary);
 }
 
 .select-list__item_active {

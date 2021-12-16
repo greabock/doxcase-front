@@ -58,7 +58,7 @@ props: {
 }
 .content-loader__cont {
     font-size: 26px;
-    color: #1d47ce;
+    color: var(--bs-primary);
 }
 .lds-default {
     display: inline-block;
@@ -70,7 +70,7 @@ props: {
     position: absolute;
     width: 6px;
     height: 6px;
-    background: #1d47ce;
+    background: var(--bs-primary);
     border-radius: 50%;
     animation: lds-default 1.2s linear infinite;
 }

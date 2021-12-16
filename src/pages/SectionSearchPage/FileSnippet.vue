@@ -114,7 +114,7 @@ export default {
     cursor: pointer;
 }
 .file-extension {
-    color: #1d47ce;
+    color: var(--bs-primary);
     font-size: 14px;
 }
 .connected-with-material {

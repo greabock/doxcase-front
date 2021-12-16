@@ -337,6 +337,8 @@ export default {
 
 .btn-primary {
     color: #fff;
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
 }
 
 .html-data >>> * {
