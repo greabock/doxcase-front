@@ -15,7 +15,7 @@
 
     <div class="mb-4 groups-users-add-button">
         <div @click="isAddModalVisible = true" class="btn-add">
-            <div class="btn-add__plus"></div>
+            <div class="topLine__btn topLine__btn--plus btn-primary"></div>
             <div class="btn-add__text">Добавить группу</div>
         </div>
     </div>

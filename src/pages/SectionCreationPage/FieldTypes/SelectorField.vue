@@ -40,7 +40,7 @@
                 <div
                     @click='addOption'
                     class="btn-add">
-                    <div class="btn-add__plus">
+                    <div class="topLine__btn topLine__btn--plus btn-primary">
                     </div>
                     <div class="btn-add__text">Добавить вариант
                     </div>

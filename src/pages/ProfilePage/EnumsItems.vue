@@ -22,7 +22,7 @@
     <div class="my-3">
         <!-- Add new enumObject.values Item -->
         <div class="btn-add" @click="setShownEnumItemForm(true)">
-            <div class="btn-add__plus"></div>
+            <div class="topLine__btn topLine__btn--plus btn-primary"></div>
             <div class="btn-add__text">Добавить позицию</div>
         </div>
         <div v-if="isShownEnumItemForm" class="block-position__item block-position__item--edit">

@@ -38,7 +38,6 @@
             </div>
         </div>
     </div>
-    <!-- Filters List -->
     <div class="lines">
         <div
             v-for="field in sortedFields"
@@ -195,5 +194,8 @@ export default {
 .no-filters__dropdown-item {
     display: flex;
     padding: 5px 20px;
+}
+.dropdown-custom-input__title {
+    color: var(--bs-primary)
 }
 </style>
