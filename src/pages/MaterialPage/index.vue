@@ -334,13 +334,6 @@ export default {
     flex-flow: column;
     justify-content: space-between;
 }
-
-.btn-primary {
-    color: #fff;
-    background-color: var(--bs-primary);
-    border-color: var(--bs-primary);
-}
-
 .html-data >>> * {
     max-width: 100%;
 }
