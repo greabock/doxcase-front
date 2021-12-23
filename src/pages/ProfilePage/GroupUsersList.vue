@@ -163,7 +163,7 @@ export default {
             const groupsAddHeight = document.querySelector('.groups-users-add-button').scrollHeight;
             const groupsTitleSearchHeight = document.querySelector('.users-group-title-search').scrollHeight;
             const groupsFooterButtonsHeight = document.querySelector('.user-groups-footer-buttons').scrollHeight;
-            const footerHeight = document.querySelector('.footer').scrollHeight;
+            const footerHeight = 0;
 
             const restHeight = window.innerHeight - topLineHeight - headerHeight - navTabsHeight - groupsButtonsHeight - groupsAddHeight -
                 groupsTitleSearchHeight - groupsFooterButtonsHeight - footerHeight + (-130);

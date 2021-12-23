@@ -1,0 +1,58 @@
+.search-item .btn-edit-sm .icon {
+    stroke: #fff;
+}
+.btn-primary {
+    color: #fff;
+}
+.btn-secondary, .sCardDocs__item {
+    color: #000;
+    background-color: #f7f7f7;
+    border-color: #e7e7e7;
+}
+.btn-outline-primary:hover, .sCardHead__aside-btn:hover {
+    color: #fff;
+}
+.btn-primary:hover {
+    color: #fff;
+    background-color: #359847;
+    border-color: #359847;
+}
+.btn-add:hover .btn-add__text {
+    color: #359847;
+}
+.btn-filter:hover, .btn-info:hover, .lines__item:hover {
+    background-color: #eafaee;
+    border-color: #eafaee;
+}
+.btn-filter, .btn-info, .lines__item {
+    background-color: #eafaee;
+    border-color: #eafaee;
+}
+.sCardDocs__download {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-end;
+}
+.sCardDocs__size {
+    align-self: flex-end;
+}
+.form-wrap__btn-choose {
+    color: #fff;
+    background-color: var(--bs-primary);
+}
+.form-wrap__btn-choose:hover {
+    color: #fff;
+    background-color: #359847;
+}
+.btn-primary.disabled,
+.btn-primary:disabled,
+.disabled.form-wrap__btn-choose,
+.disabled.sCardHead__toggle-aside,
+.disabled.sSearchResult__btn-toggle,
+.disabled.topLine__link-back,
+.form-wrap__btn-choose:disabled,
+.sCardHead__toggle-aside:disabled,
+.sSearchResult__btn-toggle:disabled,
+.topLine__link-back:disabled {
+    color: #fff;
+}
