@@ -1,6 +1,5 @@
 <template>
     <main class="main-block d-flex">
-        <!-- start sCabinet-->
         <section class="sCabinet section py-0" id="sCabinet">
             <div class="container-fluid">
                 <div class="row">
@@ -43,11 +42,8 @@
                                 </li>
                             </ul>
                                 <div v-show="pageContent === 'enums'" class="sCabinetMain__body">
-                                    <!-- Enums block -->
                                     <enums-tab></enums-tab>
                                 </div>
-
-
                                 <div v-if="(user?.role === 'admin') && isEditAllowed">
                                     <div v-if="pageContent === 'users'" class="sCabinetMain__body">
                                         <!-- Users block -->
@@ -60,7 +56,6 @@
                             <div v-if="(user?.role === 'admin') && isEditAllowed">
                                 <div v-if="pageContent === 'groups'"
                                      class="sCabinetMain__body groups-tab-cont-wrapper">
-                                    <!-- Users block -->
                                     <groups-tab></groups-tab>
                                 </div>
                             </div>
@@ -69,7 +64,6 @@
                 </div>
             </div>
         </section>
-        <!-- end sCabinet-->
     </main>
 </template>
 
@@ -96,8 +90,6 @@ export default {
         const store = useStore();
         const user = computed(() => store.getters['user/getUser']);
         const isEditAllowed = computed(() => store.getters['user/getIsEditAllowed']);
-
-
 
         function switchPageContent(to) {
             pageContent.value = to;

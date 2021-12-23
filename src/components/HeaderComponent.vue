@@ -35,7 +35,7 @@
                                 <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
                             </div>
                             <div class="d-none d-sm-block">
-                                <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                                <logo-icon-small iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon-small>
                             </div>
                         </div>
                     </template>
@@ -47,7 +47,7 @@
                                 <logo-icon-small iconWidth="82" iconHeight="26" iconColor="#252f6c"></logo-icon-small>
                             </div>
                             <div class="d-none d-sm-block">
-                                <logo-icon iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon>
+                                <logo-icon-small iconWidth="354" iconHeight="157" iconColor="#252f6c"></logo-icon-small>
                             </div>
                         </router-link>
                     </template>
@@ -112,7 +112,6 @@
 import {ref, computed, onMounted, onUnmounted} from 'vue';
 import {useStore} from 'vuex';
 import {useRoute, useRouter} from 'vue-router';
-import LogoIcon from '@/assets/LogoIcon';
 import LogoIconSmall from '@/assets/LogoIconSmall';
 import TopMenu from '@/components/TopMenu';
 import KeyAlert from '@/components/KeyAlert';
@@ -121,7 +120,6 @@ import {defineIsEditAllowed} from '@/utils/date.helpers';
 
 export default {
     components: {
-        LogoIcon,
         LogoIconSmall,
         TopMenu,
         KeyAlert

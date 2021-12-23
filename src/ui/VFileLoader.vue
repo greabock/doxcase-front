@@ -64,8 +64,8 @@ export default {
     width: 100%;
     height: 10rem;
     display: flex;
-    border: 1px solid $blue;
-    color: #6e6e6e;
+    border: 1px solid var(--bs-primary);
+    color: var(--bs-dark);
     padding: 1rem;
 
     &:hover {
@@ -86,7 +86,7 @@ export default {
     &_multiple {
         width: 8rem;
         height: 8rem;
-        border: 1px dashed $blue;
+        border: 1px dashed var(--bs-primary);
     }
 }
 

@@ -147,7 +147,7 @@
                                     <div class="btn-add"
                                          @click.stop="setFieldToChange({}); setFieldModalVisible(true)"
                                     >
-                                        <div class="btn-add__plus"></div>
+                                        <div class="topLine__btn topLine__btn--plus btn-primary"></div>
                                         <div class="btn-add__text">Добавить</div>
                                     </div>
                                 </div>
@@ -173,7 +173,7 @@
                             <div class="d-lg-none">
                                 <div class="mb-3">
                                     <div class="btn-add">
-                                        <div class="btn-add__plus"></div>
+                                        <div class="topLine__btn topLine__btn--plus btn-primary"></div>
                                         <div
                                              @click="setFieldToChange({}); setFieldModalVisible(true)"
                                              class="btn-add__text"
@@ -587,12 +587,12 @@ export default {
 .section-creation-access__avalible {
     display: block;
     margin-right: 3px;
-    color:#6E6E6E;
+    color: var(--bs-dark);
 }
 .section-creation-access__avalible-value {
     display: block;
     margin-right: 30px;
-    color: #1D47CE;
+    color: var(--bs-primary);
 }
 .section-creation__header {
     margin-bottom: 20px;

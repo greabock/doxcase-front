@@ -162,7 +162,7 @@
                                 <div class="col-auto d-none d-lg-block">
                                     <div class="btn-add"
                                          @click.stop="setFieldToChange({}); setFieldModalVisible(true)">
-                                        <div class="btn-add__plus"></div>
+                                        <div class="topLine__btn topLine__btn--plus btn-primary"></div>
                                         <div class="btn-add__text">Добавить
                                         </div>
                                     </div>
@@ -189,7 +189,7 @@
                             <div class="d-lg-none">
                                 <div class="mb-3">
                                     <div class="btn-add">
-                                        <div class="btn-add__plus"></div>
+                                        <div class="topLine__btn topLine__btn--plus btn-primary"></div>
                                         <div
                                             @click="setFieldToChange({}); setFieldModalVisible(true)"
                                             class="btn-add__text"

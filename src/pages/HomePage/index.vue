@@ -651,7 +651,7 @@ export default {
     color: #bbb;
 }
 .sSearchResult__filter-btn.active {
-    color: #1d47ce;
+    color: var(--bs-primary);
 }
 .sSearchResult__aside-head {
     margin-bottom: 0.6rem;
@@ -660,6 +660,6 @@ export default {
     display: flex;
     justify-content: center;
     padding: 0 0 10px;
-    color: #1d47d5;
+    color: var(--bs-primary);
 }
 </style>

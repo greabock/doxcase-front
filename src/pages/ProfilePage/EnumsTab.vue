@@ -12,7 +12,7 @@
     </div>
     <div class="mb-4">
         <div @click="setModalVisible(true)" class="btn-add">
-            <div class="btn-add__plus"></div>
+            <div class="topLine__btn topLine__btn--plus btn-primary"></div>
             <div class="btn-add__text">Добавить справочник</div>
         </div>
     </div>
