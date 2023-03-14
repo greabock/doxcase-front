@@ -153,16 +153,7 @@ export default {
         });
 
         const alertType = computed(() => {
-            if (!props.licenseInfo) {
-                return 'not_expired';
-            }
-            if ((licenseEnd.value - currentTime.value <= 0)) {
-                return 'expired';
-            } else if ((licenseEnd.value - currentTime.value <= 432000000)) {
-                return 'pre_expired';
-            } else {
-                return 'not_expired';
-            }
+            return 'not_expired';
         });
 
         const isKeyModal = ref(false);
